@@ -8,9 +8,19 @@ import { createDatabaseConfig } from './config/database-config';
 import { UserModule } from './domain/user/user.module';
 import { LoggerModule } from './shared/module/logger/logger.module';
 import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
+import { ClsModule } from 'nestjs-cls';
+import { v4 as uuidv4 } from 'uuid';
 
 @Module({
   imports: [
+    ClsModule.forRoot({
+      global: true,
+      middleware: {
+        mount: true,
+        generateId: true,
+        idGenerator: () => uuidv4(),
+      },
+    }),
     AppConfigModule,
     MikroOrmModule.forRootAsync({
       imports: [AppConfigModule],

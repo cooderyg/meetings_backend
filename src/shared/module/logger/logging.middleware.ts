@@ -1,9 +1,9 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { LoggerService } from './logger.service';
-import { v4 as uuidv4 } from 'uuid';
 import { AppConfig } from '../app-config/app-config';
 import { LOGGER_CONSTANTS } from './const/logger.const';
+import { ClsService } from 'nestjs-cls';
 
 /**
  * HTTP 요청/응답을 로깅하는 미들웨어
@@ -17,6 +17,7 @@ export class LoggingMiddleware implements NestMiddleware {
   constructor(
     private readonly logger: LoggerService,
     private readonly appConfig: AppConfig,
+    private readonly cls: ClsService,
   ) {}
 
   /**
@@ -35,8 +36,8 @@ export class LoggingMiddleware implements NestMiddleware {
     // API 버전 정보를 요청 객체에 추가
     req.apiVersion = this.appConfig.apiVersion;
 
-    // 요청 추적을 위한 고유 ID 생성 또는 헤더에서 추출
-    const requestId = (req.headers['x-request-id'] as string) || uuidv4();
+    // CLS에서 자동 생성된 ID 가져오기 또는 헤더에서 추출한 ID 사용
+    const requestId = (req.headers['x-request-id'] as string) || this.cls.getId();
     req.requestId = requestId;
     res.setHeader('x-request-id', requestId);
     res.setHeader('x-api-version', this.appConfig.apiVersion);
@@ -48,7 +49,6 @@ export class LoggingMiddleware implements NestMiddleware {
     this.logger.debug(
       LOGGER_CONSTANTS.MESSAGE_TEMPLATES.HTTP.STARTED(method, originalUrl),
       LOGGER_CONSTANTS.CONTEXTS.HTTP,
-      requestId,
       {
         ip,
         userAgent,
@@ -71,7 +71,6 @@ export class LoggingMiddleware implements NestMiddleware {
           ),
           undefined,
           LOGGER_CONSTANTS.CONTEXTS.HTTP,
-          requestId,
         );
       } else if (statusCode >= 400) {
         // 4xx 에러: 클라이언트 오류로 경고 로그
@@ -83,13 +82,12 @@ export class LoggingMiddleware implements NestMiddleware {
             duration,
           ),
           LOGGER_CONSTANTS.CONTEXTS.HTTP,
-          requestId,
         );
       }
 
       // 설정된 임계값보다 느린 요청에 대한 성능 로깅
       if (duration > LOGGER_CONSTANTS.PERFORMANCE_THRESHOLD.HTTP_REQUEST_SLOW) {
-        this.logger.logPerformance('HTTP Request', duration, requestId, {
+        this.logger.logPerformance('HTTP Request', duration, {
           method,
           url: originalUrl,
           statusCode,

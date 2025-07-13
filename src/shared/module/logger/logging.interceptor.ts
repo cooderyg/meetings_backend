@@ -44,8 +44,6 @@ export class LoggingInterceptor implements NestInterceptor {
       return next.handle();
     }
 
-    // 미들웨어에서 설정된 요청 ID 사용
-    const requestId = request.requestId as string;
 
     // 실행되는 컨트롤러와 메서드 정보 추출
     const controllerName = context.getClass().name;
@@ -61,7 +59,6 @@ export class LoggingInterceptor implements NestInterceptor {
     this.logger.debug(
       LOGGER_CONSTANTS.MESSAGE_TEMPLATES.CONTROLLER.STARTED(controllerPath),
       LOGGER_CONSTANTS.CONTEXTS.CONTROLLER,
-      requestId,
     );
 
     return next.handle().pipe(
@@ -77,14 +74,13 @@ export class LoggingInterceptor implements NestInterceptor {
               duration,
             ),
             LOGGER_CONSTANTS.CONTEXTS.CONTROLLER,
-            requestId,
           );
 
           // 설정된 임계값보다 느린 경우 성능 로그 기록
           if (
             duration > LOGGER_CONSTANTS.PERFORMANCE_THRESHOLD.CONTROLLER_SLOW
           ) {
-            this.logger.logPerformance(controllerPath, duration, requestId, {
+            this.logger.logPerformance(controllerPath, duration, {
               method,
               url,
               statusCode: response.statusCode,
@@ -101,7 +97,6 @@ export class LoggingInterceptor implements NestInterceptor {
             ),
             error.stack,
             LOGGER_CONSTANTS.CONTEXTS.CONTROLLER,
-            requestId,
             {
               duration,
               method,

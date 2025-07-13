@@ -22,26 +22,6 @@ export class ErrorResponse {
   details?: any;
 }
 
-// 페이지네이션 메타 스키마
-export class PaginationMeta {
-  @ApiProperty({ example: 1 })
-  page: number;
-
-  @ApiProperty({ example: 10 })
-  limit: number;
-
-  @ApiProperty({ example: 100 })
-  total: number;
-
-  @ApiProperty({ example: 10 })
-  totalPages: number;
-}
-
-// 메타 스키마
-export class ResponseMeta {
-  @ApiPropertyOptional({ type: PaginationMeta })
-  pagination?: PaginationMeta;
-}
 
 // 공통 응답 스키마 속성
 const getBaseSchema = (): Record<string, any> => ({
@@ -52,13 +32,13 @@ const getBaseSchema = (): Record<string, any> => ({
 // StandardResponse를 위한 Swagger 데코레이터
 export const ApiStandardResponse = <T extends ClassConstructor>(
   model?: T,
-  options?: { isArray?: boolean; hasPagination?: boolean },
+  options?: { isArray?: boolean; hasTotalCount?: boolean },
 ) => {
   const baseSchema = getBaseSchema();
 
-  // pagination이 있는 경우 pagination 필드 추가
-  if (options?.hasPagination) {
-    baseSchema.pagination = { $ref: getSchemaPath(PaginationMeta) };
+  // totalCount가 있는 경우 totalCount 필드 추가
+  if (options?.hasTotalCount) {
+    baseSchema.totalCount = { type: 'number', example: 100 };
   }
 
   if (model) {

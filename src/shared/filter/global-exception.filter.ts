@@ -11,7 +11,7 @@ import { Response, Request } from 'express';
 import { LoggerService } from '../module/logger/logger.service';
 import { ExceptionLogMetadata } from '../module/logger/type/logger.type';
 import { AppException } from '../exception/app.exception';
-import { ErrorCode } from '../enum/error-code';
+import { ERROR_CODES } from '../const/error-code.const';
 import { AppConfig } from '../module/app-config/app-config';
 import { ErrorResponse } from '../type/error-response.types';
 
@@ -64,7 +64,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const errorDetails = this.buildErrorResponse(exception);
 
     // 예외 로깅
-    this.logException(exception, request, status, requestId);
+    this.logException(exception, request, status);
 
     // 표준 응답 형태로 래핑
     const standardResponse: StandardResponse<unknown> = {
@@ -152,13 +152,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const errorResponse: ErrorResponse = {
       code: exception.code,
       message: exception.message,
-      userMessage: exception.userMessage,
+      userMessage: exception.message,
       ...(exception.details && { details: exception.details }),
     };
 
     if (this.appConfig.nodeEnv === 'development') {
       errorResponse.debug = {
-        errorCode: exception.errorCode,
+        errorCode: exception.errorDef.code,
         internalMessage: exception.message,
         stack: exception.stack,
         timestamp: new Date().toISOString(),
@@ -186,7 +186,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       : [response.message || exception.message];
 
     const errorResponse: ErrorResponse = {
-      code: ErrorCode.VALIDATION_FAILED,
+      code: ERROR_CODES.VALIDATION_FAILED.code,
       message: messages.join(', '),
       userMessage: '입력한 정보를 다시 확인해주세요',
       details: { validationErrors: messages },
@@ -214,7 +214,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     exception: NotFoundException,
   ): ErrorResponse {
     const errorResponse: ErrorResponse = {
-      code: ErrorCode.RESOURCE_NOT_FOUND,
+      code: ERROR_CODES.RESOURCE_NOT_FOUND.code,
       message: exception.message,
       userMessage: '요청하신 정보를 찾을 수 없습니다',
     };
@@ -245,7 +245,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         : (response as { message?: string }).message || exception.message;
 
     const errorResponse: ErrorResponse = {
-      code: ErrorCode.SYSTEM_INTERNAL_ERROR,
+      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR.code,
       message: responseMessage,
       userMessage: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     };
@@ -277,7 +277,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           : 'Unknown error';
 
     const errorResponse: ErrorResponse = {
-      code: ErrorCode.SYSTEM_INTERNAL_ERROR,
+      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR.code,
       message,
       userMessage: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     };
@@ -301,7 +301,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    */
   private buildFallbackErrorResponse(): ErrorResponse {
     return {
-      code: ErrorCode.SYSTEM_INTERNAL_ERROR,
+      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR.code,
       message: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
       userMessage: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     };
@@ -323,7 +323,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     exception: unknown,
     request: Request,
     status: number,
-    requestId?: string,
   ): void {
     // 로깅에 포함할 메타데이터 준비
     const logMeta: ExceptionLogMetadata = {
@@ -335,9 +334,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     };
 
     if (exception instanceof AppException) {
-      this.logAppException(exception, logMeta, requestId);
+      this.logAppException(exception, logMeta);
     } else {
-      this.logUnhandledException(exception, logMeta, requestId);
+      this.logUnhandledException(exception, logMeta);
     }
   }
 
@@ -353,40 +352,48 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private logAppException(
     exception: AppException,
     logMeta: ExceptionLogMetadata,
-    requestId?: string,
   ): void {
-    const logMessage = `Business exception: [${exception.errorCode}] ${exception.message || 'No message'}`;
+    const logMessage = `Business exception: [${exception.errorDef.code}] ${exception.message || 'No message'}`;
     const logContext = 'BusinessException';
     // 로깅에 포함할 메타데이터 준비
     const metaData = {
       ...logMeta,
       code: exception.code,
       details: exception.details,
-      errorCode: exception.errorCode,
+      errorCode: exception.errorDef.code,
     };
 
     // 예외에 설정된 로그 레벨에 따라 로깅
-    switch (exception.logLevel) {
+    const logLevel = exception.logLevel as 'error' | 'warn' | 'info' | 'debug' | 'verbose';
+    switch (logLevel) {
       case 'error':
         this.loggerService.error(
           logMessage,
           exception.stack || 'No stack trace',
           logContext,
-          requestId,
           metaData,
         );
         break;
       case 'warn':
-        this.loggerService.warn(logMessage, logContext, requestId, metaData);
+        this.loggerService.warn(logMessage, logContext, metaData);
         break;
       case 'info':
-        this.loggerService.log(logMessage, logContext, requestId, metaData);
+        this.loggerService.log(logMessage, logContext, metaData);
         break;
       case 'debug':
-        this.loggerService.debug(logMessage, logContext, requestId, metaData);
+        this.loggerService.debug(logMessage, logContext, metaData);
         break;
       case 'verbose':
-        this.loggerService.verbose(logMessage, logContext, requestId, metaData);
+        this.loggerService.verbose(logMessage, logContext, metaData);
+        break;
+      default:
+        // fallback to error level
+        this.loggerService.error(
+          logMessage,
+          exception.stack || 'No stack trace',
+          logContext,
+          metaData,
+        );
         break;
     }
   }
@@ -403,13 +410,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private logUnhandledException(
     exception: unknown,
     logMeta: ExceptionLogMetadata,
-    requestId?: string,
   ): void {
     this.loggerService.error(
       `Unhandled exception: ${exception instanceof Error ? exception.message : 'Unknown error'}`,
       exception instanceof Error ? exception.stack : undefined,
       'UnhandledException',
-      requestId,
       logMeta,
     );
   }
