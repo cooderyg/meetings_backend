@@ -4,15 +4,18 @@ import { TenantMember } from '../../tenant/entity/tenant-member.entity';
 
 @Entity({ tableName: 'users' })
 export class User extends BaseEntity {
-  @Property({ length: 255 })
+  @Property()
   @Unique()
   @Index()
   email!: string;
 
-  @Property({ length: 255, nullable: true })
-  name?: string;
+  @Property()
+  firstName!: string;
 
-  @Property({ length: 255, hidden: true })
+  @Property()
+  lastName!: string;
+
+  @Property({ hidden: true })
   passwordHash!: string;
 
   @Property({ default: true })

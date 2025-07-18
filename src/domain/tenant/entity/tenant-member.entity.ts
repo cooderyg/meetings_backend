@@ -1,4 +1,12 @@
-import { Entity, ManyToOne, Property, OneToMany, Collection, Index, Unique } from '@mikro-orm/core';
+import {
+  Entity,
+  ManyToOne,
+  Property,
+  OneToMany,
+  Collection,
+  Index,
+  Unique,
+} from '@mikro-orm/core';
 import { BaseEntity } from '../../../shared/entity/base.entity';
 import { User } from '../../user/entity/user.entity';
 import { Tenant } from './tenant.entity';
@@ -22,20 +30,20 @@ export class TenantMember extends BaseEntity {
   @Property({ default: true })
   isActive: boolean = true;
 
-  @Property({ nullable: true })
-  department?: string;
+  @Property()
+  firstName!: string;
 
-  @Property({ nullable: true })
-  jobTitle?: string;
+  @Property()
+  lastName!: string;
 
-  @OneToMany(() => Page, page => page.owner)
+  @OneToMany(() => Page, (page) => page.owner)
   ownedPages = new Collection<Page>(this);
 
-  @OneToMany(() => MemberResourcePermission, urp => urp.tenantMember)
+  @OneToMany(() => MemberResourcePermission, (urp) => urp.tenantMember)
   resourcePermissions = new Collection<MemberResourcePermission>(this);
 
   getDisplayName(): string {
-    return this.user.name || this.user.email;
+    return [this.firstName, this.lastName].filter(Boolean).join(' ');
   }
 
   hasRole(roleName: string): boolean {

@@ -4,8 +4,8 @@
   "settings": {
     "width": 4000,
     "height": 4000,
-    "scrollTop": -613.0144,
-    "scrollLeft": -1351.2852,
+    "scrollTop": -487.0144,
+    "scrollLeft": -447.2852,
     "zoomLevel": 0.74,
     "show": 431,
     "database": 4,
@@ -70,6 +70,7 @@
           "col1_1",
           "col1_2",
           "col1_3",
+          "col1_7",
           "col1_4",
           "col1_5",
           "col1_6"
@@ -78,6 +79,7 @@
           "col1_1",
           "col1_2",
           "col1_3",
+          "col1_7",
           "col1_4",
           "col1_5",
           "col1_6"
@@ -135,6 +137,8 @@
           "col3_2",
           "col3_3",
           "col3_4",
+          "col3_8",
+          "col3_9",
           "col3_5",
           "col3_6",
           "col3_7"
@@ -144,6 +148,8 @@
           "col3_2",
           "col3_3",
           "col3_4",
+          "col3_8",
+          "col3_9",
           "col3_5",
           "col3_6",
           "col3_7"
@@ -442,8 +448,28 @@
       "col1_3": {
         "id": "col1_3",
         "tableId": "table1",
-        "name": "name",
+        "name": "first_name",
         "comment": "이름",
+        "dataType": "VARCHAR(255)",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 62,
+          "widthComment": 60,
+          "widthDataType": 90,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1700000000000,
+          "createAt": 1700000000000
+        }
+      },
+      "col1_7": {
+        "id": "col1_7",
+        "tableId": "table1",
+        "name": "last_name",
+        "comment": "성",
         "dataType": "VARCHAR(255)",
         "default": "",
         "options": 0,
@@ -752,6 +778,46 @@
           "widthName": 60,
           "widthComment": 60,
           "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1700000000000,
+          "createAt": 1700000000000
+        }
+      },
+      "col3_8": {
+        "id": "col3_8",
+        "tableId": "table3",
+        "name": "first_name",
+        "comment": "이름",
+        "dataType": "VARCHAR(255)",
+        "default": "",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 62,
+          "widthComment": 60,
+          "widthDataType": 90,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1700000000000,
+          "createAt": 1700000000000
+        }
+      },
+      "col3_9": {
+        "id": "col3_9",
+        "tableId": "table3",
+        "name": "last_name",
+        "comment": "성",
+        "dataType": "VARCHAR(255)",
+        "default": "",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 90,
           "widthDefault": 60
         },
         "meta": {
@@ -1672,7 +1738,7 @@
             "col1_1"
           ],
           "x": 520.8649,
-          "y": 124.3245,
+          "y": 136.3245,
           "direction": 2
         },
         "end": {
@@ -1681,7 +1747,7 @@
             "col3_2"
           ],
           "x": 611.2678,
-          "y": 390.507,
+          "y": 470.507,
           "direction": 1
         },
         "meta": {
@@ -1708,7 +1774,7 @@
           "columnIds": [
             "col3_3"
           ],
-          "x": 846.7678,
+          "x": 848.7678,
           "y": 334.507,
           "direction": 4
         },
@@ -1736,8 +1802,8 @@
           "columnIds": [
             "col3_4"
           ],
-          "x": 1082.2678,
-          "y": 390.507,
+          "x": 1086.2678,
+          "y": 402.507,
           "direction": 2
         },
         "meta": {
@@ -1839,8 +1905,8 @@
           "columnIds": [
             "col3_1"
           ],
-          "x": 1082.2678,
-          "y": 502.507,
+          "x": 1086.2678,
+          "y": 538.5070000000001,
           "direction": 2
         },
         "end": {
@@ -1923,9 +1989,9 @@
           "columnIds": [
             "col3_1"
           ],
-          "x": 611.2678,
-          "y": 502.507,
-          "direction": 1
+          "x": 730.0178,
+          "y": 606.5070000000001,
+          "direction": 8
         },
         "end": {
           "tableId": "table8",
@@ -1979,8 +2045,8 @@
           "columnIds": [
             "col3_1"
           ],
-          "x": 846.7678,
-          "y": 558.5070000000001,
+          "x": 967.5178,
+          "y": 606.5070000000001,
           "direction": 8
         },
         "end": {
@@ -2008,7 +2074,7 @@
             "col1_1"
           ],
           "x": 267.8649,
-          "y": 224.3245,
+          "y": 248.3245,
           "direction": 8
         },
         "end": {
