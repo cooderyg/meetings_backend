@@ -4,8 +4,8 @@
   "settings": {
     "width": 4000,
     "height": 4000,
-    "scrollTop": -320.7722,
-    "scrollLeft": -472.2852,
+    "scrollTop": -613.0144,
+    "scrollLeft": -1351.2852,
     "zoomLevel": 0.74,
     "show": 431,
     "database": 4,
@@ -1182,14 +1182,14 @@
       "col8_6": {
         "id": "col8_6",
         "tableId": "table8",
-        "name": "tree_path",
-        "comment": "트리 경로",
+        "name": "resource_path",
+        "comment": "리소스 경로",
         "dataType": "LTREE",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
-          "widthName": 60,
+          "widthName": 84,
           "widthComment": 60,
           "widthDataType": 60,
           "widthDefault": 60
@@ -1342,14 +1342,14 @@
       "col9_6": {
         "id": "col9_6",
         "tableId": "table9",
-        "name": "tree_path",
-        "comment": "트리 경로",
+        "name": "resource_path",
+        "comment": "리소스 경로",
         "dataType": "LTREE",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
-          "widthName": 60,
+          "widthName": 84,
           "widthComment": 60,
           "widthDataType": 60,
           "widthDefault": 60
@@ -1904,7 +1904,7 @@
           "columnIds": [
             "col8_2"
           ],
-          "x": 260.0352,
+          "x": 268.5352,
           "y": 800,
           "direction": 4
         },
@@ -1932,7 +1932,7 @@
           "columnIds": [
             "col8_3"
           ],
-          "x": 497.5352,
+          "x": 514.5352,
           "y": 924,
           "direction": 2
         },
@@ -1960,7 +1960,7 @@
           "columnIds": [
             "col9_2"
           ],
-          "x": 708.8909,
+          "x": 713.1409,
           "y": 800,
           "direction": 4
         },
@@ -1988,7 +1988,7 @@
           "columnIds": [
             "col9_3"
           ],
-          "x": 946.3909,
+          "x": 959.1409,
           "y": 800,
           "direction": 4
         },

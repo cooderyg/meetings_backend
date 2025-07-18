@@ -31,7 +31,7 @@ export class Space extends BaseEntity {
 
   @Property({ type: LTreeType })
   @Index({ type: 'gist' })
-  treePath!: string;
+  resourcePath!: string;
 
   @Property({ type: 'jsonb', nullable: true })
   metadata?: {
@@ -56,7 +56,7 @@ export class Space extends BaseEntity {
   }
 
   getParentId(): string | null {
-    const parts = this.treePath.split('.');
+    const parts = this.resourcePath.split('.');
     if (parts.length <= 1) return null;
     return parts[parts.length - 2];
   }
