@@ -6,3 +6,5 @@ architecture.md
 desc.md
 volumes
 .vscode
+.env
+temp

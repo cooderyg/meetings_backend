@@ -1,10 +1,6 @@
-import { PrimaryKey, Property } from '@mikro-orm/core';
-import { v4 } from 'uuid';
+import { Property } from '@mikro-orm/core';
 
-export abstract class BaseEntity {
-  @PrimaryKey({ type: 'uuid' })
-  id: string = v4();
-
+export abstract class TimestampedEntity {
   @Property({ type: 'timestamptz', onCreate: () => new Date() })
   createdAt: Date = new Date();
 
