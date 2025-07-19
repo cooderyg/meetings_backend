@@ -8,6 +8,7 @@ import { createDatabaseConfig } from './config/database-config';
 import { UserModule } from './domain/user/user.module';
 import { LoggerModule } from './shared/module/logger/logger.module';
 import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
+import { CacheModule } from './infrastructure/cache/cache.module';
 import { ClsModule } from 'nestjs-cls';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -28,6 +29,7 @@ import { v4 as uuidv4 } from 'uuid';
       inject: [AppConfig],
     }),
     LoggerModule,
+    CacheModule,
     UserModule,
   ],
   controllers: [AppController],

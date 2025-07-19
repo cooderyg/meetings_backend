@@ -65,6 +65,13 @@ export function createDatabaseConfig(appConfig: AppConfig): Options {
         password: appConfig.database.password,
         dbName: appConfig.database.name,
         debug: false,
+        driverOptions: {
+          connection: {
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          },
+        },
         pool: { min: 1, max: 5 },
       };
     default: // 'development'
@@ -76,6 +83,13 @@ export function createDatabaseConfig(appConfig: AppConfig): Options {
         password: appConfig.database.password,
         dbName: appConfig.database.name,
         debug: true,
+        driverOptions: {
+          connection: {
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          },
+        },
         // SQL 구문 하이라이팅 (개발 환경에서만 사용)
         highlighter: new SqlHighlighter(),
         allowGlobalContext: true, // 개발 환경에서만 허용

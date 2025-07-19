@@ -26,6 +26,19 @@ export class AppConfig {
     refreshExpiresIn: '7d',
   };
 
+  readonly cache = {
+    type: '',
+    redis: {
+      host: '',
+      port: 6379,
+      password: '',
+    },
+    memory: {
+      maxSize: 1000,
+      ttl: 300000,
+    },
+  };
+
   static validationSchema = Joi.object({
     NODE_ENV: Joi.string()
       .valid('development', 'staging', 'production')
@@ -43,6 +56,13 @@ export class AppConfig {
     JWT_EXPIRES_IN: Joi.string().required(),
     REFRESH_SECRET: Joi.string().required(),
     REFRESH_EXPIRES_IN: Joi.string().required(),
+    CACHE_TYPE: Joi.string().valid('memory', 'redis').default('memory'),
+    REDIS_HOST: Joi.string().default('localhost'),
+    REDIS_PORT: Joi.number().default(6379),
+    REDIS_PASSWORD: Joi.string().allow('').optional(),
+    REDIS_DB: Joi.number().default(0),
+    CACHE_MAX_SIZE: Joi.number().default(1000),
+    CACHE_TTL: Joi.number().default(300000),
   });
 
   constructor() {
@@ -65,6 +85,19 @@ export class AppConfig {
       jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
       refreshSecret: process.env.REFRESH_SECRET || '',
       refreshExpiresIn: process.env.REFRESH_EXPIRES_IN || '7d',
+    };
+
+    this.cache = {
+      type: (process.env.CACHE_TYPE as 'memory' | 'redis') || 'memory',
+      redis: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
+        password: process.env.REDIS_PASSWORD || '',
+      },
+      memory: {
+        maxSize: parseInt(process.env.CACHE_MAX_SIZE || '1000', 10),
+        ttl: parseInt(process.env.CACHE_TTL || '300000', 10),
+      },
     };
   }
 }
