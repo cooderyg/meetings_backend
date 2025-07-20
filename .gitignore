@@ -9,3 +9,4 @@ volumes
 .env
 temp
 .idea
+.env.*
