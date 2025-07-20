@@ -8,3 +8,4 @@ volumes
 .vscode
 .env
 temp
+.idea
