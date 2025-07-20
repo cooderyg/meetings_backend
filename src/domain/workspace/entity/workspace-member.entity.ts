@@ -9,20 +9,20 @@ import {
 } from '@mikro-orm/core';
 import { BaseEntity } from '../../../shared/entity/base.entity';
 import { User } from '../../user/entity/user.entity';
-import { Tenant } from './tenant.entity';
+import { Workspace } from './workspace.entity';
 import { Role } from '../../role/entity/role.entity';
 import { Meeting } from '../../meeting/entity/meeting.entity';
 import { MemberResourcePermission } from '../../permission/entity/member-resource-permission.entity';
 
-@Entity({ tableName: 'tenant_members' })
-@Unique({ properties: ['user', 'tenant'] })
-@Index({ properties: ['tenant', 'user'] })
-export class TenantMember extends BaseEntity {
+@Entity({ tableName: 'workspace_members' })
+@Unique({ properties: ['user', 'workspace'] })
+@Index({ properties: ['workspace', 'user'] })
+export class WorkspaceMember extends BaseEntity {
   @ManyToOne(() => User)
   user!: User;
 
-  @ManyToOne(() => Tenant)
-  tenant!: Tenant;
+  @ManyToOne(() => Workspace)
+  workspace!: Workspace;
 
   @ManyToOne(() => Role)
   role!: Role;
@@ -39,7 +39,7 @@ export class TenantMember extends BaseEntity {
   @OneToMany(() => Meeting, (meeting) => meeting.owner)
   ownedMeetings = new Collection<Meeting>(this);
 
-  @OneToMany(() => MemberResourcePermission, (urp) => urp.tenantMember)
+  @OneToMany(() => MemberResourcePermission, (urp) => urp.workspaceMember)
   resourcePermissions = new Collection<MemberResourcePermission>(this);
 
   getDisplayName(): string {

@@ -1,7 +1,7 @@
 import { Entity, Property, ManyToOne, Index, Enum } from '@mikro-orm/core';
 import { BaseEntity } from '../../../shared/entity/base.entity';
-import { Tenant } from '../../tenant/entity/tenant.entity';
-import { TenantMember } from '../../tenant/entity/tenant-member.entity';
+import { Workspace } from '../../workspace/entity/workspace.entity';
+import { WorkspaceMember } from '../../workspace/entity/workspace-member.entity';
 import { LTreeType } from '../../../shared/type/ltree.type';
 
 export enum SpaceVisibility {
@@ -11,13 +11,13 @@ export enum SpaceVisibility {
 
 @Entity({ tableName: 'spaces' })
 export class Space extends BaseEntity {
-  @ManyToOne(() => Tenant)
+  @ManyToOne(() => Workspace)
   @Index()
-  tenant!: Tenant;
+  workspace!: Workspace;
 
-  @ManyToOne(() => TenantMember)
+  @ManyToOne(() => WorkspaceMember)
   @Index()
-  owner!: TenantMember;
+  owner!: WorkspaceMember;
 
   @Property({ length: 255 })
   name!: string;

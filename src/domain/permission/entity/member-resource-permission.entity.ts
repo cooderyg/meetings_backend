@@ -1,20 +1,20 @@
 import { Entity, Property, ManyToOne, Index, Unique } from '@mikro-orm/core';
 import { BaseEntity } from '../../../shared/entity/base.entity';
-import { TenantMember } from '../../tenant/entity/tenant-member.entity';
-import { Tenant } from '../../tenant/entity/tenant.entity';
+import { WorkspaceMember } from '../../workspace/entity/workspace-member.entity';
+import { Workspace } from '../../workspace/entity/workspace.entity';
 import { Permission } from './permission.entity';
 import { LTreeType } from '../../../shared/type/ltree.type';
 
 @Entity({ tableName: 'member_resource_permissions' })
-@Unique({ properties: ['tenantMember', 'permission', 'resourcePath'] })
-@Index({ properties: ['tenantMember', 'tenant'] })
+@Unique({ properties: ['workspaceMember', 'permission', 'resourcePath'] })
+@Index({ properties: ['workspaceMember', 'workspace'] })
 export class MemberResourcePermission extends BaseEntity {
 
-  @ManyToOne(() => TenantMember)
-  tenantMember!: TenantMember;
+  @ManyToOne(() => WorkspaceMember)
+  workspaceMember!: WorkspaceMember;
 
-  @ManyToOne(() => Tenant)
-  tenant!: Tenant;
+  @ManyToOne(() => Workspace)
+  workspace!: Workspace;
 
   @ManyToOne(() => Permission)
   permission!: Permission;

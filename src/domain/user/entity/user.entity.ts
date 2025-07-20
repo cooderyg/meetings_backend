@@ -1,6 +1,6 @@
 import { Entity, Property, OneToMany, Collection, Index, Unique } from '@mikro-orm/core';
 import { BaseEntity } from '../../../shared/entity/base.entity';
-import { TenantMember } from '../../tenant/entity/tenant-member.entity';
+import { WorkspaceMember } from '../../workspace/entity/workspace-member.entity';
 
 @Entity({ tableName: 'users' })
 export class User extends BaseEntity {
@@ -24,18 +24,18 @@ export class User extends BaseEntity {
   @Property({ nullable: true })
   lastLoginAt?: Date;
 
-  @OneToMany(() => TenantMember, member => member.user)
-  tenantMemberships = new Collection<TenantMember>(this);
+  @OneToMany(() => WorkspaceMember, member => member.user)
+  workspaceMemberships = new Collection<WorkspaceMember>(this);
 
-  getTenantIds(): string[] {
-    return this.tenantMemberships
+  getWorkspaceIds(): string[] {
+    return this.workspaceMemberships
       .getItems()
-      .map(membership => membership.tenant.id);
+      .map(membership => membership.workspace.id);
   }
 
-  isMemberOfTenant(tenantId: string): boolean {
-    return this.tenantMemberships
+  isMemberOfWorkspace(workspaceId: string): boolean {
+    return this.workspaceMemberships
       .getItems()
-      .some(membership => membership.tenant.id === tenantId);
+      .some(membership => membership.workspace.id === workspaceId);
   }
 }
