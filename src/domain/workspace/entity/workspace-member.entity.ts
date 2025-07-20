@@ -36,9 +36,6 @@ export class WorkspaceMember extends BaseEntity {
   @Property()
   lastName!: string;
 
-  @OneToMany(() => Meeting, (meeting) => meeting.owner)
-  ownedMeetings = new Collection<Meeting>(this);
-
   @OneToMany(() => MemberResourcePermission, (urp) => urp.workspaceMember)
   resourcePermissions = new Collection<MemberResourcePermission>(this);
 
