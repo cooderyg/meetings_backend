@@ -47,12 +47,12 @@ async function bootstrap() {
           details: formattedErrors,
         });
       },
-    }),
+    })
   );
 
   app.useGlobalInterceptors(
     new LoggingInterceptor(loggerService),
-    new TransformInterceptor(),
+    new TransformInterceptor()
   );
 
   const document = SwaggerModule.createDocument(
@@ -60,7 +60,7 @@ async function bootstrap() {
     createDocumentBuilder({
       apiVersion: appConfig.apiVersion,
       appName: appConfig.appName,
-    }),
+    })
   );
 
   SwaggerModule.setup('api-docs', app, document, swaggerCustomOptions);

@@ -9,6 +9,7 @@ import { UserModule } from './domain/user/user.module';
 import { LoggerModule } from './shared/module/logger/logger.module';
 import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
 import { CacheModule } from './infrastructure/cache/cache.module';
+import { SttModule } from './infrastructure/stt/stt.module';
 import { ClsModule } from 'nestjs-cls';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -30,6 +31,7 @@ import { v4 as uuidv4 } from 'uuid';
     }),
     LoggerModule,
     CacheModule,
+    SttModule,
     UserModule,
   ],
   controllers: [AppController],

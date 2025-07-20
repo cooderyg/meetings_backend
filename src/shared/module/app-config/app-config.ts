@@ -39,6 +39,19 @@ export class AppConfig {
     },
   };
 
+  readonly gcp = {
+    type: '',
+    projectId: '',
+    privateKeyId: '',
+    privateKey: '',
+    clientEmail: '',
+    clientId: '',
+  };
+
+  readonly stt = {
+    provider: 'GCP' as 'GCP' | 'AWS',
+  };
+
   static validationSchema = Joi.object({
     NODE_ENV: Joi.string()
       .valid('development', 'staging', 'production')
@@ -63,6 +76,13 @@ export class AppConfig {
     REDIS_DB: Joi.number().default(0),
     CACHE_MAX_SIZE: Joi.number().default(1000),
     CACHE_TTL: Joi.number().default(300000),
+    GCP_TYPE: Joi.string().default('service_account'),
+    GCP_PROJECT_ID: Joi.string().required(),
+    GCP_PRIVATE_KEY_ID: Joi.string().required(),
+    GCP_PRIVATE_KEY: Joi.string().required(),
+    GCP_CLIENT_EMAIL: Joi.string().required(),
+    GCP_CLIENT_ID: Joi.string().required(),
+    STT_PROVIDER: Joi.string().valid('GCP', 'AWS').default('GCP'),
   });
 
   constructor() {
@@ -98,6 +118,19 @@ export class AppConfig {
         maxSize: parseInt(process.env.CACHE_MAX_SIZE || '1000', 10),
         ttl: parseInt(process.env.CACHE_TTL || '300000', 10),
       },
+    };
+
+    this.gcp = {
+      type: process.env.GCP_TYPE || 'service_account',
+      projectId: process.env.GCP_PROJECT_ID || '',
+      privateKeyId: process.env.GCP_PRIVATE_KEY_ID || '',
+      privateKey: process.env.GCP_PRIVATE_KEY || '',
+      clientEmail: process.env.GCP_CLIENT_EMAIL || '',
+      clientId: process.env.GCP_CLIENT_ID || '',
+    };
+
+    this.stt = {
+      provider: (process.env.STT_PROVIDER as 'GCP' | 'AWS') || 'GCP',
     };
   }
 }

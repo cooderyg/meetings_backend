@@ -4,9 +4,9 @@
   "settings": {
     "width": 4000,
     "height": 4000,
-    "scrollTop": -487.0144,
-    "scrollLeft": -447.2852,
-    "zoomLevel": 0.74,
+    "scrollTop": -715.7295,
+    "scrollLeft": -507.7921,
+    "zoomLevel": 0.71,
     "show": 431,
     "database": 4,
     "databaseName": "meetings_backend",
@@ -139,9 +139,9 @@
           "col3_4",
           "col3_8",
           "col3_9",
+          "col3_7",
           "col3_5",
-          "col3_6",
-          "col3_7"
+          "col3_6"
         ],
         "seqColumnIds": [
           "col3_1",
@@ -150,9 +150,9 @@
           "col3_4",
           "col3_8",
           "col3_9",
+          "col3_7",
           "col3_5",
-          "col3_6",
-          "col3_7"
+          "col3_6"
         ],
         "ui": {
           "x": 611.2678,
@@ -163,7 +163,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1752815981085,
+          "updateAt": 1752987743193,
           "createAt": 1700000000000
         }
       },
@@ -175,13 +175,15 @@
           "col4_1",
           "col4_2",
           "col4_3",
-          "col4_4"
+          "col4_4",
+          "B1qsDKbXX4vT3MhW-C6d4"
         ],
         "seqColumnIds": [
           "col4_1",
           "col4_2",
           "col4_3",
-          "col4_4"
+          "col4_4",
+          "B1qsDKbXX4vT3MhW-C6d4"
         ],
         "ui": {
           "x": 1185.649,
@@ -192,7 +194,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1752816009284,
+          "updateAt": 1753002674970,
           "createAt": 1700000000000
         }
       },
@@ -211,15 +213,15 @@
           "col5_3"
         ],
         "ui": {
-          "x": 1214.1037,
-          "y": 58.8314,
+          "x": 1211.4009,
+          "y": 49.3722,
           "zIndex": 2,
           "widthName": 70,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1752816005385,
+          "updateAt": 1752987031000,
           "createAt": 1700000000000
         }
       },
@@ -271,28 +273,29 @@
           "col7_6"
         ],
         "ui": {
-          "x": 1177.4837,
-          "y": 715.3787,
+          "x": 1182.8889,
+          "y": 770.7842,
           "zIndex": 2,
           "widthName": 180,
           "widthComment": 81,
           "color": ""
         },
         "meta": {
-          "updateAt": 1752816010998,
+          "updateAt": 1753002672328,
           "createAt": 1700000000000
         }
       },
       "table8": {
         "id": "table8",
-        "name": "pages",
-        "comment": "페이지",
+        "name": "meetings",
+        "comment": "회의",
         "columnIds": [
           "col8_1",
           "col8_2",
           "col8_3",
-          "col8_4",
           "col8_5",
+          "fVcPAahIJCMGjdtGFvkey",
+          "tPCYTEWUouFTsH3ezK6KN",
           "col8_6",
           "col8_7",
           "col8_8"
@@ -303,20 +306,22 @@
           "col8_3",
           "col8_4",
           "col8_5",
+          "fVcPAahIJCMGjdtGFvkey",
+          "tPCYTEWUouFTsH3ezK6KN",
           "col8_6",
           "col8_7",
           "col8_8"
         ],
         "ui": {
-          "x": 22.5352,
-          "y": 800,
+          "x": 33.3459,
+          "y": 806.7568,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1752815971649,
+          "updateAt": 1753002579375,
           "createAt": 1700000000000
         }
       },
@@ -347,15 +352,15 @@
           "col9_9"
         ],
         "ui": {
-          "x": 590.1409,
-          "y": 800,
+          "x": 586.0868,
+          "y": 766.2167,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1752815976600,
+          "updateAt": 1752987273546,
           "createAt": 1700000000000
         }
       },
@@ -1724,6 +1729,66 @@
           "updateAt": 1752815933354,
           "createAt": 1752815928106
         }
+      },
+      "fVcPAahIJCMGjdtGFvkey": {
+        "id": "fVcPAahIJCMGjdtGFvkey",
+        "tableId": "table8",
+        "name": "content",
+        "comment": "내용",
+        "dataType": "TEXT",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1753002572945,
+          "createAt": 1753002553757
+        }
+      },
+      "tPCYTEWUouFTsH3ezK6KN": {
+        "id": "tPCYTEWUouFTsH3ezK6KN",
+        "tableId": "table8",
+        "name": "visibility",
+        "comment": "공개 설정",
+        "dataType": "VARCHAR(20)",
+        "default": "'public'",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 83,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1753002652106,
+          "createAt": 1753002576839
+        }
+      },
+      "B1qsDKbXX4vT3MhW-C6d4": {
+        "id": "B1qsDKbXX4vT3MhW-C6d4",
+        "tableId": "table4",
+        "name": "updated_at",
+        "comment": "수정일시",
+        "dataType": "TIMESTAMPTZ",
+        "default": "CURRENT_TIMESTAMP",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 67,
+          "widthComment": 60,
+          "widthDataType": 86,
+          "widthDefault": 133
+        },
+        "meta": {
+          "updateAt": 1753002705344,
+          "createAt": 1753002674970
+        }
       }
     },
     "relationshipEntities": {
@@ -1794,7 +1859,7 @@
             "col4_1"
           ],
           "x": 1185.649,
-          "y": 633.6612,
+          "y": 651.6612,
           "direction": 1
         },
         "end": {
@@ -1831,7 +1896,7 @@
             "col4_2"
           ],
           "x": 1185.649,
-          "y": 557.6612,
+          "y": 563.6612,
           "direction": 1
         },
         "meta": {
@@ -1849,7 +1914,7 @@
           "columnIds": [
             "col4_1"
           ],
-          "x": 1420.649,
+          "x": 1422.649,
           "y": 519.6612,
           "direction": 4
         },
@@ -1877,8 +1942,8 @@
           "columnIds": [
             "col5_1"
           ],
-          "x": 1321.1037,
-          "y": 186.8314,
+          "x": 1318.4009,
+          "y": 177.3722,
           "direction": 8
         },
         "end": {
@@ -1914,8 +1979,8 @@
           "columnIds": [
             "col7_2"
           ],
-          "x": 1177.4837,
-          "y": 815.3787,
+          "x": 1182.8889,
+          "y": 870.7842,
           "direction": 1
         },
         "meta": {
@@ -1933,8 +1998,8 @@
           "columnIds": [
             "col5_1"
           ],
-          "x": 1535.1037,
-          "y": 186.8314,
+          "x": 1532.4009,
+          "y": 177.3722,
           "direction": 8
         },
         "end": {
@@ -1942,8 +2007,8 @@
           "columnIds": [
             "col7_3"
           ],
-          "x": 1440.4837,
-          "y": 715.3787,
+          "x": 1445.8889,
+          "y": 770.7842,
           "direction": 4
         },
         "meta": {
@@ -1970,8 +2035,8 @@
           "columnIds": [
             "col8_2"
           ],
-          "x": 268.5352,
-          "y": 800,
+          "x": 279.34590000000003,
+          "y": 806.7568,
           "direction": 4
         },
         "meta": {
@@ -1998,8 +2063,8 @@
           "columnIds": [
             "col8_3"
           ],
-          "x": 514.5352,
-          "y": 924,
+          "x": 525.3459,
+          "y": 942.7568,
           "direction": 2
         },
         "meta": {
@@ -2026,8 +2091,8 @@
           "columnIds": [
             "col9_2"
           ],
-          "x": 713.1409,
-          "y": 800,
+          "x": 709.0868,
+          "y": 766.2167,
           "direction": 4
         },
         "meta": {
@@ -2054,8 +2119,8 @@
           "columnIds": [
             "col9_3"
           ],
-          "x": 959.1409,
-          "y": 800,
+          "x": 955.0868,
+          "y": 766.2167,
           "direction": 4
         },
         "meta": {

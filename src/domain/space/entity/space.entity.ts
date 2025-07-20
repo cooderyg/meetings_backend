@@ -1,16 +1,7 @@
-import {
-  Entity,
-  Property,
-  ManyToOne,
-  OneToMany,
-  Collection,
-  Index,
-  Enum,
-} from '@mikro-orm/core';
+import { Entity, Property, ManyToOne, Index, Enum } from '@mikro-orm/core';
 import { BaseEntity } from '../../../shared/entity/base.entity';
 import { Tenant } from '../../tenant/entity/tenant.entity';
 import { TenantMember } from '../../tenant/entity/tenant-member.entity';
-import { Page } from '../../page/entity/page.entity';
 import { LTreeType } from '../../../shared/type/ltree.type';
 
 export enum SpaceVisibility {
@@ -47,9 +38,6 @@ export class Space extends BaseEntity {
     color?: string;
     tags?: string[];
   };
-
-  @OneToMany(() => Page, (page) => page.space)
-  pages = new Collection<Page>(this);
 
   isOwnedBy(memberId: string): boolean {
     return this.owner.id === memberId;

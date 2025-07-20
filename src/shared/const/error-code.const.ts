@@ -152,6 +152,24 @@ export const ERROR_CODES = {
     httpStatus: 500,
     logLevel: 'error' as const,
   },
+  STT_SERVICE_ERROR: {
+    code: 'EXT_003',
+    message: USER_MESSAGES['EXT_003'],
+    httpStatus: 502,
+    logLevel: 'error' as const,
+  },
+  STT_NO_RESULTS: {
+    code: 'EXT_004',
+    message: USER_MESSAGES['EXT_004'],
+    httpStatus: 400,
+    logLevel: 'warn' as const,
+  },
+  STT_NO_ALTERNATIVES: {
+    code: 'EXT_005',
+    message: USER_MESSAGES['EXT_005'],
+    httpStatus: 400,
+    logLevel: 'warn' as const,
+  },
 
   // =================
   // 시스템/서버 관련 (001~099)

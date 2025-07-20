@@ -12,7 +12,7 @@ export enum Action {
 
 export enum ResourceSubject {
   ALL = 'all',
-  PAGE = 'Page',
+  MEETING = 'Meeting',
   SPACE = 'Space',
   LOGIN_EVENT = 'LoginEvent',
 }

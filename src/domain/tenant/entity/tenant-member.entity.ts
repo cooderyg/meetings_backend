@@ -11,7 +11,7 @@ import { BaseEntity } from '../../../shared/entity/base.entity';
 import { User } from '../../user/entity/user.entity';
 import { Tenant } from './tenant.entity';
 import { Role } from '../../role/entity/role.entity';
-import { Page } from '../../page/entity/page.entity';
+import { Meeting } from '../../meeting/entity/meeting.entity';
 import { MemberResourcePermission } from '../../permission/entity/member-resource-permission.entity';
 
 @Entity({ tableName: 'tenant_members' })
@@ -36,8 +36,8 @@ export class TenantMember extends BaseEntity {
   @Property()
   lastName!: string;
 
-  @OneToMany(() => Page, (page) => page.owner)
-  ownedPages = new Collection<Page>(this);
+  @OneToMany(() => Meeting, (meeting) => meeting.owner)
+  ownedMeetings = new Collection<Meeting>(this);
 
   @OneToMany(() => MemberResourcePermission, (urp) => urp.tenantMember)
   resourcePermissions = new Collection<MemberResourcePermission>(this);
