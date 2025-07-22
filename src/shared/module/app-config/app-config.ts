@@ -46,6 +46,11 @@ export class AppConfig {
     privateKey: '',
     clientEmail: '',
     clientId: '',
+    clientSecret: '',
+  };
+
+  readonly oauth = {
+    redirectUri: '',
   };
 
   readonly stt = {
@@ -82,6 +87,8 @@ export class AppConfig {
     GCP_PRIVATE_KEY: Joi.string().required(),
     GCP_CLIENT_EMAIL: Joi.string().required(),
     GCP_CLIENT_ID: Joi.string().required(),
+    GCP_CLIENT_SECRET: Joi.string().required(),
+    OAUTH_REDIRECT_URI: Joi.string().required(),
     STT_PROVIDER: Joi.string().valid('GCP', 'AWS').default('GCP'),
   });
 
@@ -127,6 +134,7 @@ export class AppConfig {
       privateKey: process.env.GCP_PRIVATE_KEY || '',
       clientEmail: process.env.GCP_CLIENT_EMAIL || '',
       clientId: process.env.GCP_CLIENT_ID || '',
+      clientSecret: process.env.GCP_CLIENT_SECRET || '',
     };
 
     this.stt = {
