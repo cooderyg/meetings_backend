@@ -1,17 +1,18 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AppConfig } from './shared/module/app-config/app-config';
-import { AppConfigModule } from './shared/module/app-config/app-config.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { createDatabaseConfig } from './config/database-config';
-import { UserModule } from './domain/user/user.module';
-import { LoggerModule } from './shared/module/logger/logger.module';
-import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
-import { CacheModule } from './infrastructure/cache/cache.module';
-import { SttModule } from './infrastructure/stt/stt.module';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ClsModule } from 'nestjs-cls';
 import { v4 as uuidv4 } from 'uuid';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { createDatabaseConfig } from './config/database-config';
+import { AuthModule } from './domain/auth/auth.module';
+import { UserModule } from './domain/user/user.module';
+import { CacheModule } from './infrastructure/cache/cache.module';
+import { SttModule } from './infrastructure/stt/stt.module';
+import { AppConfig } from './shared/module/app-config/app-config';
+import { AppConfigModule } from './shared/module/app-config/app-config.module';
+import { LoggerModule } from './shared/module/logger/logger.module';
+import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { v4 as uuidv4 } from 'uuid';
     CacheModule,
     SttModule,
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfig],
