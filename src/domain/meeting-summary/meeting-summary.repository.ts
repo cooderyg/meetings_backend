@@ -19,7 +19,7 @@ export class MeetingSummaryRepository {
 
   create({ meetingId, ...data }: MeetingSummaryCreate) {
     const resource = this.em.getReference(Resource, meetingId);
-    const meeting = this.em.getReference(Meeting, resource);
+    const meeting = this.em.getReference(Meeting, meetingId);
     // const resource = this.repository.assign(new MeetingSummary(), {
     //   ...data,
     //   meeting,
