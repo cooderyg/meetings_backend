@@ -13,7 +13,7 @@ import { MeetingParticipant } from '../../meeting-participant/entity/meeting-par
 
 export interface UserSettings {
   theme: {
-    type: 'system' | 'light' | 'dark';
+    mode: 'system' | 'light' | 'dark';
   };
 }
 
@@ -43,7 +43,7 @@ export class User extends BaseEntity {
   imagePath?: string;
 
   @Property({ type: JsonType })
-  settings: UserSettings = { theme: { type: 'system' } };
+  settings: UserSettings = { theme: { mode: 'system' } };
 
   @OneToMany(() => WorkspaceMember, (member) => member.user)
   workspaceMemberships = new Collection<WorkspaceMember>(this);
