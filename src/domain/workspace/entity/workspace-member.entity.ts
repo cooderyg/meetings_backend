@@ -11,7 +11,6 @@ import { BaseEntity } from '../../../shared/entity/base.entity';
 import { User } from '../../user/entity/user.entity';
 import { Workspace } from './workspace.entity';
 import { Role } from '../../role/entity/role.entity';
-import { Meeting } from '../../meeting/entity/meeting.entity';
 import { MemberResourcePermission } from '../../permission/entity/member-resource-permission.entity';
 
 @Entity({ tableName: 'workspace_members' })
@@ -35,6 +34,9 @@ export class WorkspaceMember extends BaseEntity {
 
   @Property()
   lastName!: string;
+
+  @Property({ nullable: true })
+  imagePath?: string;
 
   @OneToMany(() => MemberResourcePermission, (urp) => urp.workspaceMember)
   resourcePermissions = new Collection<MemberResourcePermission>(this);
