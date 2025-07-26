@@ -7,5 +7,7 @@ export class WorkspaceMemberService {
     private readonly workspaceMemberRepository: WorkspaceMemberRepository
   ) {}
 
-  // TODO: 멤버 관리 로직 구현
+  async findById(id: string) {
+    return await this.workspaceMemberRepository.findById(id);
+  }
 }

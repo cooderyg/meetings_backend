@@ -1,6 +1,7 @@
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { UpdateWorkspaceNameDto } from './dto/request/update-workspace-name.dto';
+import { UpdateWorkspaceNameResDto } from './dto/response/update-workspace-name.res.dto';
 
 @Controller('workspace')
 export class WorkspaceController {
@@ -10,14 +11,9 @@ export class WorkspaceController {
   async updateWorkspaceName(
     @Body() data: UpdateWorkspaceNameDto,
     @Param('id') id: string
-  ) {
-    // TODO 토큰 파싱해서 WorkspaceMemberId 넣기
-    const workspaceMemberId = 'sdasdassdasduuid';
+  ): Promise<UpdateWorkspaceNameResDto> {
+    const name = await this.workspaceService.updateWorkspaceName(id, data);
 
-    const name = await this.workspaceService.updateWorkspaceName(
-      id,
-      workspaceMemberId,
-      data
-    );
+    return { name };
   }
 }

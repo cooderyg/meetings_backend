@@ -1,4 +1,12 @@
-import { Entity, Property, ManyToOne, OneToMany, Collection, Index, Unique } from '@mikro-orm/core';
+import {
+  Entity,
+  Property,
+  ManyToOne,
+  OneToMany,
+  Collection,
+  Index,
+  Unique,
+} from '@mikro-orm/core';
 import { TimestampedEntity } from '../../../shared/entity/timestamped.entity';
 import { Workspace } from '../../workspace/entity/workspace.entity';
 import { WorkspaceMember } from '../../workspace-member/entity/workspace-member.entity';
@@ -20,10 +28,10 @@ export class Role extends TimestampedEntity {
   @Property({ type: 'text', nullable: true })
   description?: string;
 
-  @OneToMany(() => WorkspaceMember, member => member.role)
+  @OneToMany(() => WorkspaceMember, (member) => member.role)
   members = new Collection<WorkspaceMember>(this);
 
-  @OneToMany(() => RolePermission, rp => rp.role)
+  @OneToMany(() => RolePermission, (rp) => rp.role)
   rolePermissions = new Collection<RolePermission>(this);
 
   isSystemRole(): boolean {
