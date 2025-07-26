@@ -7,7 +7,7 @@ import {
   JsonType,
 } from '@mikro-orm/core';
 import { BaseEntity } from '../../../shared/entity/base.entity';
-import { WorkspaceMember } from './workspace-member.entity';
+import { WorkspaceMember } from '../../workspace-member/entity/workspace-member.entity';
 import { Role } from '../../role/entity/role.entity';
 import { Meeting } from '../../meeting/entity/meeting.entity';
 import { MemberResourcePermission } from '../../permission/entity/member-resource-permission.entity';

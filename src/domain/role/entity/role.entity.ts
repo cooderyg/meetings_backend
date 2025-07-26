@@ -1,7 +1,7 @@
 import { Entity, Property, ManyToOne, OneToMany, Collection, Index, Unique } from '@mikro-orm/core';
 import { TimestampedEntity } from '../../../shared/entity/timestamped.entity';
 import { Workspace } from '../../workspace/entity/workspace.entity';
-import { WorkspaceMember } from '../../workspace/entity/workspace-member.entity';
+import { WorkspaceMember } from '../../workspace-member/entity/workspace-member.entity';
 import { RolePermission } from '../../permission/entity/role-permission.entity';
 
 @Entity({ tableName: 'roles' })

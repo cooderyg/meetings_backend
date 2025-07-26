@@ -8,7 +8,7 @@ import {
 } from '@mikro-orm/core';
 import { JsonType } from '@mikro-orm/postgresql';
 import { BaseEntity } from '../../../shared/entity/base.entity';
-import { WorkspaceMember } from '../../workspace/entity/workspace-member.entity';
+import { WorkspaceMember } from '../../workspace-member/entity/workspace-member.entity';
 import { MeetingParticipant } from '../../meeting-participant/entity/meeting-participant.entity';
 
 export interface UserSettings {

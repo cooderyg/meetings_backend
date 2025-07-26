@@ -1,6 +1,6 @@
 import { Entity, Property, ManyToOne, Index, Unique } from '@mikro-orm/core';
 import { BaseEntity } from '../../../shared/entity/base.entity';
-import { WorkspaceMember } from '../../workspace/entity/workspace-member.entity';
+import { WorkspaceMember } from '../../workspace-member/entity/workspace-member.entity';
 import { Workspace } from '../../workspace/entity/workspace.entity';
 import { Permission } from './permission.entity';
 import { LTreeType } from '../../../shared/type/ltree.type';

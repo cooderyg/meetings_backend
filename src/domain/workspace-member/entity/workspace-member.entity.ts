@@ -9,7 +9,7 @@ import {
 } from '@mikro-orm/core';
 import { BaseEntity } from '../../../shared/entity/base.entity';
 import { User } from '../../user/entity/user.entity';
-import { Workspace } from './workspace.entity';
+import { Workspace } from '../../workspace/entity/workspace.entity';
 import { Role } from '../../role/entity/role.entity';
 import { MemberResourcePermission } from '../../permission/entity/member-resource-permission.entity';
 
