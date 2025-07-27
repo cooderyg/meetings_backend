@@ -41,8 +41,8 @@ export class Meeting extends TimestampedEntity {
   status: MeetingStatus = MeetingStatus.DRAFT;
 
   /** 태그 목록 */
-  @Property({ type: 'varchar[]', nullable: true })
-  tags: string[];
+  @Property({ type: 'varchar[]' })
+  tags: string[] = [];
 
   /** 워크스페이스 */
   @ManyToOne(() => Workspace)
