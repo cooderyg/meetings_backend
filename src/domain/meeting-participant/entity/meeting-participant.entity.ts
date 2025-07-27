@@ -1,13 +1,10 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { TimestampedEntity } from '../../../shared/entity/timestamped.entity';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { User } from '../../user/entity/user.entity';
 import { Meeting } from '../../meeting/entity/meeting.entity';
+import { BaseEntity } from '../../../shared/entity/base.entity';
 
 @Entity({ tableName: 'meeting_participants' })
-export class MeetingParticipant extends TimestampedEntity {
-  @PrimaryKey({ autoincrement: true })
-  id: number;
-
+export class MeetingParticipant extends BaseEntity {
   @Property({ type: 'varchar', nullable: true })
   guestName: string | null = null;
 

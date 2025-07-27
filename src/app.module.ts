@@ -12,6 +12,7 @@ import { CacheModule } from './infrastructure/cache/cache.module';
 import { SttModule } from './infrastructure/stt/stt.module';
 import { ClsModule } from 'nestjs-cls';
 import { v4 as uuidv4 } from 'uuid';
+import { MeetingSummaryModule } from './domain/meeting-summary/meeting-summary.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { v4 as uuidv4 } from 'uuid';
     CacheModule,
     SttModule,
     UserModule,
+    MeetingSummaryModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfig],
