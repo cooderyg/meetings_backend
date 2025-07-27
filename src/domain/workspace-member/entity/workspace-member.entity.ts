@@ -9,10 +9,10 @@ import {
 } from '@mikro-orm/core';
 import { BaseEntity } from '../../../shared/entity/base.entity';
 import { User } from '../../user/entity/user.entity';
-import { Workspace } from './workspace.entity';
+import { Workspace } from '../../workspace/entity/workspace.entity';
 import { Role } from '../../role/entity/role.entity';
-import { Meeting } from '../../meeting/entity/meeting.entity';
 import { MemberResourcePermission } from '../../permission/entity/member-resource-permission.entity';
+import { SystemRole } from '../../role/enum/system-role.enum';
 
 @Entity({ tableName: 'workspace_members' })
 @Unique({ properties: ['user', 'workspace'] })
@@ -36,6 +36,9 @@ export class WorkspaceMember extends BaseEntity {
   @Property()
   lastName!: string;
 
+  @Property({ nullable: true })
+  imagePath?: string;
+
   @OneToMany(() => MemberResourcePermission, (urp) => urp.workspaceMember)
   resourcePermissions = new Collection<MemberResourcePermission>(this);
 
@@ -47,7 +50,27 @@ export class WorkspaceMember extends BaseEntity {
     return this.role.name === roleName;
   }
 
+  hasSystemRole(systemRole: SystemRole): boolean {
+    return this.role.isSpecificSystemRole(systemRole);
+  }
+
+  isOwner(): boolean {
+    return this.hasSystemRole(SystemRole.OWNER);
+  }
+
   isAdmin(): boolean {
-    return this.role.name === 'Admin';
+    return this.hasSystemRole(SystemRole.ADMIN);
+  }
+
+  canEdit(): boolean {
+    return (
+      this.hasSystemRole(SystemRole.CAN_EDIT) ||
+      this.isAdmin() ||
+      this.isOwner()
+    );
+  }
+
+  canView(): boolean {
+    return this.hasSystemRole(SystemRole.CAN_VIEW) || this.canEdit();
   }
 }

@@ -14,6 +14,7 @@ export enum ResourceSubject {
   ALL = 'all',
   MEETING = 'Meeting',
   SPACE = 'Space',
+  RESOURCE = 'Resource', // Space+Meeting 통합 권한용
   LOGIN_EVENT = 'LoginEvent',
 }
 
@@ -37,5 +38,36 @@ export class Permission {
 
   toString(): string {
     return `${this.action}:${this.resourceSubject}`;
+  }
+
+  /**
+   * 특정 액션과 리소스 타입과 일치하는지 확인
+   */
+  matches(action: Action, resourceSubject: ResourceSubject): boolean {
+    return this.action === action && this.resourceSubject === resourceSubject;
+  }
+
+  /**
+   * MANAGE 권한인지 확인 (모든 액션을 포괄)
+   */
+  isManagePermission(): boolean {
+    return this.action === Action.MANAGE;
+  }
+
+  /**
+   * ALL 리소스 권한인지 확인 (모든 리소스를 포괄)
+   */
+  isAllResourcePermission(): boolean {
+    return this.resourceSubject === ResourceSubject.ALL;
+  }
+
+  /**
+   * 요청된 권한을 포괄하는지 확인
+   */
+  covers(action: Action, resourceSubject: ResourceSubject): boolean {
+    const actionMatches = this.action === action || this.isManagePermission();
+    const resourceMatches = this.resourceSubject === resourceSubject || this.isAllResourcePermission();
+    
+    return actionMatches && resourceMatches;
   }
 }
