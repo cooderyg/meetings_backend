@@ -1,12 +1,9 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { TimestampedEntity } from '../../../shared/entity/timestamped.entity';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { Meeting } from '../../meeting/entity/meeting.entity';
+import { BaseEntity } from '../../../shared/entity/base.entity';
 
 @Entity({ tableName: 'meeting_summaries' })
-export class MeetingSummary extends TimestampedEntity {
-  @PrimaryKey({ comment: '아이디', autoincrement: true })
-  id: number;
-
+export class MeetingSummary extends BaseEntity {
   @Property({ comment: '제목', type: 'varchar' })
   title: string;
 

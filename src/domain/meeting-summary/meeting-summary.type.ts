@@ -1,5 +1,5 @@
 export type MeetingSummaryCreate = {
-  meetingId: string;
+  meeting: string;
   title: string;
   content: string;
 };

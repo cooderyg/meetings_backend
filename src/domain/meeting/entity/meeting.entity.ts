@@ -1,13 +1,14 @@
 import {
-  Entity,
-  Property,
-  OneToOne,
-  ManyToOne,
-  Index,
-  OneToMany,
   Collection,
+  Entity,
   Enum,
+  Index,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryKey,
+  PrimaryKeyProp,
+  Property,
 } from '@mikro-orm/core';
 import { TimestampedEntity } from '../../../shared/entity/timestamped.entity';
 import { Resource } from '../../resource/entity/resource.entity';
@@ -25,26 +26,23 @@ export enum MeetingStatus {
 
 @Entity({ tableName: 'meetings' })
 export class Meeting extends TimestampedEntity {
-  /** ID (resource의 id를 승계) */
-  @PrimaryKey({ type: 'uuid' })
-  get id(): string {
-    return this.resource?.id;
-  }
+  [PrimaryKeyProp]?: 'resource';
 
   /** 리소스 */
   @OneToOne(() => Resource, {
-    fieldName: 'id',
+    joinColumn: 'id',
+    primary: true,
   })
   @Index()
-  resource!: Resource;
+  resource: Resource;
 
   /** 상태 */
   @Enum(() => MeetingStatus)
   status: MeetingStatus = MeetingStatus.DRAFT;
 
   /** 태그 목록 */
-  @Property({ type: 'varchar[]', nullable: true })
-  tags: string[];
+  @Property({ type: 'varchar[]' })
+  tags: string[] = [];
 
   /** 워크스페이스 */
   @ManyToOne(() => Workspace)

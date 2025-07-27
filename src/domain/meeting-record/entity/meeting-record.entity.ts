@@ -1,23 +1,9 @@
-import {
-  Entity,
-  Property,
-  OneToOne,
-  ManyToOne,
-  Index,
-  PrimaryKeyProp,
-  PrimaryKey,
-} from '@mikro-orm/core';
-import { TimestampedEntity } from '../../../shared/entity/timestamped.entity';
-import { Resource } from '../../resource/entity/resource.entity';
-import { Workspace } from '../../workspace/entity/workspace.entity';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { Meeting } from '../../meeting/entity/meeting.entity';
+import { BaseEntity } from '../../../shared/entity/base.entity';
 
 @Entity({ tableName: 'meeting_records' })
-export class MeetingRecord extends TimestampedEntity {
-  /** 아이디 */
-  @PrimaryKey({ autoincrement: true })
-  id: number;
-
+export class MeetingRecord extends BaseEntity {
   /** 시간 00:00 */
   @Property({ type: 'time' })
   time!: string;

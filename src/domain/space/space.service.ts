@@ -59,7 +59,9 @@ export class SpaceService {
     const space = new Space();
     space.resource = resource;
     space.workspace = workspace;
-    space.description = dto.description;
+    if (dto.description !== undefined) {
+      space.description = dto.description;
+    }
 
     const result = await this.spaceRepository.create(space);
     await this.em.flush();
