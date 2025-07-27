@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from './user.repository';
-import { AppException } from '../../shared/exception/app.exception';
 import { ERROR_CODES } from '../../shared/const';
+import { AppException } from '../../shared/exception/app.exception';
 import { UpdateUserSettingsDto } from './dto/request/update-user-settings.dto';
 import { UserSettings } from './entity/user.entity';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async updateUserSettings(id: string, data: UpdateUserSettingsDto): Promise<UserSettings> {
+  async updateUserSettings(
+    id: string,
+    data: UpdateUserSettingsDto
+  ): Promise<UserSettings> {
     // 1. 사용자 찾기 없으면 예외 처리
     const user = await this.userRepository.findById(id);
 
@@ -20,7 +23,7 @@ export class UserService {
     user.settings = updatedSettings;
 
     await this.userRepository.updateUser(user);
-    
+
     return user.settings;
   }
 

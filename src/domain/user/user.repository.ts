@@ -6,6 +6,10 @@ export class UserRepository extends EntityRepository<User> {
     return await this.findOne({ id });
   }
 
+  async findByUid(uid: string) {
+    return await this.findOne({ uid });
+  }
+
   async updateUser(user: User) {
     await this.em.persistAndFlush(user);
   }

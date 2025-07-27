@@ -1,5 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { ClsModule } from 'nestjs-cls';
 import { v4 as uuidv4 } from 'uuid';
 import { AppController } from './app.controller';
@@ -29,6 +30,10 @@ import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
       imports: [AppConfigModule],
       useFactory: (appConfig: AppConfig) => createDatabaseConfig(appConfig),
       inject: [AppConfig],
+    }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
     }),
     LoggerModule,
     CacheModule,
