@@ -24,14 +24,11 @@ export class UserService {
     if (!user.uid && !user.passwordHash) {
       throw new BadRequestException('uid and passwordHash are required');
     }
-    const createdUser = this.userRepository.create({
+    const createdUser = this.userRepository.assign(new User(), {
       ...user,
       passwordHash: user.passwordHash ?? '',
-      isActive: true,
-      settings: { theme: { mode: 'system' } },
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
+
     await this.em.flush();
     return createdUser;
   }

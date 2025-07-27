@@ -19,11 +19,10 @@ export class WorkspaceService {
   ) {}
 
   async createWorkspace(workspace: ICreateWorkspace) {
-    const createdWorkspace = this.workspaceRepository.create({
-      ...workspace,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    const createdWorkspace = this.workspaceRepository.assign(
+      new Workspace(),
+      workspace
+    );
     await this.em.flush();
     return createdWorkspace;
   }
