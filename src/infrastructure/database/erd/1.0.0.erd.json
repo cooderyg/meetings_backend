@@ -4,8 +4,8 @@
   "settings": {
     "width": 4000,
     "height": 4000,
-    "scrollTop": -1028.314,
-    "scrollLeft": -433.8561,
+    "scrollTop": -468.9666,
+    "scrollLeft": -528.8595,
     "zoomLevel": 0.74,
     "show": 431,
     "database": 4,
@@ -77,6 +77,8 @@
           "users_password_hash",
           "users_is_active",
           "users_last_login_at",
+          "mIiv3O0F-_MSxUeEMTFKd",
+          "fZ4bWtXw6tqMvifrOzURS",
           "users_created_at",
           "users_updated_at"
         ],
@@ -88,19 +90,22 @@
           "users_password_hash",
           "users_is_active",
           "users_last_login_at",
+          "mIiv3O0F-_MSxUeEMTFKd",
+          "fZ4bWtXw6tqMvifrOzURS",
           "users_created_at",
-          "users_updated_at"
+          "users_updated_at",
+          "bgva2ks-Ep2zuJuImN9IB"
         ],
         "ui": {
-          "x": 50,
-          "y": 50,
+          "x": 40.5405,
+          "y": 464.8649,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753010000000,
+          "updateAt": 1753507611141,
           "createAt": 1753010000000
         }
       },
@@ -112,6 +117,8 @@
           "workspaces_id",
           "workspaces_name",
           "workspaces_subscription_tier",
+          "XJ5wwLPTCTcujgFlMxQyy",
+          "EJyNFYLMwvXZjw_nPr5G4",
           "workspaces_created_at",
           "workspaces_updated_at"
         ],
@@ -119,19 +126,21 @@
           "workspaces_id",
           "workspaces_name",
           "workspaces_subscription_tier",
+          "XJ5wwLPTCTcujgFlMxQyy",
+          "EJyNFYLMwvXZjw_nPr5G4",
           "workspaces_created_at",
           "workspaces_updated_at"
         ],
         "ui": {
           "x": 688.7327,
-          "y": 334.507,
+          "y": 333.1556,
           "zIndex": 2,
           "widthName": 69,
           "widthComment": 64,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753010881826,
+          "updateAt": 1753505638394,
           "createAt": 1753010000000
         }
       },
@@ -146,6 +155,7 @@
           "workspace_members_role_id",
           "workspace_members_first_name",
           "workspace_members_last_name",
+          "dQnWn1w6ggSWjmm_4A2I3",
           "workspace_members_is_active",
           "workspace_members_created_at",
           "workspace_members_updated_at"
@@ -157,20 +167,22 @@
           "workspace_members_role_id",
           "workspace_members_first_name",
           "workspace_members_last_name",
+          "dQnWn1w6ggSWjmm_4A2I3",
           "workspace_members_is_active",
+          "6vyNNCua3Mie-jI6L3Xv0",
           "workspace_members_created_at",
           "workspace_members_updated_at"
         ],
         "ui": {
-          "x": 707.746,
-          "y": 619.0138,
+          "x": 692.253,
+          "y": 703.5208,
           "zIndex": 2,
           "widthName": 122,
           "widthComment": 88,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753010897705,
+          "updateAt": 1753506037047,
           "createAt": 1753010000000
         }
       },
@@ -222,15 +234,15 @@
           "permissions_resource_subject"
         ],
         "ui": {
-          "x": 1370.4225,
-          "y": 338.7321,
+          "x": 1392.5771,
+          "y": 323.5817,
           "zIndex": 2,
           "widthName": 70,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753010878996,
+          "updateAt": 1753505799633,
           "createAt": 1753010000000
         }
       },
@@ -249,15 +261,15 @@
           "role_permissions_conditions"
         ],
         "ui": {
-          "x": 1347.8874,
-          "y": 59.8591,
+          "x": 1438.4279,
+          "y": 47.6969,
           "zIndex": 2,
           "widthName": 98,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753010877698,
+          "updateAt": 1753505545063,
           "createAt": 1753010000000
         }
       },
@@ -288,15 +300,15 @@
           "member_resource_permissions_updated_at"
         ],
         "ui": {
-          "x": 1318.3099,
-          "y": 621.8311,
+          "x": 1353.0837,
+          "y": 633.9935,
           "zIndex": 2,
           "widthName": 180,
           "widthComment": 81,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753010875600,
+          "updateAt": 1753506074051,
           "createAt": 1753010000000
         }
       },
@@ -316,6 +328,7 @@
           "resources_updated_at"
         ],
         "seqColumnIds": [
+          "xjh_zygBFqI2_h9Gl3mqD",
           "resources_id",
           "resources_workspace_id",
           "resources_parent_id",
@@ -329,15 +342,15 @@
           "resources_updated_at"
         ],
         "ui": {
-          "x": 102.1127,
-          "y": 876.0565,
+          "x": 47.7157,
+          "y": 877.9974,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": "#FFE6E6"
         },
         "meta": {
-          "updateAt": 1753012843162,
+          "updateAt": 1753506085424,
           "createAt": 1753010000000
         }
       },
@@ -368,15 +381,15 @@
           "spaces_updated_at"
         ],
         "ui": {
-          "x": 51.4081,
-          "y": 1363.3807,
+          "x": 17.5483,
+          "y": 1291.3405,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": "#E6F3FF"
         },
         "meta": {
-          "updateAt": 1753012830783,
+          "updateAt": 1753506082656,
           "createAt": 1753010000000
         }
       },
@@ -407,15 +420,15 @@
           "meetings_updated_at"
         ],
         "ui": {
-          "x": 666.9016,
-          "y": 1366.1972,
+          "x": 688.9039,
+          "y": 1223.5629,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": "#E6FFE6"
         },
         "meta": {
-          "updateAt": 1753012836551,
+          "updateAt": 1753505669604,
           "createAt": 1753010000000
         }
       },
@@ -430,9 +443,9 @@
           "login_events_event_type",
           "login_events_ip_address",
           "login_events_user_agent",
+          "YpY0hK_feaGaZGWmZAIaO",
           "login_events_failure_reason",
           "login_events_session_id",
-          "login_events_metadata",
           "login_events_created_at",
           "login_events_updated_at"
         ],
@@ -443,22 +456,23 @@
           "login_events_event_type",
           "login_events_ip_address",
           "login_events_user_agent",
+          "YpY0hK_feaGaZGWmZAIaO",
           "login_events_failure_reason",
           "login_events_session_id",
-          "login_events_metadata",
           "login_events_created_at",
-          "login_events_updated_at"
+          "login_events_updated_at",
+          "login_events_metadata"
         ],
         "ui": {
-          "x": 50.7043,
-          "y": 438.0282,
+          "x": 84.4878,
+          "y": 19.1091,
           "zIndex": 2,
           "widthName": 73,
           "widthComment": 68,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753010740081,
+          "updateAt": 1753507624669,
           "createAt": 1753010000000
         }
       }
@@ -2303,6 +2317,186 @@
           "updateAt": 1753010850424,
           "createAt": 1753010843716
         }
+      },
+      "EJyNFYLMwvXZjw_nPr5G4": {
+        "id": "EJyNFYLMwvXZjw_nPr5G4",
+        "tableId": "workspaces_table",
+        "name": "settings",
+        "comment": "설정",
+        "dataType": "JSONB",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1753505074559,
+          "createAt": 1753505040548
+        }
+      },
+      "bgva2ks-Ep2zuJuImN9IB": {
+        "id": "bgva2ks-Ep2zuJuImN9IB",
+        "tableId": "users_table",
+        "name": "settings",
+        "comment": "설정",
+        "dataType": "JSONB",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1753505097729,
+          "createAt": 1753505082425
+        }
+      },
+      "6vyNNCua3Mie-jI6L3Xv0": {
+        "id": "6vyNNCua3Mie-jI6L3Xv0",
+        "tableId": "workspace_members_table",
+        "name": "settings",
+        "comment": "설정",
+        "dataType": "JSONB",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1753505117011,
+          "createAt": 1753505106132
+        }
+      },
+      "xjh_zygBFqI2_h9Gl3mqD": {
+        "id": "xjh_zygBFqI2_h9Gl3mqD",
+        "tableId": "resources_table",
+        "name": "metadata",
+        "comment": "메타데이터",
+        "dataType": "JSONB",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1753505487616,
+          "createAt": 1753505487616
+        }
+      },
+      "YpY0hK_feaGaZGWmZAIaO": {
+        "id": "YpY0hK_feaGaZGWmZAIaO",
+        "tableId": "login_events_table",
+        "name": "metadata",
+        "comment": "메타데이터",
+        "dataType": "JSONB",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1753505489924,
+          "createAt": 1753505489924
+        }
+      },
+      "dQnWn1w6ggSWjmm_4A2I3": {
+        "id": "dQnWn1w6ggSWjmm_4A2I3",
+        "tableId": "workspace_members_table",
+        "name": "image_path",
+        "comment": "이미지 경로",
+        "dataType": "VARCHAR(255)",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 68,
+          "widthComment": 60,
+          "widthDataType": 90,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1753505606780,
+          "createAt": 1753505568088
+        }
+      },
+      "XJ5wwLPTCTcujgFlMxQyy": {
+        "id": "XJ5wwLPTCTcujgFlMxQyy",
+        "tableId": "workspaces_table",
+        "name": "image_path",
+        "comment": "이미지 경로",
+        "dataType": "VARCHAR(255)",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 68,
+          "widthComment": 60,
+          "widthDataType": 90,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1753505661334,
+          "createAt": 1753505616817
+        }
+      },
+      "fZ4bWtXw6tqMvifrOzURS": {
+        "id": "fZ4bWtXw6tqMvifrOzURS",
+        "tableId": "users_table",
+        "name": "settings",
+        "comment": "설정",
+        "dataType": "JSONB",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1753506050805,
+          "createAt": 1753506040731
+        }
+      },
+      "mIiv3O0F-_MSxUeEMTFKd": {
+        "id": "mIiv3O0F-_MSxUeEMTFKd",
+        "tableId": "users_table",
+        "name": "image_path",
+        "comment": "이미지 경로(구글 oauth 이미지)",
+        "dataType": "VARCHAR(255)",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 68,
+          "widthComment": 157,
+          "widthDataType": 90,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1753507607962,
+          "createAt": 1753507571041
+        }
       }
     },
     "relationshipEntities": {
@@ -2316,8 +2510,8 @@
           "columnIds": [
             "users_id"
           ],
-          "x": 556,
-          "y": 186,
+          "x": 635.5405,
+          "y": 624.8649,
           "direction": 2
         },
         "end": {
@@ -2325,8 +2519,8 @@
           "columnIds": [
             "workspace_members_user_id"
           ],
-          "x": 707.746,
-          "y": 687.0138,
+          "x": 692.253,
+          "y": 777.5208,
           "direction": 1
         },
         "meta": {
@@ -2345,7 +2539,7 @@
             "workspaces_id"
           ],
           "x": 1127.0660333333335,
-          "y": 510.507,
+          "y": 557.1556,
           "direction": 8
         },
         "end": {
@@ -2353,8 +2547,8 @@
           "columnIds": [
             "workspace_members_workspace_id"
           ],
-          "x": 1088.746,
-          "y": 619.0138,
+          "x": 1073.2530000000002,
+          "y": 703.5208,
           "direction": 4
         },
         "meta": {
@@ -2381,8 +2575,8 @@
           "columnIds": [
             "workspace_members_role_id"
           ],
-          "x": 834.746,
-          "y": 619.0138,
+          "x": 819.253,
+          "y": 703.5208,
           "direction": 4
         },
         "meta": {
@@ -2401,7 +2595,7 @@
             "workspaces_id"
           ],
           "x": 951.7327,
-          "y": 334.507,
+          "y": 333.1556,
           "direction": 4
         },
         "end": {
@@ -2437,8 +2631,8 @@
           "columnIds": [
             "role_permissions_role_id"
           ],
-          "x": 1347.8874,
-          "y": 123.8591,
+          "x": 1438.4279,
+          "y": 111.6969,
           "direction": 1
         },
         "meta": {
@@ -2456,8 +2650,8 @@
           "columnIds": [
             "permissions_id"
           ],
-          "x": 1584.4225,
-          "y": 338.7321,
+          "x": 1606.5771,
+          "y": 323.5817,
           "direction": 4
         },
         "end": {
@@ -2465,8 +2659,8 @@
           "columnIds": [
             "role_permissions_permission_id"
           ],
-          "x": 1540.8874,
-          "y": 187.8591,
+          "x": 1631.4279,
+          "y": 175.6969,
           "direction": 8
         },
         "meta": {
@@ -2484,8 +2678,8 @@
           "columnIds": [
             "workspace_members_id"
           ],
-          "x": 1215.746,
-          "y": 755.0138,
+          "x": 1200.2530000000002,
+          "y": 851.5208,
           "direction": 2
         },
         "end": {
@@ -2493,8 +2687,8 @@
           "columnIds": [
             "member_resource_permissions_workspace_member_id"
           ],
-          "x": 1318.3099,
-          "y": 757.8311,
+          "x": 1353.0837,
+          "y": 769.9935,
           "direction": 1
         },
         "meta": {
@@ -2512,8 +2706,8 @@
           "columnIds": [
             "permissions_id"
           ],
-          "x": 1584.4225,
-          "y": 466.7321,
+          "x": 1606.5771,
+          "y": 451.5817,
           "direction": 8
         },
         "end": {
@@ -2521,8 +2715,8 @@
           "columnIds": [
             "member_resource_permissions_permission_id"
           ],
-          "x": 1608.8099,
-          "y": 621.8311,
+          "x": 1643.5837,
+          "y": 633.9935,
           "direction": 4
         },
         "meta": {
@@ -2541,7 +2735,7 @@
             "workspaces_id"
           ],
           "x": 688.7327,
-          "y": 422.507,
+          "y": 445.1556,
           "direction": 1
         },
         "end": {
@@ -2549,8 +2743,8 @@
           "columnIds": [
             "resources_workspace_id"
           ],
-          "x": 356.1127,
-          "y": 876.0565,
+          "x": 301.71569999999997,
+          "y": 877.9974,
           "direction": 4
         },
         "meta": {
@@ -2568,8 +2762,8 @@
           "columnIds": [
             "workspace_members_id"
           ],
-          "x": 707.746,
-          "y": 823.0138,
+          "x": 692.253,
+          "y": 925.5208,
           "direction": 1
         },
         "end": {
@@ -2577,36 +2771,8 @@
           "columnIds": [
             "resources_owner_id"
           ],
-          "x": 610.1127,
-          "y": 1012.0565,
-          "direction": 2
-        },
-        "meta": {
-          "updateAt": 1753010000000,
-          "createAt": 1753010000000
-        }
-      },
-      "resource_parent_rel": {
-        "id": "resource_parent_rel",
-        "identification": false,
-        "relationshipType": 16,
-        "startRelationshipType": 1,
-        "start": {
-          "tableId": "resources_table",
-          "columnIds": [
-            "resources_id"
-          ],
-          "x": 230.11270000000002,
-          "y": 876.0565,
-          "direction": 4
-        },
-        "end": {
-          "tableId": "resources_table",
-          "columnIds": [
-            "resources_parent_id"
-          ],
-          "x": 614.1127,
-          "y": 1116.0565000000001,
+          "x": 555.7157,
+          "y": 945.9974,
           "direction": 2
         },
         "meta": {
@@ -2624,8 +2790,8 @@
           "columnIds": [
             "resources_id"
           ],
-          "x": 229.11270000000002,
-          "y": 1148.0565000000001,
+          "x": 301.71569999999997,
+          "y": 1149.9974,
           "direction": 8
         },
         "end": {
@@ -2633,8 +2799,8 @@
           "columnIds": [
             "spaces_id"
           ],
-          "x": 320.4081,
-          "y": 1363.3807,
+          "x": 286.5483,
+          "y": 1291.3405,
           "direction": 4
         },
         "meta": {
@@ -2652,17 +2818,17 @@
           "columnIds": [
             "resources_id"
           ],
-          "x": 483.1127,
-          "y": 1148.0565000000001,
-          "direction": 8
+          "x": 555.7157,
+          "y": 1081.9974,
+          "direction": 2
         },
         "end": {
           "tableId": "meetings_table",
           "columnIds": [
             "meetings_id"
           ],
-          "x": 666.9016,
-          "y": 1454.1972,
+          "x": 688.9039,
+          "y": 1311.5629,
           "direction": 1
         },
         "meta": {
@@ -2680,18 +2846,18 @@
           "columnIds": [
             "users_id"
           ],
-          "x": 303,
-          "y": 322,
-          "direction": 8
+          "x": 338.0405,
+          "y": 464.8649,
+          "direction": 4
         },
         "end": {
           "tableId": "login_events_table",
           "columnIds": [
             "login_events_user_id"
           ],
-          "x": 304.7043,
-          "y": 438.0282,
-          "direction": 4
+          "x": 338.4878,
+          "y": 339.1091,
+          "direction": 8
         },
         "meta": {
           "updateAt": 1753010000000,
@@ -2709,7 +2875,7 @@
             "workspaces_id"
           ],
           "x": 776.3993666666668,
-          "y": 510.507,
+          "y": 557.1556,
           "direction": 8
         },
         "end": {
@@ -2717,8 +2883,8 @@
           "columnIds": [
             "sqLU0Xk-c8H1ZNSSiOpXZ"
           ],
-          "x": 589.4081,
-          "y": 1451.3807,
+          "x": 555.5483,
+          "y": 1379.3405,
           "direction": 2
         },
         "meta": {
@@ -2737,7 +2903,7 @@
             "workspaces_id"
           ],
           "x": 951.7327000000001,
-          "y": 510.507,
+          "y": 557.1556,
           "direction": 8
         },
         "end": {
@@ -2745,8 +2911,8 @@
           "columnIds": [
             "cHY4JcazWPKJJKCfv7T1X"
           ],
-          "x": 925.9016,
-          "y": 1366.1972,
+          "x": 947.9039,
+          "y": 1223.5629,
           "direction": 4
         },
         "meta": {
