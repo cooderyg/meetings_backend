@@ -48,11 +48,11 @@ export class GoogleAuthStrategy implements IOAuthStrategy {
   ) {}
 
   get clientId(): string {
-    return this.appConfig.gcp.clientId;
+    return this.appConfig.oauth.gcpClientId;
   }
 
   get clientSecret(): string {
-    return this.appConfig.gcp.clientSecret;
+    return this.appConfig.oauth.gcpClientSecret;
   }
 
   get redirectUri(): string {
