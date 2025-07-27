@@ -46,10 +46,11 @@ export class AppConfig {
     privateKey: '',
     clientEmail: '',
     clientId: '',
-    clientSecret: '',
   };
 
   readonly oauth = {
+    gcpClientId: '',
+    gcpClientSecret: '',
     redirectUri: '',
   };
 
@@ -87,7 +88,8 @@ export class AppConfig {
     GCP_PRIVATE_KEY: Joi.string().required(),
     GCP_CLIENT_EMAIL: Joi.string().required(),
     GCP_CLIENT_ID: Joi.string().required(),
-    GCP_CLIENT_SECRET: Joi.string().required(),
+    OAUTH_GOOGLE_CLIENT_ID: Joi.string().required(),
+    OAUTH_GOOGLE_CLIENT_SECRET: Joi.string().required(),
     OAUTH_REDIRECT_URI: Joi.string().required(),
     STT_PROVIDER: Joi.string().valid('GCP', 'AWS').default('GCP'),
   });
@@ -134,11 +136,16 @@ export class AppConfig {
       privateKey: process.env.GCP_PRIVATE_KEY || '',
       clientEmail: process.env.GCP_CLIENT_EMAIL || '',
       clientId: process.env.GCP_CLIENT_ID || '',
-      clientSecret: process.env.GCP_CLIENT_SECRET || '',
     };
 
     this.stt = {
       provider: (process.env.STT_PROVIDER as 'GCP' | 'AWS') || 'GCP',
+    };
+
+    this.oauth = {
+      gcpClientId: process.env.OAUTH_GOOGLE_CLIENT_ID || '',
+      gcpClientSecret: process.env.OAUTH_GOOGLE_CLIENT_SECRET || '',
+      redirectUri: process.env.OAUTH_REDIRECT_URI || '',
     };
   }
 }

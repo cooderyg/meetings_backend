@@ -1,13 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ERROR_CODES } from '../../shared/const';
 import { AppException } from '../../shared/exception/app.exception';
 import { UpdateUserSettingsDto } from './dto/request/update-user-settings.dto';
-import { UserSettings } from './entity/user.entity';
+import { User, UserSettings } from './entity/user.entity';
+import { ICreateUser } from './interfaces/create-user.interface';
 import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: UserRepository,
+    private readonly em: EntityManager
+  ) {}
+
+  async getUserByUid(uid: string) {
+    return this.userRepository.findByUid(uid);
+  }
+
+  async createUser(user: ICreateUser) {
+    if (!user.uid && !user.passwordHash) {
+      throw new BadRequestException('uid and passwordHash are required');
+    }
+    const createdUser = this.userRepository.create({
+      ...user,
+      passwordHash: user.passwordHash ?? '',
+      isActive: true,
+      settings: { theme: { mode: 'system' } },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    await this.em.flush();
+    return createdUser;
+  }
 
   async updateUserSettings(
     id: string,

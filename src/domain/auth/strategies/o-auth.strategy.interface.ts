@@ -7,5 +7,13 @@ export interface IOAuthStrategy {
    * @param args : OAuth 로그인 코드
    * @returns uid
    */
-  signIn(args: { code: string }): Promise<string>;
+  verifyOAuthToken(args: { code: string }): Promise<IVerifyOAuthTokenReturn>;
+}
+
+export interface IVerifyOAuthTokenReturn {
+  uid: string;
+  email: string;
+  name: string;
+  firstName: string;
+  lastName: string;
 }

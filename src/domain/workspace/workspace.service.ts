@@ -1,16 +1,32 @@
+import { EntityManager } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
-import { WorkspaceRepository } from './workspace.repository';
-import { UpdateWorkspaceNameDto } from './dto/request/update-workspace-name.dto';
-import { AppException } from '../../shared/exception/app.exception';
 import { ERROR_CODES } from '../../shared/const';
+import { AppException } from '../../shared/exception/app.exception';
 import { WorkspaceMemberService } from '../workspace-member/workspace-member.service';
+import { UpdateWorkspaceNameDto } from './dto/request/update-workspace-name.dto';
+import { Workspace } from './entity/workspace.entity';
+import { ICreateWorkspace } from './interfaces/create-workspace.interface';
+import { WorkspaceRepository } from './workspace.repository';
 
 @Injectable()
 export class WorkspaceService {
   constructor(
+    private readonly workspaceMemberService: WorkspaceMemberService,
+    @InjectRepository(Workspace)
     private readonly workspaceRepository: WorkspaceRepository,
-    private readonly workspaceMemberService: WorkspaceMemberService
+    private readonly em: EntityManager
   ) {}
+
+  async createWorkspace(workspace: ICreateWorkspace) {
+    const createdWorkspace = this.workspaceRepository.create({
+      ...workspace,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    await this.em.flush();
+    return createdWorkspace;
+  }
 
   async updateWorkspaceName(id: string, data: UpdateWorkspaceNameDto) {
     const { name } = data;

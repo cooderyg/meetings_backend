@@ -1,13 +1,11 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AppConfig } from '../../../shared/module/app-config/app-config';
 import { User } from '../../user/entity/user.entity';
-import { UserRepository } from '../../user/user.repository';
+import { UserService } from '../../user/user.service';
+import { SubscriptionTier } from '../../workspace/entity/workspace.entity';
+import { WorkspaceService } from '../../workspace/workspace.service';
 import { OAuthType } from '../enums/oauth-type.enum';
 import { ISignIn, ISignInReturn } from '../interfaces/sign-in.interface';
 import { GoogleAuthStrategy } from '../strategies/google-auth.strategy';
@@ -21,7 +19,8 @@ export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-    private readonly userRepository: UserRepository
+    private readonly userService: UserService,
+    private readonly workspaceService: WorkspaceService
   ) {
     this.appConfig = new AppConfig();
     this.strategies = {
@@ -56,19 +55,26 @@ export class AuthService {
       throw new BadRequestException('Invalid OAuth type');
     }
 
-    const uid = await strategy.signIn({ code });
+    const oauthResult = await strategy.verifyOAuthToken({ code });
 
-    const userInfo = await this.getUserInfo(uid);
-    if (!userInfo) {
-      throw new NotFoundException('User not found');
+    const user = await this.userService.getUserByUid(oauthResult.uid);
+    if (!user) {
+      const newUser = await this.userService.createUser({
+        uid: oauthResult.uid,
+        email: oauthResult.email,
+        firstName: oauthResult.firstName,
+        lastName: oauthResult.lastName,
+      });
+
+      await this.workspaceService.createWorkspace({
+        name: `${oauthResult.firstName}'s Workspace`,
+        subscriptionTier: SubscriptionTier.FREE,
+      });
+
+      return this.getTokens(newUser);
     }
 
-    return this.getTokens(userInfo);
-  }
-
-  private async getUserInfo(uid: string) {
-    const userInfo = await this.userRepository.findByUid(uid);
-    return userInfo;
+    return this.getTokens(user);
   }
 
   private getTokens(user: User) {

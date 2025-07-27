@@ -3,7 +3,10 @@ import { JwtService } from '@nestjs/jwt';
 import axios, { AxiosResponse } from 'axios';
 import { AppConfig } from '../../../shared/module/app-config/app-config';
 import { ISignIn } from '../interfaces/sign-in.interface';
-import { IOAuthStrategy } from './o-auth.strategy.interface';
+import {
+  IOAuthStrategy,
+  IVerifyOAuthTokenReturn,
+} from './o-auth.strategy.interface';
 
 // Google OAuth 토큰 응답 타입 정의
 interface GoogleTokenResponse {
@@ -56,13 +59,11 @@ export class GoogleAuthStrategy implements IOAuthStrategy {
     return this.appConfig.oauth.redirectUri;
   }
 
-  async signIn(args: ISignIn): Promise<string> {
+  async verifyOAuthToken(args: ISignIn): Promise<IVerifyOAuthTokenReturn> {
     const { code } = args;
 
-    // getToken 메서드를 호출해서 실제 토큰을 받아옴
     const tokenResponse = await this.getOauthToken(code);
 
-    // Google ID 토큰 검증 및 디코딩 (타입 안전성 확보)
     const decodedIdToken = this.jwtService.verify<GoogleIdTokenPayload>(
       tokenResponse.id_token
     );
@@ -70,8 +71,17 @@ export class GoogleAuthStrategy implements IOAuthStrategy {
       throw new BadRequestException('Invalid Google ID token');
     }
 
-    // uid만 반환 (sub 필드가 Google의 user ID)
-    return decodedIdToken.sub;
+    return {
+      uid: decodedIdToken.sub,
+      email: decodedIdToken.email,
+      name: decodedIdToken.name,
+      firstName:
+        decodedIdToken.given_name || decodedIdToken.name.split(' ')[0] || '',
+      lastName:
+        decodedIdToken.family_name ||
+        decodedIdToken.name.split(' ').slice(1).join(' ') ||
+        '',
+    };
   }
 
   async getOauthToken(code: string): Promise<GoogleTokenResponse> {
