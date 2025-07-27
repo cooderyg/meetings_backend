@@ -30,7 +30,7 @@ export class Workspace extends BaseEntity {
   subscriptionTier: SubscriptionTier = SubscriptionTier.FREE;
 
   @Property({ nullable: true })
-  imagePath?: string;
+  imagePath: string | null = null;
 
   @Property({ type: JsonType })
   settings: WorkSpaceSettings = {};

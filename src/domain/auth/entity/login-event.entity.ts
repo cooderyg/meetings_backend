@@ -21,7 +21,7 @@ export enum LoginEventType {
 export class LoginEvent extends BaseEntity {
   @ManyToOne(() => User, { nullable: true })
   @Index()
-  user?: User;
+  user: User | null = null;
 
   @Enum({ items: () => LoginMethod })
   loginMethod!: LoginMethod;
@@ -31,20 +31,20 @@ export class LoginEvent extends BaseEntity {
 
   @Property({ length: 45, nullable: true })
   @Index()
-  ipAddress?: string;
+  ipAddress: string | null = null;
 
   @Property({ type: 'text', nullable: true })
-  userAgent?: string;
+  userAgent: string | null = null;
 
   @Property({ length: 255, nullable: true })
-  failureReason?: string;
+  failureReason: string | null = null;
 
   @Property({ length: 255, nullable: true })
   @Index()
-  sessionId?: string;
+  sessionId: string | null = null;
 
   @Property({ type: 'jsonb', nullable: true })
-  metadata?: {
+  metadata: {
     deviceFingerprint?: string;
     location?: {
       country?: string;
@@ -52,7 +52,7 @@ export class LoginEvent extends BaseEntity {
       timezone?: string;
     };
     riskScore?: number;
-  };
+  } | null = null;
 
   isSuccessful(): boolean {
     return this.eventType === LoginEventType.SUCCESS;

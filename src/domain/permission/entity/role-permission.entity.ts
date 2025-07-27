@@ -11,5 +11,5 @@ export class RolePermission {
   permission!: Permission;
 
   @Property({ type: 'jsonb', nullable: true })
-  conditions?: Record<string, any>;
+  conditions: Record<string, any> | null = null;
 }

@@ -27,7 +27,7 @@ export class MemberResourcePermission extends BaseEntity {
   isAllowed: boolean = true;
 
   @Property({ type: 'timestamptz', nullable: true })
-  expiresAt?: Date;
+  expiresAt: Date | null = null;
 
   isExpired(): boolean {
     return this.expiresAt ? this.expiresAt < new Date() : false;

@@ -37,10 +37,10 @@ export class User extends BaseEntity {
   isActive: boolean = true;
 
   @Property({ nullable: true })
-  lastLoginAt?: Date;
+  lastLoginAt: Date | null = null;
 
   @Property({ nullable: true })
-  imagePath?: string;
+  imagePath: string | null = null;
 
   @Property({ type: JsonType })
   settings: UserSettings = { theme: { mode: 'system' } };

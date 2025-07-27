@@ -18,8 +18,8 @@ export function createDatabaseConfig(appConfig: AppConfig): Options {
       glob: '!(*.d).{js,ts}',
     },
     seeder: {
-      path: join(process.cwd(), 'dist/database/seeder'),
-      pathTs: join(process.cwd(), 'src/database/seeder'),
+      path: join(process.cwd(), 'dist/infrastructure/database/seeder'),
+      pathTs: join(process.cwd(), 'src/infrastructure/database/seeder'),
       glob: '!(*.d).{js,ts}',
     },
     driver: PostgreSqlDriver,

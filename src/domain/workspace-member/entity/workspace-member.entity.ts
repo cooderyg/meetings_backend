@@ -37,7 +37,7 @@ export class WorkspaceMember extends BaseEntity {
   lastName!: string;
 
   @Property({ nullable: true })
-  imagePath?: string;
+  imagePath: string | null = null;
 
   @OneToMany(() => MemberResourcePermission, (urp) => urp.workspaceMember)
   resourcePermissions = new Collection<MemberResourcePermission>(this);

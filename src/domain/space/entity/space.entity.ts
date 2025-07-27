@@ -14,5 +14,5 @@ export class Space extends TimestampedEntity {
   workspace!: Workspace;
 
   @Property({ type: 'text', nullable: true })
-  description?: string;
+  description: string | null = null;
 }

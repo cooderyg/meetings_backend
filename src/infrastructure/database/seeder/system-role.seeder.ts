@@ -1,13 +1,13 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
-import { Role } from '../../domain/role/entity/role.entity';
-import { Permission } from '../../domain/permission/entity/permission.entity';
-import { RolePermission } from '../../domain/permission/entity/role-permission.entity';
-import { SystemRole } from '../../domain/role/enum/system-role.enum';
+import { Role } from '../../../domain/role/entity/role.entity';
+import { Permission } from '../../../domain/permission/entity/permission.entity';
+import { RolePermission } from '../../../domain/permission/entity/role-permission.entity';
+import { SystemRole } from '../../../domain/role/enum/system-role.enum';
 import { 
   SYSTEM_ROLE_PERMISSIONS, 
   SYSTEM_ROLE_DESCRIPTIONS 
-} from '../../domain/role/const/system-role-permissions.constant';
+} from '../../../domain/role/const/system-role-permissions.constant';
 
 export class SystemRoleSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {

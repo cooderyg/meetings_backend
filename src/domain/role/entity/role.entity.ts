@@ -21,13 +21,13 @@ export class Role extends TimestampedEntity {
 
   @ManyToOne(() => Workspace, { nullable: true })
   @Index()
-  workspace?: Workspace;
+  workspace: Workspace | null = null;
 
   @Property({ length: 100 })
   name!: string;
 
   @Property({ type: 'text', nullable: true })
-  description?: string;
+  description: string | null = null;
 
   @OneToMany(() => WorkspaceMember, (member) => member.role)
   members = new Collection<WorkspaceMember>(this);
@@ -46,8 +46,10 @@ export class Role extends TimestampedEntity {
   static createSystemRole(name: SystemRole, description?: string): Role {
     const role = new Role();
     role.name = name;
-    role.description = description;
-    role.workspace = undefined;
+    if (description !== undefined) {
+      role.description = description;
+    }
+    role.workspace = null;
     return role;
   }
 }
