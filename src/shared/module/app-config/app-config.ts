@@ -88,8 +88,8 @@ export class AppConfig {
     GCP_PRIVATE_KEY: Joi.string().required(),
     GCP_CLIENT_EMAIL: Joi.string().required(),
     GCP_CLIENT_ID: Joi.string().required(),
-    OAUTH_GOOGLE_CLIENT_ID: Joi.string().required(),
-    OAUTH_GOOGLE_CLIENT_SECRET: Joi.string().required(),
+    OAUTH_GCP_CLIENT_ID: Joi.string().required(),
+    OAUTH_GCP_CLIENT_SECRET: Joi.string().required(),
     OAUTH_REDIRECT_URI: Joi.string().required(),
     STT_PROVIDER: Joi.string().valid('GCP', 'AWS').default('GCP'),
   });

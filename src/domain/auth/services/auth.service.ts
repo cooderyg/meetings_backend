@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AppConfig } from '../../../shared/module/app-config/app-config';
 import { User } from '../../user/entity/user.entity';
@@ -17,7 +16,6 @@ export class AuthService {
   private readonly strategies: Record<OAuthType, IOAuthStrategy>;
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
     private readonly workspaceService: WorkspaceService
@@ -32,19 +30,19 @@ export class AuthService {
   }
 
   get accessTokenSecret(): string {
-    return this.configService.getOrThrow<string>('ACCESS_TOKEN_SECRET');
+    return this.appConfig.auth.jwtSecret;
   }
 
   get accessTokenExpiresIn(): string {
-    return this.configService.getOrThrow<string>('ACCESS_TOKEN_EXPIRES_IN');
+    return this.appConfig.auth.jwtExpiresIn;
   }
 
   get refreshTokenSecret(): string {
-    return this.configService.getOrThrow<string>('REFRESH_TOKEN_SECRET');
+    return this.appConfig.auth.refreshSecret;
   }
 
   get refreshTokenExpiresIn(): string {
-    return this.configService.getOrThrow<string>('REFRESH_TOKEN_EXPIRES_IN');
+    return this.appConfig.auth.refreshExpiresIn;
   }
 
   async signIn(args: ISignIn): Promise<ISignInReturn> {

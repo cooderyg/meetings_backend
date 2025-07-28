@@ -3,7 +3,6 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 import { ERROR_CODES } from '../../shared/const';
 import { AppException } from '../../shared/exception/app.exception';
-import { WorkspaceMemberService } from '../workspace-member/workspace-member.service';
 import { UpdateWorkspaceNameDto } from './dto/request/update-workspace-name.dto';
 import { Workspace } from './entity/workspace.entity';
 import { ICreateWorkspace } from './interfaces/create-workspace.interface';
@@ -12,7 +11,6 @@ import { WorkspaceRepository } from './workspace.repository';
 @Injectable()
 export class WorkspaceService {
   constructor(
-    private readonly workspaceMemberService: WorkspaceMemberService,
     @InjectRepository(Workspace)
     private readonly workspaceRepository: WorkspaceRepository,
     private readonly em: EntityManager

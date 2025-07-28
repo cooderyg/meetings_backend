@@ -9,6 +9,8 @@ import { createDatabaseConfig } from './config/database-config';
 import { AuthModule } from './domain/auth/auth.module';
 import { MeetingSummaryModule } from './domain/meeting-summary/meeting-summary.module';
 import { UserModule } from './domain/user/user.module';
+import { WorkspaceMemberModule } from './domain/workspace-member/workspace-member.module';
+import { WorkspaceModule } from './domain/workspace/workspace.module';
 import { CacheModule } from './infrastructure/cache/cache.module';
 import { SttModule } from './infrastructure/stt/stt.module';
 import { AppConfig } from './shared/module/app-config/app-config';
@@ -35,6 +37,7 @@ import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
+      global: true,
     }),
     LoggerModule,
     CacheModule,
@@ -42,6 +45,8 @@ import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
     UserModule,
     AuthModule,
     MeetingSummaryModule,
+    WorkspaceModule,
+    WorkspaceMemberModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfig],
