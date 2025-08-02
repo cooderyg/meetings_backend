@@ -158,8 +158,8 @@ export class AppConfig {
     };
 
     this.oauth = {
-      gcpClientId: process.env.OAUTH_GOOGLE_CLIENT_ID || '',
-      gcpClientSecret: process.env.OAUTH_GOOGLE_CLIENT_SECRET || '',
+      gcpClientId: process.env.OAUTH_GCP_CLIENT_ID || '',
+      gcpClientSecret: process.env.OAUTH_GCP_CLIENT_SECRET || '',
       redirectUri: process.env.OAUTH_REDIRECT_URI || '',
     };
     this.storage = {
