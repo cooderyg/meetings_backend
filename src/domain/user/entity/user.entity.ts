@@ -49,6 +49,9 @@ export class User extends BaseEntity {
   @Property({ type: JsonType })
   settings: UserSettings = { theme: { mode: 'system' } };
 
+  @Property({ default: false })
+  isDeleted: boolean = false;
+
   @OneToMany(() => WorkspaceMember, (member) => member.user)
   workspaceMemberships = new Collection<WorkspaceMember>(this);
 

@@ -1,5 +1,4 @@
 import { EntityManager } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ERROR_CODES } from '../../shared/const';
 import { AppException } from '../../shared/exception/app.exception';
@@ -11,7 +10,6 @@ import { UserRepository } from './user.repository';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
     private readonly userRepository: UserRepository,
     private readonly em: EntityManager
   ) {}
