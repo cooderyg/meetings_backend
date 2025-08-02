@@ -1,13 +1,13 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
-import { Role } from '../../../domain/role/entity/role.entity';
 import { Permission } from '../../../domain/permission/entity/permission.entity';
 import { RolePermission } from '../../../domain/permission/entity/role-permission.entity';
-import { SystemRole } from '../../../domain/role/enum/system-role.enum';
-import { 
-  SYSTEM_ROLE_PERMISSIONS, 
-  SYSTEM_ROLE_DESCRIPTIONS 
+import {
+  SYSTEM_ROLE_DESCRIPTIONS,
+  SYSTEM_ROLE_PERMISSIONS,
 } from '../../../domain/role/const/system-role-permissions.constant';
+import { Role } from '../../../domain/role/entity/role.entity';
+import { SystemRole } from '../../../domain/role/enum/system-role.enum';
 
 export class SystemRoleSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
@@ -17,17 +17,16 @@ export class SystemRoleSeeder extends Seeder {
   }
 
   private async createSystemRoles(em: EntityManager): Promise<void> {
-    for (const [roleName, description] of Object.entries(SYSTEM_ROLE_DESCRIPTIONS)) {
-      const existingRole = await em.findOne(Role, { 
-        name: roleName, 
-        workspace: null 
+    for (const [roleName, description] of Object.entries(
+      SYSTEM_ROLE_DESCRIPTIONS
+    )) {
+      const existingRole = await em.findOne(Role, {
+        name: roleName,
+        workspace: null,
       });
 
       if (!existingRole) {
-        const role = Role.createSystemRole(
-          roleName as SystemRole, 
-          description
-        );
+        const role = Role.createSystemRole(roleName as SystemRole, description);
         em.persist(role);
         console.log(`Created system role: ${roleName}`);
       } else {
@@ -39,10 +38,12 @@ export class SystemRoleSeeder extends Seeder {
   }
 
   private async assignPermissionsToRoles(em: EntityManager): Promise<void> {
-    for (const [roleName, permissionRules] of Object.entries(SYSTEM_ROLE_PERMISSIONS)) {
-      const role = await em.findOne(Role, { 
-        name: roleName, 
-        workspace: null 
+    for (const [roleName, permissionRules] of Object.entries(
+      SYSTEM_ROLE_PERMISSIONS
+    )) {
+      const role = await em.findOne(Role, {
+        name: roleName,
+        workspace: null,
       });
 
       if (!role) {
@@ -71,7 +72,9 @@ export class SystemRoleSeeder extends Seeder {
           rolePermission.role = role;
           rolePermission.permission = permission;
           em.persist(rolePermission);
-          console.log(`Assigned permission ${rule.action}:${rule.subject} to role ${roleName}`);
+          console.log(
+            `Assigned permission ${rule.action}:${rule.subject} to role ${roleName}`
+          );
         }
       }
     }
@@ -80,13 +83,15 @@ export class SystemRoleSeeder extends Seeder {
   }
 
   private async migrateGuestRoles(em: EntityManager): Promise<void> {
-    const guestRoles = await em.find(Role, { 
-      name: 'Guest', 
-      workspace: null 
+    const guestRoles = await em.find(Role, {
+      name: 'Guest',
+      workspace: null,
     });
 
     for (const guestRole of guestRoles) {
-      console.log(`Migrating Guest role (ID: ${guestRole.id}) to CAN_VIEW role`);
+      console.log(
+        `Migrating Guest role (ID: ${guestRole.id}) to CAN_VIEW role`
+      );
       guestRole.name = SystemRole.CAN_VIEW;
       guestRole.description = SYSTEM_ROLE_DESCRIPTIONS[SystemRole.CAN_VIEW];
       em.persist(guestRole);
