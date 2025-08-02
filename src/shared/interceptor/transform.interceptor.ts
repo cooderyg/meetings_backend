@@ -53,7 +53,7 @@ export class TransformInterceptor implements NestInterceptor {
         }
 
         return response;
-      }),
+      })
     );
   }
 }

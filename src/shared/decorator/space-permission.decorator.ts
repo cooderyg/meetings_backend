@@ -4,9 +4,9 @@ import { SpacePermissionGuard } from '../guard/space-permission.guard';
 
 /**
  * Space 권한 확인 데코레이터
- * 
+ *
  * @param action - 필요한 권한 액션 (create, read, update, delete, manage)
- * 
+ *
  * @example
  * ```typescript
  * @Get(':id')

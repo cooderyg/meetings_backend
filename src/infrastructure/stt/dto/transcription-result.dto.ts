@@ -1,7 +1,7 @@
 export interface WordDetail {
   word: string;
   startTime: number; // seconds
-  endTime: number;   // seconds
+  endTime: number; // seconds
   confidence: number; // 0.0 to 1.0
   speakerId?: string | number;
 }

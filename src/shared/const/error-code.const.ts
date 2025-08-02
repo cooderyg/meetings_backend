@@ -1,6 +1,5 @@
 import { USER_MESSAGES } from './error-message.const';
 
-
 /**
  * 애플리케이션 에러 정의 객체
  *
@@ -225,4 +224,4 @@ export const ERROR_CODES = {
 } as const;
 
 export type ErrorCodeKey = keyof typeof ERROR_CODES;
-export type ErrorCodeDefinition = typeof ERROR_CODES[ErrorCodeKey];
+export type ErrorCodeDefinition = (typeof ERROR_CODES)[ErrorCodeKey];

@@ -1,4 +1,11 @@
-import { Entity, Property, OneToMany, Collection, Unique, Enum } from '@mikro-orm/core';
+import {
+  Entity,
+  Property,
+  OneToMany,
+  Collection,
+  Unique,
+  Enum,
+} from '@mikro-orm/core';
 import { RolePermission } from './role-permission.entity';
 import { MemberResourcePermission } from './member-resource-permission.entity';
 
@@ -7,7 +14,7 @@ export enum Action {
   READ = 'read',
   UPDATE = 'update',
   DELETE = 'delete',
-  MANAGE = 'manage'
+  MANAGE = 'manage',
 }
 
 export enum ResourceSubject {
@@ -30,10 +37,10 @@ export class Permission {
   @Enum({ items: () => ResourceSubject })
   resourceSubject!: ResourceSubject;
 
-  @OneToMany(() => RolePermission, rp => rp.permission)
+  @OneToMany(() => RolePermission, (rp) => rp.permission)
   rolePermissions = new Collection<RolePermission>(this);
 
-  @OneToMany(() => MemberResourcePermission, urp => urp.permission)
+  @OneToMany(() => MemberResourcePermission, (urp) => urp.permission)
   memberResourcePermissions = new Collection<MemberResourcePermission>(this);
 
   toString(): string {
@@ -66,8 +73,10 @@ export class Permission {
    */
   covers(action: Action, resourceSubject: ResourceSubject): boolean {
     const actionMatches = this.action === action || this.isManagePermission();
-    const resourceMatches = this.resourceSubject === resourceSubject || this.isAllResourcePermission();
-    
+    const resourceMatches =
+      this.resourceSubject === resourceSubject ||
+      this.isAllResourcePermission();
+
     return actionMatches && resourceMatches;
   }
 }

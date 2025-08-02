@@ -1,5 +1,5 @@
 import { HttpException } from '@nestjs/common';
-import {  ErrorCodeDefinition } from '../const/error-code.const';
+import { ErrorCodeDefinition } from '../const/error-code.const';
 
 /**
  * 애플리케이션 예외 생성 시 사용할 옵션 인터페이스

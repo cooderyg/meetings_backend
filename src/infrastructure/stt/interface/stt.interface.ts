@@ -2,8 +2,14 @@ import { TranscriptionResult, WordDetail, TranscriptionConfig } from '../dto';
 export { TranscriptionResult, WordDetail as WordInfo, TranscriptionConfig };
 
 export interface ISttService {
-  transcribeAudio(audioBuffer: Buffer, config?: TranscriptionConfig): Promise<TranscriptionResult>;
-  transcribeStream(audioStream: NodeJS.ReadableStream, config?: TranscriptionConfig): Promise<TranscriptionResult>;
+  transcribeAudio(
+    audioBuffer: Buffer,
+    config?: TranscriptionConfig
+  ): Promise<TranscriptionResult>;
+  transcribeStream(
+    audioStream: NodeJS.ReadableStream,
+    config?: TranscriptionConfig
+  ): Promise<TranscriptionResult>;
 }
 
 /**

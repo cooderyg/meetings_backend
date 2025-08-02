@@ -9,7 +9,6 @@ import { LTreeType } from '../../../shared/type/ltree.type';
 @Unique({ properties: ['workspaceMember', 'permission', 'resourcePath'] })
 @Index({ properties: ['workspaceMember', 'workspace'] })
 export class MemberResourcePermission extends BaseEntity {
-
   @ManyToOne(() => WorkspaceMember)
   workspaceMember!: WorkspaceMember;
 
@@ -55,8 +54,10 @@ export class MemberResourcePermission extends BaseEntity {
    * 특정 액션과 리소스 타입에 대한 권한인지 확인
    */
   matchesPermission(action: string, resourceSubject: string): boolean {
-    return this.permission.action === action && 
-           this.permission.resourceSubject === resourceSubject;
+    return (
+      this.permission.action === action &&
+      this.permission.resourceSubject === resourceSubject
+    );
   }
 
   /**

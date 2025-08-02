@@ -8,7 +8,14 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiOkResponse, ApiBadRequestResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiConsumes,
+  ApiBody,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
 import {
   ISttService,
   STT_SERVICE,
@@ -67,9 +74,9 @@ export class AppController {
   }
 
   @Post('test-stt')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'STT 서비스 테스트',
-    description: '오디오 파일을 업로드하여 음성을 텍스트로 변환합니다.' 
+    description: '오디오 파일을 업로드하여 음성을 텍스트로 변환합니다.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -97,7 +104,7 @@ export class AppController {
           file: {
             name: 'meeting.wav',
             size: 1024000,
-            type: 'audio/wav'
+            type: 'audio/wav',
           },
           transcription: {
             transcript: '안녕하세요. 오늘 회의를 시작하겠습니다.',
@@ -106,17 +113,41 @@ export class AppController {
             wordCount: 8,
             hasWords: true,
             words: [
-              { word: '안녕하세요', confidence: 0.98, startTime: 0.1, endTime: 0.8, speakerId: 1 },
-              { word: '오늘', confidence: 0.97, startTime: 0.9, endTime: 1.2, speakerId: 1 }
+              {
+                word: '안녕하세요',
+                confidence: 0.98,
+                startTime: 0.1,
+                endTime: 0.8,
+                speakerId: 1,
+              },
+              {
+                word: '오늘',
+                confidence: 0.97,
+                startTime: 0.9,
+                endTime: 1.2,
+                speakerId: 1,
+              },
             ],
             wordPreview: [
-              { word: '안녕하세요', confidence: 0.98, startTime: 0.1, endTime: 0.8, speakerId: 1 },
-              { word: '오늘', confidence: 0.97, startTime: 0.9, endTime: 1.2, speakerId: 1 }
-            ]
-          }
-        }
-      }
-    }
+              {
+                word: '안녕하세요',
+                confidence: 0.98,
+                startTime: 0.1,
+                endTime: 0.8,
+                speakerId: 1,
+              },
+              {
+                word: '오늘',
+                confidence: 0.97,
+                startTime: 0.9,
+                endTime: 1.2,
+                speakerId: 1,
+              },
+            ],
+          },
+        },
+      },
+    },
   })
   @ApiBadRequestResponse({
     description: 'STT 변환 실패',
@@ -130,14 +161,16 @@ export class AppController {
           file: {
             name: 'invalid.txt',
             size: 1024,
-            type: 'text/plain'
-          }
-        }
-      }
-    }
+            type: 'text/plain',
+          },
+        },
+      },
+    },
   })
   @UseInterceptors(FileInterceptor('audio'))
-  async testStt(@UploadedFile() file: any): Promise<SttTestSuccessResponseDto | SttTestErrorResponseDto> {
+  async testStt(
+    @UploadedFile() file: any
+  ): Promise<SttTestSuccessResponseDto | SttTestErrorResponseDto> {
     if (!file) {
       throw new BadRequestException('오디오 파일이 필요합니다');
     }
@@ -145,7 +178,9 @@ export class AppController {
     // 매우 큰 파일에 대한 경고 (50MB 이상)
     const warnFileSize = 50 * 1024 * 1024; // 50MB
     if (file.size > warnFileSize) {
-      console.warn(`큰 파일 처리 중: ${(file.size / 1024 / 1024).toFixed(2)}MB - 처리 시간이 오래 걸릴 수 있습니다.`);
+      console.warn(
+        `큰 파일 처리 중: ${(file.size / 1024 / 1024).toFixed(2)}MB - 처리 시간이 오래 걸릴 수 있습니다.`
+      );
     }
 
     console.log('업로드된 파일:', {
@@ -174,7 +209,7 @@ export class AppController {
       const result = await this.sttService.transcribeAudio(file.buffer, config);
 
       const processingTimeMs = Date.now() - startTime;
-      
+
       // 9MB보다 큰 파일인지 확인 (청크 처리 여부)
       const maxChunkSize = 9 * 1024 * 1024;
       const isChunked = file.size > maxChunkSize;

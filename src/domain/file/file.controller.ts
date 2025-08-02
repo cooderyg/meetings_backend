@@ -26,9 +26,7 @@ import {
   UploadFileDto,
   UploadMultipleFilesDto,
 } from './dto/request/upload-file.dto';
-import {
-  FileUploadResponseDto,
-} from './dto/response/file-response.dto';
+import { FileUploadResponseDto } from './dto/response/file-response.dto';
 
 @ApiTags('Files')
 @Controller('files')
@@ -51,7 +49,8 @@ export class FileController {
     type: FileUploadResponseDto,
   })
   @ApiBadRequestResponse({
-    description: '파일 업로드 실패 (파일 크기 초과, 지원하지 않는 파일 형식 등)',
+    description:
+      '파일 업로드 실패 (파일 크기 초과, 지원하지 않는 파일 형식 등)',
   })
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
@@ -135,7 +134,8 @@ export class FileController {
       properties: {
         url: {
           type: 'string',
-          example: 'https://bucket.s3.ap-northeast-2.amazonaws.com/uploads/file.jpg?X-Amz-Signature=...',
+          example:
+            'https://bucket.s3.ap-northeast-2.amazonaws.com/uploads/file.jpg?X-Amz-Signature=...',
         },
         expiresIn: { type: 'number', example: 3600 },
       },
@@ -174,9 +174,9 @@ export class FileController {
           type: 'string',
           example: '파일이 성공적으로 삭제되었습니다.',
         },
-        key: { 
+        key: {
           type: 'string',
-          example: 'uploads/1704067200000-a1b2c3d4-sample_image.jpg'
+          example: 'uploads/1704067200000-a1b2c3d4-sample_image.jpg',
         },
       },
     },

@@ -4,9 +4,9 @@ import { MeetingPermissionGuard } from '../guard/meeting-permission.guard';
 
 /**
  * Meeting 권한 확인 데코레이터 (계층형 상속 포함)
- * 
+ *
  * @param action - 필요한 권한 액션 (create, read, update, delete, manage)
- * 
+ *
  * @example
  * ```typescript
  * @Get(':id')

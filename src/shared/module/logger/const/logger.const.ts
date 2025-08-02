@@ -33,7 +33,7 @@ export const LOGGER_CONSTANTS = {
         method: string,
         url: string,
         status: number,
-        duration: number,
+        duration: number
       ) => `${method} ${url} completed - ${status} - ${duration}ms`,
       FAILED: (method: string, url: string, status: number, duration: number) =>
         `${method} ${url} failed - ${status} - ${duration}ms`,

@@ -5,6 +5,7 @@ import { PermissionRepository } from './permission.repository';
 import { MemberResourcePermission } from './entity/member-resource-permission.entity';
 import { WorkspaceMember } from '../workspace-member/entity/workspace-member.entity';
 import { Resource } from '../resource/entity/resource.entity';
+import { EntityManager } from '@mikro-orm/core';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { Resource } from '../resource/entity/resource.entity';
     {
       provide: PermissionRepository,
       useFactory: (em) => em.getRepository(MemberResourcePermission),
-      inject: ['EntityManager'],
+      inject: [EntityManager],
     },
     PermissionService,
   ],

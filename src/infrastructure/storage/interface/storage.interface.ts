@@ -1,5 +1,9 @@
 export interface IStorageService {
-  uploadFile(key: string, buffer: Buffer, options?: UploadOptions): Promise<UploadResult>;
+  uploadFile(
+    key: string,
+    buffer: Buffer,
+    options?: UploadOptions
+  ): Promise<UploadResult>;
   downloadFile(key: string): Promise<Buffer>;
   deleteFile(key: string): Promise<void>;
   getPresignedUrl(key: string, expires?: number): Promise<string>;
