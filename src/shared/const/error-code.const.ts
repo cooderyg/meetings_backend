@@ -170,6 +170,42 @@ export const ERROR_CODES = {
     httpStatus: 400,
     logLevel: 'warn' as const,
   },
+  STORAGE_UPLOAD_FAILED: {
+    code: 'EXT_006',
+    message: USER_MESSAGES['EXT_006'],
+    httpStatus: 502,
+    logLevel: 'error' as const,
+  },
+  STORAGE_DOWNLOAD_FAILED: {
+    code: 'EXT_007',
+    message: USER_MESSAGES['EXT_007'],
+    httpStatus: 502,
+    logLevel: 'error' as const,
+  },
+  STORAGE_DELETE_FAILED: {
+    code: 'EXT_008',
+    message: USER_MESSAGES['EXT_008'],
+    httpStatus: 502,
+    logLevel: 'error' as const,
+  },
+  STORAGE_FILE_NOT_FOUND: {
+    code: 'EXT_009',
+    message: USER_MESSAGES['EXT_009'],
+    httpStatus: 404,
+    logLevel: 'warn' as const,
+  },
+  STORAGE_PRESIGNED_URL_FAILED: {
+    code: 'EXT_010',
+    message: USER_MESSAGES['EXT_010'],
+    httpStatus: 502,
+    logLevel: 'error' as const,
+  },
+  STORAGE_CHECK_FAILED: {
+    code: 'EXT_011',
+    message: USER_MESSAGES['EXT_011'],
+    httpStatus: 502,
+    logLevel: 'error' as const,
+  },
 
   // =================
   // 시스템/서버 관련 (001~099)

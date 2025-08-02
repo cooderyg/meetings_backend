@@ -52,6 +52,16 @@ export class AppConfig {
     provider: 'GCP' as 'GCP' | 'AWS',
   };
 
+  readonly storage = {
+    provider: 'AWS' as 'AWS' | 'GCP',
+    aws: {
+      region: '',
+      bucket: '',
+      accessKeyId: '',
+      secretAccessKey: '',
+    },
+  };
+
   static validationSchema = Joi.object({
     NODE_ENV: Joi.string()
       .valid('development', 'staging', 'production')
@@ -83,6 +93,11 @@ export class AppConfig {
     GCP_CLIENT_EMAIL: Joi.string().required(),
     GCP_CLIENT_ID: Joi.string().required(),
     STT_PROVIDER: Joi.string().valid('GCP', 'AWS').default('GCP'),
+    STORAGE_PROVIDER: Joi.string().valid('AWS', 'GCP').default('AWS'),
+    AWS_REGION: Joi.string().default('ap-northeast-2'),
+    AWS_S3_BUCKET: Joi.string().required(),
+    AWS_ACCESS_KEY_ID: Joi.string().allow('').optional(),
+    AWS_SECRET_ACCESS_KEY: Joi.string().allow('').optional(),
   });
 
   constructor() {
@@ -131,6 +146,16 @@ export class AppConfig {
 
     this.stt = {
       provider: (process.env.STT_PROVIDER as 'GCP' | 'AWS') || 'GCP',
+    };
+
+    this.storage = {
+      provider: (process.env.STORAGE_PROVIDER as 'AWS' | 'GCP') || 'AWS',
+      aws: {
+        region: process.env.AWS_REGION || 'ap-northeast-2',
+        bucket: process.env.AWS_S3_BUCKET || '',
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+      },
     };
   }
 }

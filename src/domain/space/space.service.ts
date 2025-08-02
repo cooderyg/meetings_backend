@@ -41,27 +41,24 @@ export class SpaceService {
   }
 
   async create(dto: CreateSpaceDto): Promise<Space> {
-    const workspace = new Workspace();
-    workspace.id = dto.workspaceId;
+    const workspace = this.em.assign(new Workspace(), { id: dto.workspaceId });
+    const owner = this.em.assign(new WorkspaceMember(), { id: dto.ownerId });
 
-    const owner = new WorkspaceMember();
-    owner.id = dto.ownerId;
+    const resource = this.em.assign(new Resource(), {
+      workspace,
+      owner,
+      type: ResourceType.SPACE,
+      title: dto.title,
+      path: dto.parentPath
+        ? `${dto.parentPath}.${Date.now()}`
+        : String(Date.now()),
+    });
 
-    const resource = new Resource();
-    resource.workspace = workspace;
-    resource.owner = owner;
-    resource.type = ResourceType.SPACE;
-    resource.title = dto.title;
-    resource.path = dto.parentPath
-      ? `${dto.parentPath}.${Date.now()}`
-      : String(Date.now());
-
-    const space = new Space();
-    space.resource = resource;
-    space.workspace = workspace;
-    if (dto.description !== undefined) {
-      space.description = dto.description;
-    }
+    const space = this.em.assign(new Space(), {
+      resource,
+      workspace,
+      ...(dto.description !== undefined && { description: dto.description }),
+    });
 
     const result = await this.spaceRepository.create(space);
     await this.em.flush();
@@ -72,11 +69,11 @@ export class SpaceService {
     const space = await this.findById(id);
 
     if (dto.title) {
-      space.resource.title = dto.title;
+      this.em.assign(space.resource, { title: dto.title });
     }
 
     if (dto.description !== undefined) {
-      space.description = dto.description;
+      this.em.assign(space, { description: dto.description });
     }
 
     const result = await this.spaceRepository.update(space);
