@@ -7,11 +7,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { createDatabaseConfig } from './config/database-config';
 import { AuthModule } from './domain/auth/auth.module';
+import { FileModule } from './domain/file/file.module';
 import { MeetingSummaryModule } from './domain/meeting-summary/meeting-summary.module';
 import { UserModule } from './domain/user/user.module';
 import { WorkspaceMemberModule } from './domain/workspace-member/workspace-member.module';
 import { WorkspaceModule } from './domain/workspace/workspace.module';
 import { CacheModule } from './infrastructure/cache/cache.module';
+import { StorageModule } from './infrastructure/storage/storage.module';
 import { SttModule } from './infrastructure/stt/stt.module';
 import { AppConfig } from './shared/module/app-config/app-config';
 import { AppConfigModule } from './shared/module/app-config/app-config.module';
@@ -41,12 +43,14 @@ import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
     }),
     LoggerModule,
     CacheModule,
+    StorageModule,
     SttModule,
     UserModule,
     AuthModule,
     MeetingSummaryModule,
     WorkspaceModule,
     WorkspaceMemberModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfig],
