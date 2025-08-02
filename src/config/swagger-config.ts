@@ -20,7 +20,7 @@ export function createDocumentBuilder({
         bearerFormat: 'JWT',
         in: 'header',
       },
-      'access-token',
+      'access-token'
     )
     .build();
 }

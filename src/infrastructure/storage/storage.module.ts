@@ -1,6 +1,9 @@
 import { Global, Module } from '@nestjs/common';
 import { AppConfigModule } from '../../shared/module/app-config/app-config.module';
-import { STORAGE_SERVICE, IStorageService } from './interface/storage.interface';
+import {
+  STORAGE_SERVICE,
+  IStorageService,
+} from './interface/storage.interface';
 import { StorageFactoryService } from './storage-factory.service';
 
 @Global()

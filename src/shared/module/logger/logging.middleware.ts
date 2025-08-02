@@ -17,7 +17,7 @@ export class LoggingMiddleware implements NestMiddleware {
   constructor(
     private readonly logger: LoggerService,
     private readonly appConfig: AppConfig,
-    private readonly cls: ClsService,
+    private readonly cls: ClsService
   ) {}
 
   /**
@@ -37,7 +37,8 @@ export class LoggingMiddleware implements NestMiddleware {
     req.apiVersion = this.appConfig.apiVersion;
 
     // CLS에서 자동 생성된 ID 가져오기 또는 헤더에서 추출한 ID 사용
-    const requestId = (req.headers['x-request-id'] as string) || this.cls.getId();
+    const requestId =
+      (req.headers['x-request-id'] as string) || this.cls.getId();
     req.requestId = requestId;
     res.setHeader('x-request-id', requestId);
     res.setHeader('x-api-version', this.appConfig.apiVersion);
@@ -52,7 +53,7 @@ export class LoggingMiddleware implements NestMiddleware {
       {
         ip,
         userAgent,
-      },
+      }
     );
 
     // 응답 완료 시 상태 코드에 따른 로깅
@@ -67,10 +68,10 @@ export class LoggingMiddleware implements NestMiddleware {
             method,
             originalUrl,
             statusCode,
-            duration,
+            duration
           ),
           undefined,
-          LOGGER_CONSTANTS.CONTEXTS.HTTP,
+          LOGGER_CONSTANTS.CONTEXTS.HTTP
         );
       } else if (statusCode >= 400) {
         // 4xx 에러: 클라이언트 오류로 경고 로그
@@ -79,9 +80,9 @@ export class LoggingMiddleware implements NestMiddleware {
             method,
             originalUrl,
             statusCode,
-            duration,
+            duration
           ),
-          LOGGER_CONSTANTS.CONTEXTS.HTTP,
+          LOGGER_CONSTANTS.CONTEXTS.HTTP
         );
       }
 
@@ -109,12 +110,12 @@ export class LoggingMiddleware implements NestMiddleware {
     return (
       // 설정된 헬스체크 경로와 일치하는지 확인
       (LOGGER_CONSTANTS.HEALTH_CHECK_PATHS as readonly string[]).includes(
-        originalUrl,
+        originalUrl
       ) &&
       method === 'GET' &&
       // 로드밸런서나 쿠버네티스 프로브의 User-Agent 확인
       LOGGER_CONSTANTS.HEALTH_CHECK_USER_AGENTS.some((agent) =>
-        userAgent.includes(agent),
+        userAgent.includes(agent)
       )
     );
   }

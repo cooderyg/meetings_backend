@@ -41,7 +41,7 @@ export class LoggerService implements NestLoggerService {
 
   constructor(
     private readonly appConfig: AppConfig,
-    private readonly cls: ClsService,
+    private readonly cls: ClsService
   ) {
     this.logger = this.createWinstonLogger();
   }
@@ -97,7 +97,7 @@ export class LoggerService implements NestLoggerService {
         };
 
         return JSON.stringify(logEntry);
-      }),
+      })
     );
   }
 
@@ -113,7 +113,7 @@ export class LoggerService implements NestLoggerService {
       ? winston.format.json()
       : winston.format.combine(
           winston.format.colorize(),
-          winston.format.simple(),
+          winston.format.simple()
         );
 
     const transports: winston.transport[] = [
@@ -141,7 +141,7 @@ export class LoggerService implements NestLoggerService {
           maxSize: '20m',
           maxFiles: '30d',
           format: winston.format.json(),
-        }),
+        })
       );
     }
 
@@ -159,7 +159,7 @@ export class LoggerService implements NestLoggerService {
     level: string,
     message: string,
     context?: string,
-    meta?: LogMetadata,
+    meta?: LogMetadata
   ): void {
     const requestId = this.cls.getId();
     const logData: LogMetadata = {
@@ -178,11 +178,7 @@ export class LoggerService implements NestLoggerService {
    * @param context - 로그 컨텍스트 (기본값: 'Application')
    * @param meta - 추가 메타데이터
    */
-  log(
-    message: string,
-    context?: string,
-    meta?: LogMetadata,
-  ): void {
+  log(message: string, context?: string, meta?: LogMetadata): void {
     this.logWithContext('info', message, context, meta);
   }
 
@@ -199,7 +195,7 @@ export class LoggerService implements NestLoggerService {
     message: string,
     trace?: string,
     context?: string,
-    meta?: LogMetadata,
+    meta?: LogMetadata
   ): void {
     this.logWithContext('error', message, context, {
       ...meta,
@@ -216,11 +212,7 @@ export class LoggerService implements NestLoggerService {
    * @param requestId - 요청 추적 ID
    * @param meta - 추가 메타데이터
    */
-  warn(
-    message: string,
-    context?: string,
-    meta?: LogMetadata,
-  ): void {
+  warn(message: string, context?: string, meta?: LogMetadata): void {
     this.logWithContext('warn', message, context, meta);
   }
 
@@ -233,11 +225,7 @@ export class LoggerService implements NestLoggerService {
    * @param requestId - 요청 추적 ID
    * @param meta - 추가 메타데이터
    */
-  debug(
-    message: string,
-    context?: string,
-    meta?: LogMetadata,
-  ): void {
+  debug(message: string, context?: string, meta?: LogMetadata): void {
     this.logWithContext('debug', message, context, meta);
   }
 
@@ -250,11 +238,7 @@ export class LoggerService implements NestLoggerService {
    * @param requestId - 요청 추적 ID
    * @param meta - 추가 메타데이터
    */
-  verbose(
-    message: string,
-    context?: string,
-    meta?: LogMetadata,
-  ): void {
+  verbose(message: string, context?: string, meta?: LogMetadata): void {
     // Nest.js verbose를 Syslog notice에 매핑
     this.logWithContext('notice', message, context, meta);
   }
@@ -270,11 +254,7 @@ export class LoggerService implements NestLoggerService {
    * @param requestId - 요청 추적 ID
    * @param meta - 추가 메타데이터
    */
-  emerg(
-    message: string,
-    context?: string,
-    meta?: LogMetadata,
-  ): void {
+  emerg(message: string, context?: string, meta?: LogMetadata): void {
     this.logWithContext('emerg', message, context, meta);
   }
 
@@ -287,11 +267,7 @@ export class LoggerService implements NestLoggerService {
    * @param requestId - 요청 추적 ID
    * @param meta - 추가 메타데이터
    */
-  alert(
-    message: string,
-    context?: string,
-    meta?: LogMetadata,
-  ): void {
+  alert(message: string, context?: string, meta?: LogMetadata): void {
     this.logWithContext('alert', message, context, meta);
   }
 
@@ -304,11 +280,7 @@ export class LoggerService implements NestLoggerService {
    * @param requestId - 요청 추적 ID
    * @param meta - 추가 메타데이터
    */
-  crit(
-    message: string,
-    context?: string,
-    meta?: LogMetadata,
-  ): void {
+  crit(message: string, context?: string, meta?: LogMetadata): void {
     this.logWithContext('crit', message, context, meta);
   }
 
@@ -321,11 +293,7 @@ export class LoggerService implements NestLoggerService {
    * @param requestId - 요청 추적 ID
    * @param meta - 추가 메타데이터
    */
-  notice(
-    message: string,
-    context?: string,
-    meta?: LogMetadata,
-  ): void {
+  notice(message: string, context?: string, meta?: LogMetadata): void {
     this.logWithContext('notice', message, context, meta);
   }
 
@@ -338,11 +306,7 @@ export class LoggerService implements NestLoggerService {
    * @param requestId - 요청 추적 ID
    * @param meta - 추가 메타데이터
    */
-  info(
-    message: string,
-    context?: string,
-    meta?: LogMetadata,
-  ): void {
+  info(message: string, context?: string, meta?: LogMetadata): void {
     this.logWithContext('info', message, context, meta);
   }
 
@@ -355,7 +319,7 @@ export class LoggerService implements NestLoggerService {
   logPerformance(
     operation: string,
     durationMs: number,
-    meta?: Record<string, any>,
+    meta?: Record<string, any>
   ): void {
     // 1초 이상 걸리면 경고, 그 외는 정보 레벨
     const level = durationMs > 1000 ? 'warn' : 'info';
@@ -363,14 +327,14 @@ export class LoggerService implements NestLoggerService {
       level,
       LOGGER_CONSTANTS.MESSAGE_TEMPLATES.PERFORMANCE.SLOW_OPERATION(
         operation,
-        durationMs,
+        durationMs
       ),
       LOGGER_CONSTANTS.CONTEXTS.PERFORMANCE,
       {
         operation,
         duration: durationMs,
         ...meta,
-      },
+      }
     );
   }
 

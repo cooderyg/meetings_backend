@@ -38,12 +38,11 @@ export class LoggingInterceptor implements NestInterceptor {
     // 로드밸런서 헬스체크 등 시스템 요청 제외
     if (
       (LOGGER_CONSTANTS.HEALTH_CHECK_PATHS as readonly string[]).includes(
-        request.url,
+        request.url
       )
     ) {
       return next.handle();
     }
-
 
     // 실행되는 컨트롤러와 메서드 정보 추출
     const controllerName = context.getClass().name;
@@ -58,7 +57,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
     this.logger.debug(
       LOGGER_CONSTANTS.MESSAGE_TEMPLATES.CONTROLLER.STARTED(controllerPath),
-      LOGGER_CONSTANTS.CONTEXTS.CONTROLLER,
+      LOGGER_CONSTANTS.CONTEXTS.CONTROLLER
     );
 
     return next.handle().pipe(
@@ -71,9 +70,9 @@ export class LoggingInterceptor implements NestInterceptor {
             LOGGER_CONSTANTS.MESSAGE_TEMPLATES.CONTROLLER.COMPLETED(
               controllerPath,
               response.statusCode,
-              duration,
+              duration
             ),
-            LOGGER_CONSTANTS.CONTEXTS.CONTROLLER,
+            LOGGER_CONSTANTS.CONTEXTS.CONTROLLER
           );
 
           // 설정된 임계값보다 느린 경우 성능 로그 기록
@@ -93,7 +92,7 @@ export class LoggingInterceptor implements NestInterceptor {
           this.logger.error(
             LOGGER_CONSTANTS.MESSAGE_TEMPLATES.CONTROLLER.FAILED(
               controllerPath,
-              error.message,
+              error.message
             ),
             error.stack,
             LOGGER_CONSTANTS.CONTEXTS.CONTROLLER,
@@ -102,10 +101,10 @@ export class LoggingInterceptor implements NestInterceptor {
               method,
               url,
               statusCode: (error as { statusCode?: number })?.statusCode,
-            },
+            }
           );
         },
-      }),
+      })
     );
   }
 }

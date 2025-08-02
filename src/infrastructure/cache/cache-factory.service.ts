@@ -61,11 +61,11 @@ export class CacheFactoryService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleInit(): Promise<void> {
     const cacheConfig = createCacheConfig(this.appConfig);
-    
+
     if (cacheConfig.type === 'redis') {
       const redisConfig = createRedisConfig(this.appConfig);
       this.redis = new Redis(redisConfig);
-      
+
       await this.redis.ping();
       this.logger.info('Cache service initialized', 'CacheFactoryService');
     }

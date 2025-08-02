@@ -19,7 +19,11 @@ export class RedisCacheService implements ICacheService {
     const serializedValue = JSON.stringify(value);
 
     if (ttl) {
-      await this.redis.setex(key, Math.max(1, Math.floor(ttl)), serializedValue);
+      await this.redis.setex(
+        key,
+        Math.max(1, Math.floor(ttl)),
+        serializedValue
+      );
     } else {
       await this.redis.set(key, serializedValue);
     }

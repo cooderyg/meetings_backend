@@ -1,4 +1,7 @@
-import { Action, ResourceSubject } from '../../permission/entity/permission.entity';
+import {
+  Action,
+  ResourceSubject,
+} from '../../permission/entity/permission.entity';
 import { SystemRole } from '../enum/system-role.enum';
 
 export interface PermissionRule {
@@ -7,9 +10,7 @@ export interface PermissionRule {
 }
 
 export const SYSTEM_ROLE_PERMISSIONS: Record<SystemRole, PermissionRule[]> = {
-  [SystemRole.OWNER]: [
-    { action: Action.MANAGE, subject: ResourceSubject.ALL },
-  ],
+  [SystemRole.OWNER]: [{ action: Action.MANAGE, subject: ResourceSubject.ALL }],
 
   [SystemRole.ADMIN]: [
     { action: Action.MANAGE, subject: ResourceSubject.SPACE },

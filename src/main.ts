@@ -28,7 +28,7 @@ async function bootstrap() {
   const loggerService = app.get(LoggerService);
   const appConfig = app.get(AppConfig);
 
-  app.useGlobalFilters(new GlobalExceptionFilter(loggerService, appConfig));
+  app.useGlobalFilters(new GlobalExceptionFilter(loggerService));
 
   // 유효성 검증 파이프 설정
   app.useGlobalPipes(

@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Action, ResourceSubject } from './entity/permission.entity';
-import { MemberResourcePermission } from './entity/member-resource-permission.entity';
-import { Resource, ResourceType, ResourceVisibility } from '../resource/entity/resource.entity';
+import {
+  Resource,
+  ResourceType,
+  ResourceVisibility,
+} from '../resource/entity/resource.entity';
 import { PermissionRepository } from './permission.repository';
 
 @Injectable()
 export class PermissionService {
-  constructor(
-    private readonly permissionRepository: PermissionRepository
-  ) {}
+  constructor(private readonly permissionRepository: PermissionRepository) {}
 
   /**
    * Space 권한 확인 - 리팩토링된 버전
@@ -84,7 +85,6 @@ export class PermissionService {
     );
   }
 
-
   /**
    * 순수 권한 확인 (Visibility 제외한 권한 로직만)
    */
@@ -110,7 +110,6 @@ export class PermissionService {
     return this.checkRolePermission(memberId, action, resourceSubject);
   }
 
-
   /**
    * 개별 리소스 권한 직접 확인
    */
@@ -120,12 +119,13 @@ export class PermissionService {
     resourceSubject: ResourceSubject,
     resourcePath: string
   ): Promise<boolean | null> {
-    const permission = await this.permissionRepository.findDirectResourcePermission(
-      memberId,
-      action,
-      resourceSubject,
-      resourcePath
-    );
+    const permission =
+      await this.permissionRepository.findDirectResourcePermission(
+        memberId,
+        action,
+        resourceSubject,
+        resourcePath
+      );
 
     if (permission?.isActive()) {
       return permission.isAllowed;
@@ -133,7 +133,6 @@ export class PermissionService {
 
     return null;
   }
-
 
   /**
    * 리소스 트리 전체 Visibility 확인 (해당 리소스 + 모든 상위 리소스)
@@ -144,11 +143,15 @@ export class PermissionService {
     action: Action
   ): Promise<boolean> {
     // 1. 해당 리소스 + 모든 상위 경로 생성
-    const allPaths = [resourcePath, ...this.generateAncestorPaths(resourcePath)];
-    
+    const allPaths = [
+      resourcePath,
+      ...this.generateAncestorPaths(resourcePath),
+    ];
+
     // 2. 배치 쿼리로 모든 리소스 한번에 조회
-    const allResources = await this.permissionRepository.findResourcesByPaths(allPaths);
-    
+    const allResources =
+      await this.permissionRepository.findResourcesByPaths(allPaths);
+
     // 3. 각 리소스의 visibility 체크
     for (const resource of allResources) {
       const visibilityAllowed = await this.checkVisibilityAccess(
@@ -156,12 +159,12 @@ export class PermissionService {
         memberId,
         action
       );
-      
+
       if (!visibilityAllowed) {
         return false; // 하나라도 PRIVATE 접근 불가면 전체 거부
       }
     }
-    
+
     return true; // 모든 리소스 접근 가능
   }
 
@@ -201,7 +204,6 @@ export class PermissionService {
     return false;
   }
 
-
   /**
    * 역할 기반 권한 확인
    */
@@ -210,7 +212,8 @@ export class PermissionService {
     action: Action,
     resourceSubject: ResourceSubject
   ): Promise<boolean> {
-    const member = await this.permissionRepository.findMemberWithRolePermissions(memberId);
+    const member =
+      await this.permissionRepository.findMemberWithRolePermissions(memberId);
 
     if (!member?.role) return false;
 
@@ -222,13 +225,14 @@ export class PermissionService {
     return hasRolePermission;
   }
 
-
-
   /**
    * Space 리소스 조회 (backward compatibility)
    */
   private async getSpaceWithPath(spaceId: string): Promise<Resource | null> {
-    return this.permissionRepository.findResourceById(spaceId, ResourceType.SPACE);
+    return this.permissionRepository.findResourceById(
+      spaceId,
+      ResourceType.SPACE
+    );
   }
 
   /**
@@ -237,7 +241,10 @@ export class PermissionService {
   private async getMeetingWithPath(
     meetingId: string
   ): Promise<Resource | null> {
-    return this.permissionRepository.findResourceById(meetingId, ResourceType.MEETING);
+    return this.permissionRepository.findResourceById(
+      meetingId,
+      ResourceType.MEETING
+    );
   }
 
   /**
@@ -259,12 +266,12 @@ export class PermissionService {
   private generateAncestorPaths(resourcePath: string): string[] {
     const pathParts = resourcePath.split('.');
     const ancestorPaths: string[] = [];
-    
+
     // 루트부터 부모까지 모든 경로 생성
     for (let i = 1; i < pathParts.length; i++) {
       ancestorPaths.push(pathParts.slice(0, i).join('.'));
     }
-    
+
     return ancestorPaths;
   }
 

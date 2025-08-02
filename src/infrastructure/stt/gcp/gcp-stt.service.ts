@@ -40,14 +40,18 @@ export class GcpSttService implements ISttService {
       // V2 API 동기식 인식: 10MB 또는 1분 중 먼저 도달하는 제한
       // 작은 파일은 직접 처리 시도
       const maxDirectSize = 2 * 1024 * 1024; // 2MB (보통 1분 이하)
-      
+
       if (audioBuffer.length <= maxDirectSize) {
-        this.logger.log(`Small file (${(audioBuffer.length / 1024 / 1024).toFixed(2)}MB), processing directly...`);
+        this.logger.log(
+          `Small file (${(audioBuffer.length / 1024 / 1024).toFixed(2)}MB), processing directly...`
+        );
         return this.processSingleChunk(audioBuffer, config);
       }
 
       // 큰 파일은 시간 기반 청크 분할
-      this.logger.log(`Large file detected (${(audioBuffer.length / 1024 / 1024).toFixed(2)}MB), splitting by time...`);
+      this.logger.log(
+        `Large file detected (${(audioBuffer.length / 1024 / 1024).toFixed(2)}MB), splitting by time...`
+      );
       return this.processTimeBasedChunks(audioBuffer, config);
     } catch (error) {
       this.logger.error('Failed to transcribe audio', error);
@@ -80,8 +84,11 @@ export class GcpSttService implements ISttService {
     };
 
     this.logger.log('Starting V2 recognition with improved config...');
-    this.logger.debug('Request config:', JSON.stringify(request.config, null, 2));
-    
+    this.logger.debug(
+      'Request config:',
+      JSON.stringify(request.config, null, 2)
+    );
+
     const response = await this.speechClient.recognize(request);
     const result = response[0]; // 구조분해할당 대신 직접 접근
 
@@ -115,16 +122,26 @@ export class GcpSttService implements ISttService {
 
       // 50초 단위로 분할 (60초 제한 안전 마진)
       const chunkDuration = 50; // 초
-      const chunks = this.splitAudioByTimeEstimate(audioBuffer, totalDuration, chunkDuration);
+      const chunks = this.splitAudioByTimeEstimate(
+        audioBuffer,
+        totalDuration,
+        chunkDuration
+      );
 
-      this.logger.log(`Processing ${chunks.length} time-based chunks (${chunkDuration}s each estimated)...`);
+      this.logger.log(
+        `Processing ${chunks.length} time-based chunks (${chunkDuration}s each estimated)...`
+      );
 
       // 최고속 완전 병렬 처리 (모든 청크 동시 처리)
-      this.logger.log(`Starting FULL parallel processing of all ${chunks.length} chunks simultaneously...`);
-      
+      this.logger.log(
+        `Starting FULL parallel processing of all ${chunks.length} chunks simultaneously...`
+      );
+
       const allPromises = chunks.map(async (chunk, index) => {
         try {
-          this.logger.log(`Processing chunk ${index + 1}/${chunks.length} in full parallel mode...`);
+          this.logger.log(
+            `Processing chunk ${index + 1}/${chunks.length} in full parallel mode...`
+          );
           return await this.processSingleChunk(chunk, config);
         } catch (error) {
           this.logger.warn(`Failed to process chunk ${index + 1}:`, error);
@@ -148,13 +165,16 @@ export class GcpSttService implements ISttService {
 
   private async getAudioDuration(audioBuffer: Buffer): Promise<number> {
     return new Promise((resolve, reject) => {
-      mp3Duration(audioBuffer, (err: Error | null, duration: number | undefined) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(duration || 0);
+      mp3Duration(
+        audioBuffer,
+        (err: Error | null, duration: number | undefined) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(duration || 0);
+          }
         }
-      });
+      );
     });
   }
 
@@ -168,7 +188,9 @@ export class GcpSttService implements ISttService {
     const bytesPerSecond = totalSize / totalDuration;
     const bytesPerChunk = Math.floor(bytesPerSecond * chunkDuration);
 
-    this.logger.log(`Splitting audio: ${totalDuration}s total, ${bytesPerSecond.toFixed(0)} bytes/sec`);
+    this.logger.log(
+      `Splitting audio: ${totalDuration}s total, ${bytesPerSecond.toFixed(0)} bytes/sec`
+    );
 
     let offset = 0;
     let chunkIndex = 0;
@@ -186,7 +208,9 @@ export class GcpSttService implements ISttService {
       const chunk = audioBuffer.subarray(offset, chunkEnd);
       chunks.push(chunk);
 
-      this.logger.log(`Chunk ${chunkIndex + 1}: ${offset}-${chunkEnd} (${(chunk.length / 1024 / 1024).toFixed(2)}MB)`);
+      this.logger.log(
+        `Chunk ${chunkIndex + 1}: ${offset}-${chunkEnd} (${(chunk.length / 1024 / 1024).toFixed(2)}MB)`
+      );
 
       offset = chunkEnd;
       chunkIndex++;
@@ -203,8 +227,12 @@ export class GcpSttService implements ISttService {
 
   private findMp3FrameBoundary(buffer: Buffer, startPos: number): number {
     // MP3 프레임은 0xFF로 시작하므로 가장 가까운 프레임 경계를 찾음
-    for (let i = startPos; i < Math.min(startPos + 1000, buffer.length - 1); i++) {
-      if (buffer[i] === 0xFF && (buffer[i + 1] & 0xE0) === 0xE0) {
+    for (
+      let i = startPos;
+      i < Math.min(startPos + 1000, buffer.length - 1);
+      i++
+    ) {
+      if (buffer[i] === 0xff && (buffer[i + 1] & 0xe0) === 0xe0) {
         return i;
       }
     }
@@ -212,21 +240,23 @@ export class GcpSttService implements ISttService {
     return startPos;
   }
 
-
   private mergeChunkResults(
     results: TranscriptionResult[],
     config?: TranscriptionConfig
   ): TranscriptionResult {
-    const transcripts = results.map(r => r.transcript).filter(t => t.length > 0);
-    const confidences = results.map(r => r.confidence).filter(c => c > 0);
-    
+    const transcripts = results
+      .map((r) => r.transcript)
+      .filter((t) => t.length > 0);
+    const confidences = results.map((r) => r.confidence).filter((c) => c > 0);
+
     // 전체 전사 텍스트 합치기
     const mergedTranscript = transcripts.join(' ');
-    
+
     // 평균 신뢰도 계산
-    const avgConfidence = confidences.length > 0 
-      ? confidences.reduce((sum, conf) => sum + conf, 0) / confidences.length 
-      : 0;
+    const avgConfidence =
+      confidences.length > 0
+        ? confidences.reduce((sum, conf) => sum + conf, 0) / confidences.length
+        : 0;
 
     return {
       transcript: mergedTranscript,
@@ -237,7 +267,7 @@ export class GcpSttService implements ISttService {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async transcribeStream(
@@ -265,17 +295,16 @@ export class GcpSttService implements ISttService {
     }
   }
 
-
   private buildV2Features(config?: TranscriptionConfig) {
     // V2 API에서 기본 recognizer가 지원하는 features만 사용 (Word 정보 제거)
     return {
       enableWordTimeOffsets: false, // Word 정보 비활성화
       enableWordConfidence: false, // Word 신뢰도 비활성화
-      enableAutomaticPunctuation: config?.features?.enableAutomaticPunctuation !== false,
+      enableAutomaticPunctuation:
+        config?.features?.enableAutomaticPunctuation !== false,
       // Speaker Diarization은 기본 recognizer에서 지원하지 않으므로 제거
     };
   }
-
 
   private getLanguageCode(config?: TranscriptionConfig): string {
     return config?.languageCode || 'ko-KR';

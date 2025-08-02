@@ -7,7 +7,6 @@ import { Action, ResourceSubject } from './entity/permission.entity';
 
 @Injectable()
 export class PermissionRepository extends EntityRepository<MemberResourcePermission> {
-  
   /**
    * 멤버의 특정 리소스에 대한 직접 권한 조회
    */
@@ -30,7 +29,9 @@ export class PermissionRepository extends EntityRepository<MemberResourcePermiss
   /**
    * 멤버의 역할 기반 권한 조회 (populate 포함)
    */
-  async findMemberWithRolePermissions(memberId: string): Promise<WorkspaceMember | null> {
+  async findMemberWithRolePermissions(
+    memberId: string
+  ): Promise<WorkspaceMember | null> {
     const memberRepo = this.em.getRepository(WorkspaceMember);
     return memberRepo.findOne(
       { id: memberId },
@@ -66,10 +67,7 @@ export class PermissionRepository extends EntityRepository<MemberResourcePermiss
    */
   async findResourcesByPaths(paths: string[]): Promise<Resource[]> {
     const resourceRepo = this.em.getRepository(Resource);
-    return resourceRepo.find(
-      { path: { $in: paths } },
-      { populate: ['owner'] }
-    );
+    return resourceRepo.find({ path: { $in: paths } }, { populate: ['owner'] });
   }
 
   /**
@@ -82,7 +80,7 @@ export class PermissionRepository extends EntityRepository<MemberResourcePermiss
     return this.find(
       {
         workspaceMember: { id: memberId },
-        resourcePath: { $like: `${pathPattern}%` }
+        resourcePath: { $like: `${pathPattern}%` },
       },
       { populate: ['permission'] }
     );
@@ -91,15 +89,14 @@ export class PermissionRepository extends EntityRepository<MemberResourcePermiss
   /**
    * 멤버의 모든 활성 권한 조회
    */
-  async findActivePermissionsByMember(memberId: string): Promise<MemberResourcePermission[]> {
+  async findActivePermissionsByMember(
+    memberId: string
+  ): Promise<MemberResourcePermission[]> {
     return this.find(
       {
         workspaceMember: { id: memberId },
         isAllowed: true,
-        $or: [
-          { expiresAt: null },
-          { expiresAt: { $gt: new Date() } }
-        ]
+        $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
       },
       { populate: ['permission'] }
     );

@@ -22,7 +22,6 @@ export class ErrorResponse {
   details?: any;
 }
 
-
 // 공통 응답 스키마 속성
 const getBaseSchema = (): Record<string, any> => ({
   success: { type: 'boolean', example: true },
@@ -32,7 +31,7 @@ const getBaseSchema = (): Record<string, any> => ({
 // StandardResponse를 위한 Swagger 데코레이터
 export const ApiStandardResponse = <T extends ClassConstructor>(
   model?: T,
-  options?: { isArray?: boolean; hasTotalCount?: boolean },
+  options?: { isArray?: boolean; hasTotalCount?: boolean }
 ) => {
   const baseSchema = getBaseSchema();
 
@@ -54,7 +53,7 @@ export const ApiStandardResponse = <T extends ClassConstructor>(
             data: dataSchema,
           },
         },
-      }),
+      })
     );
   } else {
     return applyDecorators(
@@ -62,7 +61,7 @@ export const ApiStandardResponse = <T extends ClassConstructor>(
         schema: {
           properties: baseSchema,
         },
-      }),
+      })
     );
   }
 };
@@ -87,6 +86,6 @@ export const ApiErrorResponse = () => {
           error: { $ref: getSchemaPath(ErrorResponse) },
         },
       },
-    }),
+    })
   );
 };

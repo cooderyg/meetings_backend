@@ -9,20 +9,23 @@ import { ERROR_CODES } from '../const/error-code.const';
 export class SpacePermissionGuard implements CanActivate {
   constructor(
     private readonly permissionService: PermissionService,
-    private readonly reflector: Reflector,
+    private readonly reflector: Reflector
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user; // JWT에서 추출된 사용자 정보
-    
+
     // 사용자 인증 확인
     if (!user) {
       throw new AppException(ERROR_CODES.AUTH_UNAUTHORIZED);
     }
 
     // 메타데이터에서 필요한 권한 액션 가져오기
-    const requiredAction = this.reflector.get<Action>('space-action', context.getHandler());
+    const requiredAction = this.reflector.get<Action>(
+      'space-action',
+      context.getHandler()
+    );
     if (!requiredAction) {
       return true; // 권한 설정이 없으면 통과
     }
@@ -32,7 +35,7 @@ export class SpacePermissionGuard implements CanActivate {
     if (!spaceId) {
       throw new AppException(ERROR_CODES.AUTH_FORBIDDEN, {
         message: 'Space ID가 필요합니다.',
-        details: { resource: 'space', action: requiredAction }
+        details: { resource: 'space', action: requiredAction },
       });
     }
 
@@ -47,7 +50,11 @@ export class SpacePermissionGuard implements CanActivate {
       if (!hasPermission) {
         throw new AppException(ERROR_CODES.AUTH_FORBIDDEN, {
           message: `Space에 대한 ${requiredAction} 권한이 없습니다.`,
-          details: { resource: 'space', action: requiredAction, resourceId: spaceId }
+          details: {
+            resource: 'space',
+            action: requiredAction,
+            resourceId: spaceId,
+          },
         });
       }
 
@@ -58,7 +65,11 @@ export class SpacePermissionGuard implements CanActivate {
       }
       throw new AppException(ERROR_CODES.AUTH_FORBIDDEN, {
         message: '권한 확인 중 오류가 발생했습니다.',
-        details: { resource: 'space', action: requiredAction, error: error.message }
+        details: {
+          resource: 'space',
+          action: requiredAction,
+          error: error.message,
+        },
       });
     }
   }

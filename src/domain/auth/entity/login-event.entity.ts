@@ -8,13 +8,13 @@ export enum LoginMethod {
   GITHUB_OAUTH = 'github_oauth',
   MICROSOFT_OAUTH = 'microsoft_oauth',
   SSO = 'sso',
-  API_KEY = 'api_key'
+  API_KEY = 'api_key',
 }
 
 export enum LoginEventType {
   SUCCESS = 'success',
   FAILURE = 'failure',
-  LOGOUT = 'logout'
+  LOGOUT = 'logout',
 }
 
 @Entity({ tableName: 'login_events' })
@@ -70,7 +70,7 @@ export class LoginEvent extends BaseEntity {
     return [
       LoginMethod.GOOGLE_OAUTH,
       LoginMethod.GITHUB_OAUTH,
-      LoginMethod.MICROSOFT_OAUTH
+      LoginMethod.MICROSOFT_OAUTH,
     ].includes(this.loginMethod);
   }
 }

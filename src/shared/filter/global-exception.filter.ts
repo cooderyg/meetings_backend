@@ -12,7 +12,6 @@ import { LoggerService } from '../module/logger/logger.service';
 import { ExceptionLogMetadata } from '../module/logger/type/logger.type';
 import { AppException } from '../exception/app.exception';
 import { ERROR_CODES } from '../const/error-code.const';
-import { AppConfig } from '../module/app-config/app-config';
 import { ErrorResponse } from '../type/error-response.types';
 
 export interface StandardResponse<T> {
@@ -38,10 +37,7 @@ export interface StandardResponse<T> {
  */
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly appConfig: AppConfig,
-  ) {}
+  constructor(private readonly loggerService: LoggerService) {}
 
   /**
    * 예외 처리 메인 메서드
@@ -58,7 +54,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     // HTTP 상태 코드 결정
     const status = this.getHttpStatus(exception);
-    const requestId = request?.requestId;
 
     // 에러 응답 객체 생성
     const errorDetails = this.buildErrorResponse(exception);
@@ -134,7 +129,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.loggerService.error(
         'Error building error response',
         (error as Error).stack || 'No stack trace',
-        'GlobalExceptionFilter',
+        'GlobalExceptionFilter'
       );
       return this.buildFallbackErrorResponse();
     }
@@ -152,18 +147,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const errorResponse: ErrorResponse = {
       code: exception.code,
       message: exception.message,
-      userMessage: exception.message,
       ...(exception.details && { details: exception.details }),
     };
-
-    if (this.appConfig.nodeEnv === 'development') {
-      errorResponse.debug = {
-        errorCode: exception.errorDef.code,
-        internalMessage: exception.message,
-        stack: exception.stack,
-        timestamp: new Date().toISOString(),
-      };
-    }
 
     return errorResponse;
   }
@@ -177,29 +162,21 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    * @returns 에러 응답 객체
    */
   private buildValidationErrorResponse(
-    exception: BadRequestException,
+    _exception: BadRequestException
   ): ErrorResponse {
-    const response = exception.getResponse() as { message?: string[] | string };
+    const response = _exception.getResponse() as {
+      message?: string[] | string;
+    };
     // 메시지가 배열인지 문자열인지 확인 후 배열로 변환
     const messages = Array.isArray(response.message)
       ? response.message
-      : [response.message || exception.message];
+      : [response.message || _exception.message];
 
     const errorResponse: ErrorResponse = {
       code: ERROR_CODES.VALIDATION_FAILED.code,
-      message: messages.join(', '),
-      userMessage: '입력한 정보를 다시 확인해주세요',
+      message: '입력한 정보를 다시 확인해주세요',
       details: { validationErrors: messages },
     };
-
-    if (this.appConfig.nodeEnv === 'development') {
-      errorResponse.debug = {
-        type: 'ValidationException',
-        originalResponse: response,
-        stack: exception.stack,
-        timestamp: new Date().toISOString(),
-      };
-    }
 
     return errorResponse;
   }
@@ -211,21 +188,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    * @returns 에러 응답 객체
    */
   private buildNotFoundErrorResponse(
-    exception: NotFoundException,
+    _exception: NotFoundException
   ): ErrorResponse {
     const errorResponse: ErrorResponse = {
       code: ERROR_CODES.RESOURCE_NOT_FOUND.code,
-      message: exception.message,
-      userMessage: '요청하신 정보를 찾을 수 없습니다',
+      message: '요청하신 정보를 찾을 수 없습니다',
     };
-
-    if (this.appConfig.nodeEnv === 'development') {
-      errorResponse.debug = {
-        type: 'NotFoundException',
-        stack: exception.stack,
-        timestamp: new Date().toISOString(),
-      };
-    }
 
     return errorResponse;
   }
@@ -236,27 +204,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    * @param exception - HttpException 인스턴스
    * @returns 에러 응답 객체
    */
-  private buildHttpExceptionResponse(exception: HttpException): ErrorResponse {
-    const response = exception.getResponse();
-    // 예외 응답이 문자열인지 객체인지 확인 후 메시지 추출
-    const responseMessage =
-      typeof response === 'string'
-        ? response
-        : (response as { message?: string }).message || exception.message;
-
+  private buildHttpExceptionResponse(_exception: HttpException): ErrorResponse {
     const errorResponse: ErrorResponse = {
       code: ERROR_CODES.SYSTEM_INTERNAL_ERROR.code,
-      message: responseMessage,
-      userMessage: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      message: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     };
-
-    if (this.appConfig.nodeEnv === 'development') {
-      errorResponse.debug = {
-        originalResponse: response,
-        stack: exception.stack,
-        timestamp: new Date().toISOString(),
-      };
-    }
 
     return errorResponse;
   }
@@ -267,29 +219,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    * @param exception - 예상치 못한 예외
    * @returns 에러 응답 객체
    */
-  private buildUnknownExceptionResponse(exception: unknown): ErrorResponse {
-    // 운영 환경에서는 보안상 상세 오류 정보를 숨김
-    const message =
-      this.appConfig.nodeEnv === 'production'
-        ? '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
-        : exception instanceof Error
-          ? exception.message || 'Unknown error'
-          : 'Unknown error';
-
+  private buildUnknownExceptionResponse(_exception: unknown): ErrorResponse {
     const errorResponse: ErrorResponse = {
       code: ERROR_CODES.SYSTEM_INTERNAL_ERROR.code,
-      message,
-      userMessage: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      message: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     };
-
-    if (this.appConfig.nodeEnv === 'development') {
-      errorResponse.debug = {
-        type: 'UnhandledException',
-        originalError: exception,
-        stack: exception instanceof Error ? exception.stack : undefined,
-        timestamp: new Date().toISOString(),
-      };
-    }
 
     return errorResponse;
   }
@@ -303,7 +237,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     return {
       code: ERROR_CODES.SYSTEM_INTERNAL_ERROR.code,
       message: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-      userMessage: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     };
   }
 
@@ -322,7 +255,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private logException(
     exception: unknown,
     request: Request,
-    status: number,
+    status: number
   ): void {
     // 로깅에 포함할 메타데이터 준비
     const logMeta: ExceptionLogMetadata = {
@@ -351,7 +284,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    */
   private logAppException(
     exception: AppException,
-    logMeta: ExceptionLogMetadata,
+    logMeta: ExceptionLogMetadata
   ): void {
     const logMessage = `Business exception: [${exception.errorDef.code}] ${exception.message || 'No message'}`;
     const logContext = 'BusinessException';
@@ -364,14 +297,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     };
 
     // 예외에 설정된 로그 레벨에 따라 로깅
-    const logLevel = exception.logLevel as 'error' | 'warn' | 'info' | 'debug' | 'verbose';
+    const logLevel = exception.logLevel;
     switch (logLevel) {
       case 'error':
         this.loggerService.error(
           logMessage,
           exception.stack || 'No stack trace',
           logContext,
-          metaData,
+          metaData
         );
         break;
       case 'warn':
@@ -392,7 +325,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           logMessage,
           exception.stack || 'No stack trace',
           logContext,
-          metaData,
+          metaData
         );
         break;
     }
@@ -409,13 +342,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    */
   private logUnhandledException(
     exception: unknown,
-    logMeta: ExceptionLogMetadata,
+    logMeta: ExceptionLogMetadata
   ): void {
     this.loggerService.error(
       `Unhandled exception: ${exception instanceof Error ? exception.message : 'Unknown error'}`,
       exception instanceof Error ? exception.stack : undefined,
       'UnhandledException',
-      logMeta,
+      logMeta
     );
   }
 }

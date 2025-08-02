@@ -18,7 +18,7 @@ export const DEFAULT_FILE_VALIDATION: FileValidationOptions = {
   allowedMimeTypes: [
     // Images
     'image/jpeg',
-    'image/jpg', 
+    'image/jpg',
     'image/png',
     'image/gif',
     'image/webp',
@@ -40,9 +40,22 @@ export const DEFAULT_FILE_VALIDATION: FileValidationOptions = {
     'video/quicktime',
   ],
   allowedExtensions: [
-    '.jpg', '.jpeg', '.png', '.gif', '.webp',
-    '.pdf', '.doc', '.docx', '.xls', '.xlsx',
-    '.mp3', '.wav', '.flac', '.aac',
-    '.mp4', '.mpeg', '.mov'
-  ]
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.gif',
+    '.webp',
+    '.pdf',
+    '.doc',
+    '.docx',
+    '.xls',
+    '.xlsx',
+    '.mp3',
+    '.wav',
+    '.flac',
+    '.aac',
+    '.mp4',
+    '.mpeg',
+    '.mov',
+  ],
 };

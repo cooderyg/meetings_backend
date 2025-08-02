@@ -1,5 +1,13 @@
 export interface AudioFormat {
-  encoding: 'LINEAR16' | 'FLAC' | 'MP3' | 'OGG_OPUS' | 'MULAW' | 'AMR' | 'AMR_WB' | 'SPEEX_WITH_HEADER_BYTE';
+  encoding:
+    | 'LINEAR16'
+    | 'FLAC'
+    | 'MP3'
+    | 'OGG_OPUS'
+    | 'MULAW'
+    | 'AMR'
+    | 'AMR_WB'
+    | 'SPEEX_WITH_HEADER_BYTE';
   sampleRateHertz?: number;
   channelCount?: number;
 }
