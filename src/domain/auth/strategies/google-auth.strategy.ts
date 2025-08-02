@@ -64,7 +64,7 @@ export class GoogleAuthStrategy implements IOAuthStrategy {
 
     const tokenResponse = await this.getOauthToken(code);
 
-    const decodedIdToken = this.jwtService.verify<GoogleIdTokenPayload>(
+    const decodedIdToken = this.jwtService.decode<GoogleIdTokenPayload>(
       tokenResponse.id_token
     );
     if (decodedIdToken === null) {
