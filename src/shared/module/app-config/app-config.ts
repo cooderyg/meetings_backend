@@ -48,6 +48,12 @@ export class AppConfig {
     clientId: '',
   };
 
+  readonly oauth = {
+    gcpClientId: '',
+    gcpClientSecret: '',
+    redirectUri: '',
+  };
+
   readonly stt = {
     provider: 'GCP' as 'GCP' | 'AWS',
   };
@@ -92,6 +98,9 @@ export class AppConfig {
     GCP_PRIVATE_KEY: Joi.string().required(),
     GCP_CLIENT_EMAIL: Joi.string().required(),
     GCP_CLIENT_ID: Joi.string().required(),
+    OAUTH_GCP_CLIENT_ID: Joi.string().required(),
+    OAUTH_GCP_CLIENT_SECRET: Joi.string().required(),
+    OAUTH_REDIRECT_URI: Joi.string().required(),
     STT_PROVIDER: Joi.string().valid('GCP', 'AWS').default('GCP'),
     STORAGE_PROVIDER: Joi.string().valid('AWS', 'GCP').default('AWS'),
     AWS_REGION: Joi.string().default('ap-northeast-2'),
@@ -148,6 +157,11 @@ export class AppConfig {
       provider: (process.env.STT_PROVIDER as 'GCP' | 'AWS') || 'GCP',
     };
 
+    this.oauth = {
+      gcpClientId: process.env.OAUTH_GCP_CLIENT_ID || '',
+      gcpClientSecret: process.env.OAUTH_GCP_CLIENT_SECRET || '',
+      redirectUri: process.env.OAUTH_REDIRECT_URI || '',
+    };
     this.storage = {
       provider: (process.env.STORAGE_PROVIDER as 'AWS' | 'GCP') || 'AWS',
       aws: {

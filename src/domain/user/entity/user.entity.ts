@@ -1,15 +1,15 @@
 import {
-  Entity,
-  Property,
-  OneToMany,
   Collection,
+  Entity,
   Index,
+  OneToMany,
+  Property,
   Unique,
 } from '@mikro-orm/core';
 import { JsonType } from '@mikro-orm/postgresql';
 import { BaseEntity } from '../../../shared/entity/base.entity';
-import { WorkspaceMember } from '../../workspace-member/entity/workspace-member.entity';
 import { MeetingParticipant } from '../../meeting-participant/entity/meeting-participant.entity';
+import { WorkspaceMember } from '../../workspace-member/entity/workspace-member.entity';
 
 export interface UserSettings {
   theme: {
@@ -23,6 +23,10 @@ export class User extends BaseEntity {
   @Unique()
   @Index()
   email!: string;
+
+  @Property()
+  @Unique()
+  uid!: string; //social login uid
 
   @Property()
   firstName!: string;
@@ -44,6 +48,9 @@ export class User extends BaseEntity {
 
   @Property({ type: JsonType })
   settings: UserSettings = { theme: { mode: 'system' } };
+
+  @Property({ default: false })
+  isDeleted: boolean = false;
 
   @OneToMany(() => WorkspaceMember, (member) => member.user)
   workspaceMemberships = new Collection<WorkspaceMember>(this);

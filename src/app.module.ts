@@ -1,20 +1,24 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AppConfig } from './shared/module/app-config/app-config';
-import { AppConfigModule } from './shared/module/app-config/app-config.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { createDatabaseConfig } from './config/database-config';
-import { UserModule } from './domain/user/user.module';
-import { LoggerModule } from './shared/module/logger/logger.module';
-import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
-import { CacheModule } from './infrastructure/cache/cache.module';
-import { SttModule } from './infrastructure/stt/stt.module';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { ClsModule } from 'nestjs-cls';
 import { v4 as uuidv4 } from 'uuid';
-import { MeetingSummaryModule } from './domain/meeting-summary/meeting-summary.module';
-import { StorageModule } from './infrastructure/storage/storage.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { createDatabaseConfig } from './config/database-config';
+import { AuthModule } from './domain/auth/auth.module';
 import { FileModule } from './domain/file/file.module';
+import { MeetingSummaryModule } from './domain/meeting-summary/meeting-summary.module';
+import { UserModule } from './domain/user/user.module';
+import { WorkspaceMemberModule } from './domain/workspace-member/workspace-member.module';
+import { WorkspaceModule } from './domain/workspace/workspace.module';
+import { CacheModule } from './infrastructure/cache/cache.module';
+import { StorageModule } from './infrastructure/storage/storage.module';
+import { SttModule } from './infrastructure/stt/stt.module';
+import { AppConfig } from './shared/module/app-config/app-config';
+import { AppConfigModule } from './shared/module/app-config/app-config.module';
+import { LoggerModule } from './shared/module/logger/logger.module';
+import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
 
 @Module({
   imports: [
@@ -32,12 +36,20 @@ import { FileModule } from './domain/file/file.module';
       useFactory: (appConfig: AppConfig) => createDatabaseConfig(appConfig),
       inject: [AppConfig],
     }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
+      global: true,
+    }),
     LoggerModule,
     CacheModule,
     StorageModule,
     SttModule,
     UserModule,
+    AuthModule,
     MeetingSummaryModule,
+    WorkspaceModule,
+    WorkspaceMemberModule,
     FileModule,
   ],
   controllers: [AppController],
