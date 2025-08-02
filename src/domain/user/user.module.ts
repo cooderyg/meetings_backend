@@ -1,3 +1,4 @@
+import { EntityManager } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { User } from './entity/user.entity';
@@ -13,7 +14,7 @@ import { UserService } from './user.service';
     {
       provide: UserRepository,
       useFactory: (em) => em.getRepository(User),
-      inject: ['EntityManager'],
+      inject: [EntityManager],
     },
   ],
 })
