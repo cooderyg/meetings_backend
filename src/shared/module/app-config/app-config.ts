@@ -68,6 +68,14 @@ export class AppConfig {
     },
   };
 
+  readonly langchain = {
+    openaiApiKey: '',
+    langsmithTracing: false,
+    langsmithEndpoint: '',
+    langsmithApiKey: '',
+    langsmithProject: '',
+  };
+
   static validationSchema = Joi.object({
     NODE_ENV: Joi.string()
       .valid('development', 'staging', 'production')
@@ -107,6 +115,11 @@ export class AppConfig {
     AWS_S3_BUCKET: Joi.string().required(),
     AWS_ACCESS_KEY_ID: Joi.string().allow('').optional(),
     AWS_SECRET_ACCESS_KEY: Joi.string().allow('').optional(),
+    OPENAI_API_KEY: Joi.string().required(),
+    LANGSMITH_TRACING: Joi.boolean().default(false),
+    LANGSMITH_ENDPOINT: Joi.string().default('https://api.smith.langchain.com'),
+    LANGSMITH_API_KEY: Joi.string().allow('').optional(),
+    LANGSMITH_PROJECT: Joi.string().default('meetings_backend'),
   });
 
   constructor() {
@@ -170,6 +183,15 @@ export class AppConfig {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
       },
+    };
+
+    this.langchain = {
+      openaiApiKey: process.env.OPENAI_API_KEY || '',
+      langsmithTracing: process.env.LANGSMITH_TRACING === 'true',
+      langsmithEndpoint:
+        process.env.LANGSMITH_ENDPOINT || 'https://api.smith.langchain.com',
+      langsmithApiKey: process.env.LANGSMITH_API_KEY || '',
+      langsmithProject: process.env.LANGSMITH_PROJECT || 'meetings_backend',
     };
   }
 }

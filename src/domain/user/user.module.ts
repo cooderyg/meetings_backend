@@ -17,5 +17,6 @@ import { UserService } from './user.service';
       inject: [EntityManager],
     },
   ],
+  exports: [UserService],
 })
 export class UserModule {}
