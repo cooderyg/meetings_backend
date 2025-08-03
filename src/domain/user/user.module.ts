@@ -13,7 +13,7 @@ import { UserService } from './user.service';
     UserService,
     {
       provide: UserRepository,
-      useFactory: (em) => em.getRepository(User),
+      useFactory: (em: EntityManager) => new UserRepository(em),
       inject: [EntityManager],
     },
   ],
