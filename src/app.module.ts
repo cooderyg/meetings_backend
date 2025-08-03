@@ -13,6 +13,7 @@ import { UserModule } from './domain/user/user.module';
 import { WorkspaceMemberModule } from './domain/workspace-member/workspace-member.module';
 import { WorkspaceModule } from './domain/workspace/workspace.module';
 import { CacheModule } from './infrastructure/cache/cache.module';
+import { LangchainModule } from './infrastructure/langchain/langchain.module';
 import { StorageModule } from './infrastructure/storage/storage.module';
 import { SttModule } from './infrastructure/stt/stt.module';
 import { AppConfig } from './shared/module/app-config/app-config';
@@ -43,6 +44,7 @@ import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
     }),
     LoggerModule,
     CacheModule,
+    LangchainModule,
     StorageModule,
     SttModule,
     UserModule,
