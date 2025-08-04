@@ -20,6 +20,8 @@ import { AppConfig } from './shared/module/app-config/app-config';
 import { AppConfigModule } from './shared/module/app-config/app-config.module';
 import { LoggerModule } from './shared/module/logger/logger.module';
 import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
+import { MeetingRecordModule } from './domain/meeting-record/meeting-record.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -53,6 +55,8 @@ import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
     WorkspaceModule,
     WorkspaceMemberModule,
     FileModule,
+    MeetingRecordModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService, AppConfig],
