@@ -23,16 +23,6 @@ export function createDatabaseConfig(appConfig: AppConfig): Options {
       glob: '!(*.d).{js,ts}',
     },
     driver: PostgreSqlDriver,
-    filters: {
-      [NOT_DELETED]: {
-        cond: { isDeleted: false },
-        default: true,
-      },
-      [ACTIVE_ONLY]: {
-        cond: { status: 'active' },
-        default: false,
-      },
-    },
   };
 
   const nodeEnv = appConfig.nodeEnv;
