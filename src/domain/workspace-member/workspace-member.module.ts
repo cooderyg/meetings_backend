@@ -5,7 +5,10 @@ import { WorkspaceMemberRepository } from './workspace-member.repository';
 import { WorkspaceMemberService } from './workspace-member.service';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([WorkspaceMember])],
+  imports: [
+    MikroOrmModule.forFeature([WorkspaceMember]),
+    WorkspaceMemberModule,
+  ],
   providers: [WorkspaceMemberService, WorkspaceMemberRepository],
   exports: [WorkspaceMemberService],
 })

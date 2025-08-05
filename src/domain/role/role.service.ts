@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { RoleRepository } from './role.repository';
 import { SystemRole } from './enum/system-role.enum';
+import { RoleRepository } from './role.repository';
 
 @Injectable()
 export class RoleService {
@@ -18,5 +18,7 @@ export class RoleService {
     return await this.roleRepository.findOneSystemRole(name);
   }
 
-  async findByWorkspace(workspaceId: string) {}
+  async findSystemRoles(role: SystemRole) {
+    return this.roleRepository.findOneSystemRole(role);
+  }
 }

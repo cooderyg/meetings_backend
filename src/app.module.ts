@@ -1,5 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { JwtModule } from '@nestjs/jwt';
 import { ClsModule } from 'nestjs-cls';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,9 +9,11 @@ import { AppService } from './app.service';
 import { createDatabaseConfig } from './config/database-config';
 import { AuthModule } from './domain/auth/auth.module';
 import { FileModule } from './domain/file/file.module';
+import { MeetingRecordModule } from './domain/meeting-record/meeting-record.module';
 import { MeetingSummaryModule } from './domain/meeting-summary/meeting-summary.module';
 import { UserModule } from './domain/user/user.module';
 import { WorkspaceMemberModule } from './domain/workspace-member/workspace-member.module';
+import { WorkspaceMemberRoleModule } from './domain/workspace-memer-role/workspace-member-role.module';
 import { WorkspaceModule } from './domain/workspace/workspace.module';
 import { CacheModule } from './infrastructure/cache/cache.module';
 import { LangchainModule } from './infrastructure/langchain/langchain.module';
@@ -20,9 +23,6 @@ import { AppConfig } from './shared/module/app-config/app-config';
 import { AppConfigModule } from './shared/module/app-config/app-config.module';
 import { LoggerModule } from './shared/module/logger/logger.module';
 import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
-import { MeetingRecordModule } from './domain/meeting-record/meeting-record.module';
-import { EventEmitterModule } from '@nestjs/event-emitter';
-import { WorkspaceMemberRoleModule } from './domain/workspace-memer-role/workspace-member-role.module';
 
 @Module({
   imports: [

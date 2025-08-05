@@ -13,15 +13,12 @@ export function createDocumentBuilder({
     .setTitle(appName)
     .setDescription(SWAGGER_API_DESCRIPTION)
     .setVersion(apiVersion)
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        in: 'header',
-      },
-      'access-token'
-    )
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      in: 'header',
+    })
     .build();
 }
 
