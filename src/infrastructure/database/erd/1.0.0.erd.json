@@ -4,9 +4,9 @@
   "settings": {
     "width": 4000,
     "height": 4000,
-    "scrollTop": -833.5964,
-    "scrollLeft": -814.5143,
-    "zoomLevel": 0.74,
+    "scrollTop": -648.6649,
+    "scrollLeft": -789.3085,
+    "zoomLevel": 0.71,
     "show": 431,
     "database": 4,
     "databaseName": "meetings_backend_v1.0.1",
@@ -44,12 +44,12 @@
       "login_events_table",
       "yQAYMYPCCCC1oqZVEcslI",
       "XqinKZugwbmvWvrEPG1Xt",
-      "-tF8ld-PoGml9-PKl5zje"
+      "-tF8ld-PoGml9-PKl5zje",
+      "2bqrhLuumkpMYVqjADnFb"
     ],
     "relationshipIds": [
       "user_workspace_member_rel",
       "workspace_workspace_member_rel",
-      "workspace_member_role_rel",
       "workspace_role_rel",
       "role_role_permission_rel",
       "permission_role_permission_rel",
@@ -65,7 +65,9 @@
       "HgcevukJDwirG50Zzrb2s",
       "Kqj66gK19lIqZh1R9OEHC",
       "OQc_mHSRif2kDeiU77LRT",
-      "k5zMQa_WwBtt6wkrAF769"
+      "k5zMQa_WwBtt6wkrAF769",
+      "UkEVrJb4P6y5v5SzyALgE",
+      "L2xOI8rberga-T4xD-vlS"
     ],
     "indexIds": [],
     "memoIds": [
@@ -141,15 +143,15 @@
           "workspaces_updated_at"
         ],
         "ui": {
-          "x": 688.7327,
-          "y": 333.1556,
+          "x": 633.8031,
+          "y": 4.9866,
           "zIndex": 2,
           "widthName": 69,
           "widthComment": 64,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753505638394,
+          "updateAt": 1754391388556,
           "createAt": 1753010000000
         }
       },
@@ -161,7 +163,6 @@
           "workspace_members_id",
           "workspace_members_workspace_id",
           "workspace_members_user_id",
-          "workspace_members_role_id",
           "workspace_members_first_name",
           "workspace_members_last_name",
           "dQnWn1w6ggSWjmm_4A2I3",
@@ -183,15 +184,15 @@
           "workspace_members_updated_at"
         ],
         "ui": {
-          "x": 692.253,
-          "y": 703.5208,
+          "x": 710.563,
+          "y": 926.0559,
           "zIndex": 2,
           "widthName": 122,
           "widthComment": 88,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753506037047,
+          "updateAt": 1754392948030,
           "createAt": 1753010000000
         }
       },
@@ -216,15 +217,15 @@
           "roles_updated_at"
         ],
         "ui": {
-          "x": 645.0706,
-          "y": 48.5915,
+          "x": 697.9446,
+          "y": 317.2249,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753010754179,
+          "updateAt": 1754391927588,
           "createAt": 1753010000000
         }
       },
@@ -593,6 +594,34 @@
           "updateAt": 1753594237232,
           "createAt": 1753594076869
         }
+      },
+      "2bqrhLuumkpMYVqjADnFb": {
+        "id": "2bqrhLuumkpMYVqjADnFb",
+        "name": "workspace_member_roles",
+        "comment": "워크스페이스 멤버 역할",
+        "columnIds": [
+          "Gj-VFLqo5W6NrmmPskDt7",
+          "B7M8ONmg1-mMTuZMlxYSZ",
+          "JzeKZc3b8i7cu7trcAaRx"
+        ],
+        "seqColumnIds": [
+          "Gj-VFLqo5W6NrmmPskDt7",
+          "y85J1d4p78LbWyLd7zdM1",
+          "B7M8ONmg1-mMTuZMlxYSZ",
+          "JzeKZc3b8i7cu7trcAaRx"
+        ],
+        "ui": {
+          "x": 697.6175,
+          "y": 630.5141,
+          "zIndex": 273,
+          "widthName": 150,
+          "widthComment": 113,
+          "color": ""
+        },
+        "meta": {
+          "updateAt": 1754393046500,
+          "createAt": 1754391355173
+        }
       }
     },
     "tableColumnEntities": {
@@ -880,19 +909,19 @@
         "id": "workspace_members_id",
         "tableId": "workspace_members_table",
         "name": "id",
-        "comment": "멤버 ID",
+        "comment": "워크스페이스 멤버 ID",
         "dataType": "UUID",
         "default": "",
         "options": 14,
         "ui": {
           "keys": 1,
           "widthName": 60,
-          "widthComment": 60,
+          "widthComment": 104,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1753010000000,
+          "updateAt": 1754391975561,
           "createAt": 1753010000000
         }
       },
@@ -945,7 +974,7 @@
         "default": "",
         "options": 8,
         "ui": {
-          "keys": 2,
+          "keys": 0,
           "widthName": 60,
           "widthComment": 60,
           "widthDataType": 60,
@@ -3115,6 +3144,86 @@
           "updateAt": 1753594111515,
           "createAt": 1753594107018
         }
+      },
+      "Gj-VFLqo5W6NrmmPskDt7": {
+        "id": "Gj-VFLqo5W6NrmmPskDt7",
+        "tableId": "2bqrhLuumkpMYVqjADnFb",
+        "name": "id",
+        "comment": "워크스페이스 멤버 역할 ID",
+        "dataType": "SERIAL",
+        "default": "",
+        "options": 10,
+        "ui": {
+          "keys": 1,
+          "widthName": 60,
+          "widthComment": 128,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1754391501902,
+          "createAt": 1754391410743
+        }
+      },
+      "y85J1d4p78LbWyLd7zdM1": {
+        "id": "y85J1d4p78LbWyLd7zdM1",
+        "tableId": "2bqrhLuumkpMYVqjADnFb",
+        "name": "",
+        "comment": "",
+        "dataType": "",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1754391503325,
+          "createAt": 1754391503325
+        }
+      },
+      "JzeKZc3b8i7cu7trcAaRx": {
+        "id": "JzeKZc3b8i7cu7trcAaRx",
+        "tableId": "2bqrhLuumkpMYVqjADnFb",
+        "name": "role_id",
+        "comment": "역할 ID",
+        "dataType": "SERIAL",
+        "default": "",
+        "options": 8,
+        "ui": {
+          "keys": 2,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1754391947507,
+          "createAt": 1754391940212
+        }
+      },
+      "B7M8ONmg1-mMTuZMlxYSZ": {
+        "id": "B7M8ONmg1-mMTuZMlxYSZ",
+        "tableId": "2bqrhLuumkpMYVqjADnFb",
+        "name": "workspace_member_id",
+        "comment": "워크스페이스 멤버 ID",
+        "dataType": "UUID",
+        "default": "",
+        "options": 8,
+        "ui": {
+          "keys": 2,
+          "widthName": 133,
+          "widthComment": 104,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1754391982597,
+          "createAt": 1754391955064
+        }
       }
     },
     "relationshipEntities": {
@@ -3137,8 +3246,8 @@
           "columnIds": [
             "workspace_members_user_id"
           ],
-          "x": 692.253,
-          "y": 777.5208,
+          "x": 710.563,
+          "y": 994.0559,
           "direction": 1
         },
         "meta": {
@@ -3156,8 +3265,8 @@
           "columnIds": [
             "workspaces_id"
           ],
-          "x": 1083.2327,
-          "y": 557.1556,
+          "x": 896.8031000000001,
+          "y": 228.9866,
           "direction": 8
         },
         "end": {
@@ -3165,8 +3274,8 @@
           "columnIds": [
             "workspace_members_workspace_id"
           ],
-          "x": 1073.2530000000002,
-          "y": 703.5208,
+          "x": 843.563,
+          "y": 926.0559,
           "direction": 4
         },
         "meta": {
@@ -3184,8 +3293,8 @@
           "columnIds": [
             "roles_id"
           ],
-          "x": 771.8206,
-          "y": 248.5915,
+          "x": 933.1347,
+          "y": 531.3094,
           "direction": 8
         },
         "end": {
@@ -3193,8 +3302,8 @@
           "columnIds": [
             "workspace_members_role_id"
           ],
-          "x": 819.253,
-          "y": 703.5208,
+          "x": 1088.746,
+          "y": 793.6616,
           "direction": 4
         },
         "meta": {
@@ -3212,18 +3321,18 @@
           "columnIds": [
             "workspaces_id"
           ],
-          "x": 951.7327,
-          "y": 333.1556,
-          "direction": 4
+          "x": 1072.1364333333333,
+          "y": 228.9866,
+          "direction": 8
         },
         "end": {
           "tableId": "roles_table",
           "columnIds": [
             "roles_workspace_id"
           ],
-          "x": 1025.3206,
-          "y": 248.5915,
-          "direction": 8
+          "x": 951.4446,
+          "y": 317.2249,
+          "direction": 4
         },
         "meta": {
           "updateAt": 1753010000000,
@@ -3240,8 +3349,8 @@
           "columnIds": [
             "roles_id"
           ],
-          "x": 1152.0706,
-          "y": 148.5915,
+          "x": 1204.9446,
+          "y": 417.2249,
           "direction": 2
         },
         "end": {
@@ -3296,8 +3405,8 @@
           "columnIds": [
             "workspace_members_id"
           ],
-          "x": 1200.2530000000002,
-          "y": 851.5208,
+          "x": 1242.563,
+          "y": 1062.0558999999998,
           "direction": 2
         },
         "end": {
@@ -3352,8 +3461,8 @@
           "columnIds": [
             "workspaces_id"
           ],
-          "x": 688.7327,
-          "y": 445.1556,
+          "x": 633.8031,
+          "y": 116.9866,
           "direction": 1
         },
         "end": {
@@ -3380,8 +3489,8 @@
           "columnIds": [
             "workspace_members_id"
           ],
-          "x": 692.253,
-          "y": 925.5208,
+          "x": 710.563,
+          "y": 1130.0558999999998,
           "direction": 1
         },
         "end": {
@@ -3492,8 +3601,8 @@
           "columnIds": [
             "workspaces_id"
           ],
-          "x": 820.2327,
-          "y": 557.1556,
+          "x": 721.4697666666667,
+          "y": 228.9866,
           "direction": 8
         },
         "end": {
@@ -3520,8 +3629,8 @@
           "columnIds": [
             "workspaces_id"
           ],
-          "x": 1214.7327,
-          "y": 445.1556,
+          "x": 1159.8031,
+          "y": 116.9866,
           "direction": 2
         },
         "end": {
@@ -3564,34 +3673,6 @@
         "meta": {
           "updateAt": 1753593803180,
           "createAt": 1753593803180
-        }
-      },
-      "xo1jaDuDnz5MeHIRPH3w-": {
-        "id": "xo1jaDuDnz5MeHIRPH3w-",
-        "identification": false,
-        "relationshipType": 16,
-        "startRelationshipType": 2,
-        "start": {
-          "tableId": "meetings_table",
-          "columnIds": [
-            "meetings_id"
-          ],
-          "x": 954.6455,
-          "y": 1463.6977,
-          "direction": 8
-        },
-        "end": {
-          "tableId": "yQAYMYPCCCC1oqZVEcslI",
-          "columnIds": [
-            "x1GCEKpQzsuD3DkrVFnrU"
-          ],
-          "x": 959.4944,
-          "y": 1605.6181,
-          "direction": 4
-        },
-        "meta": {
-          "updateAt": 1753593850981,
-          "createAt": 1753593850981
         }
       },
       "Kqj66gK19lIqZh1R9OEHC": {
@@ -3677,6 +3758,62 @@
           "updateAt": 1753594107018,
           "createAt": 1753594107018
         }
+      },
+      "UkEVrJb4P6y5v5SzyALgE": {
+        "id": "UkEVrJb4P6y5v5SzyALgE",
+        "identification": false,
+        "relationshipType": 16,
+        "startRelationshipType": 2,
+        "start": {
+          "tableId": "roles_table",
+          "columnIds": [
+            "roles_id"
+          ],
+          "x": 951.4446,
+          "y": 517.2248999999999,
+          "direction": 8
+        },
+        "end": {
+          "tableId": "2bqrhLuumkpMYVqjADnFb",
+          "columnIds": [
+            "JzeKZc3b8i7cu7trcAaRx"
+          ],
+          "x": 950.6175,
+          "y": 630.5141,
+          "direction": 4
+        },
+        "meta": {
+          "updateAt": 1754391940212,
+          "createAt": 1754391940212
+        }
+      },
+      "L2xOI8rberga-T4xD-vlS": {
+        "id": "L2xOI8rberga-T4xD-vlS",
+        "identification": false,
+        "relationshipType": 16,
+        "startRelationshipType": 2,
+        "start": {
+          "tableId": "workspace_members_table",
+          "columnIds": [
+            "workspace_members_id"
+          ],
+          "x": 1109.563,
+          "y": 926.0559,
+          "direction": 4
+        },
+        "end": {
+          "tableId": "2bqrhLuumkpMYVqjADnFb",
+          "columnIds": [
+            "B7M8ONmg1-mMTuZMlxYSZ"
+          ],
+          "x": 950.6175,
+          "y": 758.5141,
+          "direction": 8
+        },
+        "meta": {
+          "updateAt": 1754391955065,
+          "createAt": 1754391955065
+        }
       }
     },
     "indexEntities": {},
@@ -3686,15 +3823,15 @@
         "id": "c7mv5W_x9ixH-Gvje4oYB",
         "value": "\b미팅 상태\n  DRAFT = 'DRAFT'\n  IN_PROGRESS = 'IN_PROGRESS'\n  COMPLETED = 'COMPLETED'\n  PAUSED = 'PAUSED'",
         "ui": {
-          "x": 1235.9555,
-          "y": 931.8472,
+          "x": 1320.4625,
+          "y": 1074.1007,
           "zIndex": 79,
           "width": 238,
           "height": 100,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753594057233,
+          "updateAt": 1754392946482,
           "createAt": 1753593304521
         }
       }

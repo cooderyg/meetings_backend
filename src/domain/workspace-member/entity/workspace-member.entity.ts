@@ -10,9 +10,9 @@ import {
 import { BaseEntity } from '../../../shared/entity/base.entity';
 import { User } from '../../user/entity/user.entity';
 import { Workspace } from '../../workspace/entity/workspace.entity';
-import { Role } from '../../role/entity/role.entity';
 import { MemberResourcePermission } from '../../permission/entity/member-resource-permission.entity';
 import { SystemRole } from '../../role/enum/system-role.enum';
+import { WorkspaceMemberRole } from '../../workspace-memer-role/entity/workspace-member-role.entity';
 
 @Entity({ tableName: 'workspace_members' })
 @Unique({ properties: ['user', 'workspace'] })
@@ -24,8 +24,6 @@ export class WorkspaceMember extends BaseEntity {
   @ManyToOne(() => Workspace)
   workspace!: Workspace;
 
-  @ManyToOne(() => Role)
-  role!: Role;
 
   @Property({ default: true })
   isActive: boolean = true;
@@ -42,16 +40,17 @@ export class WorkspaceMember extends BaseEntity {
   @OneToMany(() => MemberResourcePermission, (urp) => urp.workspaceMember)
   resourcePermissions = new Collection<MemberResourcePermission>(this);
 
+  @OneToMany(() => WorkspaceMemberRole, (wmr) => wmr.workspaceMember)
+  workspaceMemberRoles = new Collection<WorkspaceMemberRole>(this);
+
   getDisplayName(): string {
     return [this.firstName, this.lastName].filter(Boolean).join(' ');
   }
 
-  hasRole(roleName: string): boolean {
-    return this.role.name === roleName;
-  }
-
   hasSystemRole(systemRole: SystemRole): boolean {
-    return this.role.isSpecificSystemRole(systemRole);
+    return this.workspaceMemberRoles.getItems().some(wmr => 
+      wmr.role.isSpecificSystemRole(systemRole)
+    );
   }
 
   isOwner(): boolean {

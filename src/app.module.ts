@@ -22,6 +22,7 @@ import { LoggerModule } from './shared/module/logger/logger.module';
 import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
 import { MeetingRecordModule } from './domain/meeting-record/meeting-record.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { WorkspaceMemberRoleModule } from './domain/workspace-memer-role/workspace-member-role.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     MeetingSummaryModule,
     WorkspaceModule,
     WorkspaceMemberModule,
+    WorkspaceMemberRoleModule,
     FileModule,
     MeetingRecordModule,
     EventEmitterModule.forRoot(),

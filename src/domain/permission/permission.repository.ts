@@ -37,9 +37,10 @@ export class PermissionRepository extends EntityRepository<MemberResourcePermiss
       { id: memberId },
       {
         populate: [
-          'role',
-          'role.rolePermissions',
-          'role.rolePermissions.permission',
+          'workspaceMemberRoles',
+          'workspaceMemberRoles.role',
+          'workspaceMemberRoles.role.rolePermissions',
+          'workspaceMemberRoles.role.rolePermissions.permission',
         ],
       }
     );

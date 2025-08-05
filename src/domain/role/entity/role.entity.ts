@@ -9,7 +9,7 @@ import {
 } from '@mikro-orm/core';
 import { TimestampedEntity } from '../../../shared/entity/timestamped.entity';
 import { Workspace } from '../../workspace/entity/workspace.entity';
-import { WorkspaceMember } from '../../workspace-member/entity/workspace-member.entity';
+import { WorkspaceMemberRole } from '../../workspace-memer-role/entity/workspace-member-role.entity';
 import { RolePermission } from '../../permission/entity/role-permission.entity';
 import { SystemRole } from '../enum/system-role.enum';
 
@@ -29,8 +29,8 @@ export class Role extends TimestampedEntity {
   @Property({ type: 'text', nullable: true })
   description: string | null = null;
 
-  @OneToMany(() => WorkspaceMember, (member) => member.role)
-  members = new Collection<WorkspaceMember>(this);
+  @OneToMany(() => WorkspaceMemberRole, (wmr) => wmr.role)
+  workspaceMemberRoles = new Collection<WorkspaceMemberRole>(this);
 
   @OneToMany(() => RolePermission, (rp) => rp.role)
   rolePermissions = new Collection<RolePermission>(this);
