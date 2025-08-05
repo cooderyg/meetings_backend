@@ -5,7 +5,7 @@ import { RolePermission } from '../../../domain/permission/entity/role-permissio
 import {
   SYSTEM_ROLE_DESCRIPTIONS,
   SYSTEM_ROLE_PERMISSIONS,
-} from '../../../domain/role/const/system-role-permissions.constant';
+} from '../../../domain/role/const/system-role-permissions.const';
 import { Role } from '../../../domain/role/entity/role.entity';
 import { SystemRole } from '../../../domain/role/enum/system-role.enum';
 

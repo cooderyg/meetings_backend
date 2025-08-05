@@ -1,30 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  UseInterceptors,
-  UploadedFile,
-  Inject,
-  BadRequestException,
-  Body,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiConsumes,
-  ApiBody,
-  ApiOkResponse,
-  ApiBadRequestResponse,
-} from '@nestjs/swagger';
-import { IsString, IsOptional, IsNumber, Min, Max } from 'class-validator';
-import {
-  ISttService,
-  STT_SERVICE,
-  TranscriptionConfig,
-} from './infrastructure/stt';
-import { ILangchainService } from './infrastructure/langchain/interfaces/langchain.interface';
-import { LANGCHAIN_SERVICE } from './infrastructure/langchain/const/langchain.const';
+import { Controller, Get } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 // Swagger Response DTOs
 class FileInfoDto {
@@ -66,43 +41,10 @@ class SttTestErrorResponseDto {
   file: FileInfoDto;
 }
 
-class LangchainTestRequestDto {
-  @IsString()
-  prompt: string;
-
-  @IsOptional()
-  @IsString()
-  systemPrompt?: string;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(2)
-  temperature?: number;
-}
-
-class LangchainTestResponseDto {
-  success: boolean;
-  response?: string;
-  error?: {
-    code: string;
-    message: string;
-    details?: any;
-  };
-  metadata: {
-    model: string;
-    temperature: number;
-    timestamp: string;
-  };
-}
-
 @ApiTags('App')
 @Controller()
 export class AppController {
-  constructor(
-    @Inject(LANGCHAIN_SERVICE)
-    private readonly langchainService: ILangchainService
-  ) {}
+  constructor() {}
 
   @Get('health')
   @ApiOperation({ summary: '서버 상태 확인' })
@@ -290,112 +232,4 @@ export class AppController {
   //     };
   //   }
   // }
-
-  @Post('test-langchain')
-  @ApiOperation({
-    summary: 'LangChain 서비스 테스트',
-    description: 'OpenAI GPT 모델을 통해 텍스트를 생성합니다.',
-  })
-  @ApiBody({
-    description: '텍스트 생성 요청',
-    type: LangchainTestRequestDto,
-    examples: {
-      simple: {
-        summary: '간단한 질문',
-        value: {
-          prompt: '안녕하세요! 오늘 날씨가 어떤가요?',
-        },
-      },
-      withSystem: {
-        summary: '시스템 프롬프트와 함께',
-        value: {
-          prompt: '회의 요약을 작성해주세요.',
-          systemPrompt: '당신은 전문적인 회의 요약 작성자입니다.',
-          temperature: 0.3,
-        },
-      },
-    },
-  })
-  @ApiOkResponse({
-    description: 'LangChain 텍스트 생성 성공',
-    type: LangchainTestResponseDto,
-    examples: {
-      success: {
-        summary: '성공 응답 예시',
-        value: {
-          success: true,
-          response:
-            '안녕하세요! 저는 AI 어시스턴트입니다. 실제 날씨 정보에 접근할 수는 없지만...',
-          metadata: {
-            model: 'gpt-4o-mini',
-            temperature: 0.7,
-            timestamp: '2025-01-08T10:30:00Z',
-          },
-        },
-      },
-    },
-  })
-  @ApiBadRequestResponse({
-    description: 'LangChain 텍스트 생성 실패',
-    type: LangchainTestResponseDto,
-    examples: {
-      error: {
-        summary: '실패 응답 예시',
-        value: {
-          success: false,
-          error: {
-            code: 'LANGCHAIN_ERROR',
-            message: 'OpenAI API 오류: API 키가 유효하지 않습니다.',
-            details: { error: 'API key is invalid' },
-          },
-          metadata: {
-            model: 'gpt-4o-mini',
-            temperature: 0.1,
-            timestamp: '2025-01-08T10:30:00Z',
-          },
-        },
-      },
-    },
-  })
-  async testLangchain(
-    @Body() body: LangchainTestRequestDto
-  ): Promise<LangchainTestResponseDto> {
-    const timestamp = new Date().toISOString();
-
-    try {
-      if (!body.prompt || body.prompt.trim().length === 0) {
-        throw new BadRequestException('프롬프트가 필요합니다');
-      }
-
-      const response = await this.langchainService.generateText(body.prompt, {
-        systemPrompt: body.systemPrompt,
-        temperature: body.temperature || 0.1,
-        maxTokens: 1000,
-      });
-
-      return {
-        success: true,
-        response,
-        metadata: {
-          model: 'gpt-4o-mini',
-          temperature: body.temperature || 0.1,
-          timestamp,
-        },
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: {
-          code: 'LANGCHAIN_ERROR',
-          message: error.message,
-          details: { error: error.message },
-        },
-        metadata: {
-          model: 'gpt-4o-mini',
-          temperature: body.temperature || 0.1,
-          timestamp,
-        },
-      };
-    }
-  }
 }
