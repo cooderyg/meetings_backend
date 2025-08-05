@@ -1,4 +1,3 @@
-import { EntityManager } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { User } from './entity/user.entity';
@@ -9,14 +8,7 @@ import { UserService } from './user.service';
 @Module({
   imports: [MikroOrmModule.forFeature([User])],
   controllers: [UserController],
-  providers: [
-    UserService,
-    {
-      provide: UserRepository,
-      useFactory: (em: EntityManager) => new UserRepository(em),
-      inject: [EntityManager],
-    },
-  ],
+  providers: [UserService, UserRepository],
   exports: [UserService],
 })
 export class UserModule {}
