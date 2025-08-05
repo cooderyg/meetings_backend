@@ -1,4 +1,4 @@
-import { Type, Platform } from '@mikro-orm/core';
+import { Platform, Type } from '@mikro-orm/core';
 
 export class LTreeType extends Type<string, string> {
   convertToDatabaseValue(value: string, platform: Platform): string {

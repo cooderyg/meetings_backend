@@ -18,6 +18,10 @@ export class UserService {
     return this.userRepository.findByUid(uid);
   }
 
+  async getUserById(id: string) {
+    return this.userRepository.findById(id);
+  }
+
   async createUser(user: ICreateUser) {
     if (!user.uid && !user.passwordHash) {
       throw new BadRequestException('uid and passwordHash are required');

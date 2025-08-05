@@ -3,6 +3,7 @@ declare global {
     interface Request {
       requestId?: string;
       apiVersion?: string;
+      user?: JwtPayload;
     }
   }
 }

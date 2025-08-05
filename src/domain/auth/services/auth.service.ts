@@ -1,8 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AppConfig } from '../../../shared/module/app-config/app-config';
+import {
+  AccessTokenPayload,
+  RefreshTokenPayload,
+} from '../../../shared/type/token.type';
 import { User } from '../../user/entity/user.entity';
 import { UserService } from '../../user/user.service';
+import { WorkspaceMemberService } from '../../workspace-member/workspace-member.service';
 import { SubscriptionTier } from '../../workspace/entity/workspace.entity';
 import { WorkspaceService } from '../../workspace/workspace.service';
 import { OAuthType } from '../enums/oauth-type.enum';
@@ -18,7 +23,8 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
-    private readonly workspaceService: WorkspaceService
+    private readonly workspaceService: WorkspaceService,
+    private readonly workspaceMemberService: WorkspaceMemberService
   ) {
     this.appConfig = new AppConfig();
     this.strategies = {
@@ -64,10 +70,13 @@ export class AuthService {
         lastName: oauthResult.lastName,
       });
 
-      await this.workspaceService.createWorkspace({
-        name: `${oauthResult.firstName}'s Workspace`,
-        subscriptionTier: SubscriptionTier.FREE,
-      });
+      await this.workspaceService.createWorkspace(
+        {
+          name: `${oauthResult.firstName}'s Workspace`,
+          subscriptionTier: SubscriptionTier.FREE,
+        },
+        newUser
+      );
 
       return this.getTokens(newUser);
     }
@@ -76,20 +85,20 @@ export class AuthService {
   }
 
   private getTokens(user: User) {
-    const accessToken = this.jwtService.sign(
-      { uid: user.uid },
-      {
-        expiresIn: this.accessTokenExpiresIn,
-        secret: this.accessTokenSecret,
-      }
-    );
-    const refreshToken = this.jwtService.sign(
-      { uid: user.uid },
-      {
-        expiresIn: this.refreshTokenExpiresIn,
-        secret: this.refreshTokenSecret,
-      }
-    );
+    const accessTokenPayload: AccessTokenPayload = {
+      uid: user.uid,
+      id: user.id,
+    };
+    const accessToken = this.jwtService.sign(accessTokenPayload, {
+      expiresIn: this.accessTokenExpiresIn,
+      secret: this.accessTokenSecret,
+    });
+
+    const refreshTokenPayload: RefreshTokenPayload = { id: user.id };
+    const refreshToken = this.jwtService.sign(refreshTokenPayload, {
+      expiresIn: this.refreshTokenExpiresIn,
+      secret: this.refreshTokenSecret,
+    });
 
     return { accessToken, refreshToken };
   }

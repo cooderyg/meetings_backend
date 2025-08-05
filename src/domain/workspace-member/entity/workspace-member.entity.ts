@@ -1,18 +1,18 @@
 import {
-  Entity,
-  ManyToOne,
-  Property,
-  OneToMany,
   Collection,
+  Entity,
   Index,
+  ManyToOne,
+  OneToMany,
+  Property,
   Unique,
 } from '@mikro-orm/core';
 import { BaseEntity } from '../../../shared/entity/base.entity';
-import { User } from '../../user/entity/user.entity';
-import { Workspace } from '../../workspace/entity/workspace.entity';
 import { MemberResourcePermission } from '../../permission/entity/member-resource-permission.entity';
 import { SystemRole } from '../../role/enum/system-role.enum';
+import { User } from '../../user/entity/user.entity';
 import { WorkspaceMemberRole } from '../../workspace-memer-role/entity/workspace-member-role.entity';
+import { Workspace } from '../../workspace/entity/workspace.entity';
 
 @Entity({ tableName: 'workspace_members' })
 @Unique({ properties: ['user', 'workspace'] })
@@ -23,7 +23,6 @@ export class WorkspaceMember extends BaseEntity {
 
   @ManyToOne(() => Workspace)
   workspace!: Workspace;
-
 
   @Property({ default: true })
   isActive: boolean = true;
@@ -48,9 +47,9 @@ export class WorkspaceMember extends BaseEntity {
   }
 
   hasSystemRole(systemRole: SystemRole): boolean {
-    return this.workspaceMemberRoles.getItems().some(wmr => 
-      wmr.role.isSpecificSystemRole(systemRole)
-    );
+    return this.workspaceMemberRoles
+      .getItems()
+      .some((wmr) => wmr.role.isSpecificSystemRole(systemRole));
   }
 
   isOwner(): boolean {

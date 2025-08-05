@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from '../user/user.module';
+import { WorkspaceMemberModule } from '../workspace-member/workspace-member.module';
 import { WorkspaceModule } from '../workspace/workspace.module';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 
 @Module({
-  imports: [UserModule, WorkspaceModule],
+  imports: [UserModule, WorkspaceModule, WorkspaceMemberModule],
   controllers: [AuthController],
   providers: [AuthService],
 })
