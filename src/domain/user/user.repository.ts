@@ -1,17 +1,25 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Injectable } from '@nestjs/common';
 import { User } from './entity/user.entity';
 
-export class UserRepository extends EntityRepository<User> {
-  constructor(em: EntityManager) {
-    super(em, User);
+@Injectable()
+export class UserRepository {
+  em: EntityManager;
+
+  constructor(
+    @InjectRepository(User)
+    private readonly repository: EntityRepository<User>
+  ) {
+    this.em = repository.getEntityManager();
   }
 
   async findById(id: string) {
-    return await this.findOne({ id });
+    return this.em.findOne(User, { id });
   }
 
   async findByUid(uid: string) {
-    return await this.findOne({ uid });
+    return this.em.findOne(User, { uid });
   }
 
   async updateUser(user: User) {

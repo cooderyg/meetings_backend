@@ -22,7 +22,7 @@ export class UserService {
     if (!user.uid && !user.passwordHash) {
       throw new BadRequestException('uid and passwordHash are required');
     }
-    const createdUser = this.userRepository.assign(new User(), {
+    const createdUser = this.em.assign(new User(), {
       ...user,
       passwordHash: user.passwordHash ?? '',
     });
