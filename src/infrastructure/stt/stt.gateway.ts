@@ -1,4 +1,5 @@
 import {
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -22,7 +23,7 @@ import { SttSessionErrorResponse } from './classes/stt-session-error-response';
 import { SttSessionSuccessResponse } from './classes/stt-session-success-response';
 
 @WebSocketGateway(2052, { cors: true })
-export class SttGateway {
+export class SttGateway implements OnGatewayDisconnect {
   constructor(private sttService: SttService) {}
 
   @WebSocketServer()
@@ -121,5 +122,12 @@ export class SttGateway {
     ...data
   }: SttSessionErrorResponse) {
     this.server.to(clientId).emit(ERROR_STREAMING_RECOGNIZE, data);
+  }
+
+  /**
+   * **소켓 종료 시 스트리밍 종료**
+   * */
+  handleDisconnect(client: Socket) {
+    this.sttService.endStreamingRecognize(client.id);
   }
 }
