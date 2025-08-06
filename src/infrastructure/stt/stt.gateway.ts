@@ -18,6 +18,7 @@ import {
 } from './stt.constant';
 import { SttSessionErrorResponse } from './classes/stt-session-error-response';
 import { SttSessionSuccessResponse } from './classes/stt-session-success-response';
+import { safely } from '../../shared/util/safely';
 
 @WebSocketGateway(2052, { cors: true })
 export class SttGateway implements OnGatewayDisconnect {
@@ -125,10 +126,6 @@ export class SttGateway implements OnGatewayDisconnect {
    * **소켓 종료 시 스트리밍 종료**
    * */
   handleDisconnect(client: Socket) {
-    try {
-      this.sttService.endStreamingRecognize(client.id);
-    } catch (error) {
-      console.warn(error);
-    }
+    safely(() => this.sttService.endStreamingRecognize(client.id));
   }
 }
