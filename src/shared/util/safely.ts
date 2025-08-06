@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export const safely = (fn: Function) => {
+export const safely = (fn: () => void) => {
   try {
     fn();
   } catch {}
