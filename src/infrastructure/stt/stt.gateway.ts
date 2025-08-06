@@ -19,6 +19,7 @@ import {
 import { SttSessionErrorResponse } from './classes/stt-session-error-response';
 import { SttSessionSuccessResponse } from './classes/stt-session-success-response';
 import { safely } from '../../shared/util/safely';
+import { SttSessionWriteResponse } from './classes/stt-session-write-response';
 
 @WebSocketGateway(2052, { cors: true })
 export class SttGateway implements OnGatewayDisconnect {
@@ -50,7 +51,7 @@ export class SttGateway implements OnGatewayDisconnect {
   handleWriteStreamingRecognizeResponseEvent({
     clientId,
     ...data
-  }: ResponseStreamingRecognizeData) {
+  }: SttSessionWriteResponse) {
     this.server.to(clientId).emit(WRITE_STREAMING_RECOGNIZE, data);
   }
 
