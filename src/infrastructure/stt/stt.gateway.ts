@@ -128,6 +128,10 @@ export class SttGateway implements OnGatewayDisconnect {
    * **소켓 종료 시 스트리밍 종료**
    * */
   handleDisconnect(client: Socket) {
-    this.sttService.endStreamingRecognize(client.id);
+    try {
+      this.sttService.endStreamingRecognize(client.id);
+    } catch (error) {
+      console.warn(error);
+    }
   }
 }
