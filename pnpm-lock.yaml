@@ -150,6 +150,9 @@ importers:
       '@types/pumpify':
         specifier: ^1.4.4
         version: 1.4.4
+      '@types/socket.io':
+        specifier: ^3.0.2
+        version: 3.0.2
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.3
@@ -174,6 +177,9 @@ importers:
       prettier:
         specifier: ^3.4.2
         version: 3.5.3
+      socket.io:
+        specifier: ^4.8.1
+        version: 4.8.1
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
@@ -1737,6 +1743,10 @@ packages:
 
   '@types/serve-static@1.15.7':
     resolution: {integrity: sha512-W8Ym+h8nhuRwaKPaDw34QUkwsGi6Rc4yYqvKFo5rm2FUEhCFbzVWrxXUxuKK8TASjWsysJY0nsmNCGhCOIsrOw==}
+
+  '@types/socket.io@3.0.2':
+    resolution: {integrity: sha512-pu0sN9m5VjCxBZVK8hW37ZcMe8rjn4HHggBN5CbaRTvFwv5jOmuIRZEuddsBPa9Th0ts0SIo3Niukq+95cMBbQ==}
+    deprecated: This is a stub types definition. socket.io provides its own type definitions, so you do not need this installed.
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
@@ -7058,6 +7068,14 @@ snapshots:
       '@types/http-errors': 2.0.4
       '@types/node': 22.15.30
       '@types/send': 0.17.4
+
+  '@types/socket.io@3.0.2':
+    dependencies:
+      socket.io: 4.8.1
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
 
   '@types/stack-utils@2.0.3': {}
 

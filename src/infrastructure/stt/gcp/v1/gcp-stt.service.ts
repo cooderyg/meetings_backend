@@ -2,14 +2,25 @@
 import { Injectable } from '@nestjs/common';
 import { AppConfig } from '../../../../shared/module/app-config/app-config';
 import { GcpClient } from './utils/gcp-client';
-import { SttSession } from '../../utils/stt-session';
+import { SttSession } from '../../classes/stt-session';
 import { gcpStreamingRecognitionConfig } from './utils/gcp-streaming-recognition-config';
 import { google } from '@google-cloud/speech/build/protos/protos';
 import { LoggerService } from '../../../../shared/module/logger/logger.service';
-import IStreamingRecognizeResponse = google.cloud.speech.v1.IStreamingRecognizeResponse;
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { v4 } from 'uuid';
-import { GcpSttUtil } from './gcp-stt.util';
+import {
+  END_STREAMING_RECOGNIZE,
+  ERROR_STREAMING_RECOGNIZE,
+  INIT_STREAMING_RECOGNIZE,
+  PAUSE_STREAMING_RECOGNIZE,
+  RESUME_STREAMING_RECOGNIZE,
+  WRITE_STREAMING_RECOGNIZE,
+} from '../../stt.constant';
+import { MEETING_RECORD_CREATED } from '../../../../domain/meeting-record/meeting-record.constant';
+import { SttSessionWriteResponseForGcp } from '../../classes/stt-session-write-response-for-gcp';
+import { MeetingRecordCreatedForGcp } from '../../../../domain/meeting-record/classes/meeting-record-created-for-gcp';
+import { SttSessionErrorResponse } from '../../classes/stt-session-error-response';
+import IStreamingRecognizeResponse = google.cloud.speech.v1.IStreamingRecognizeResponse;
+import { SttSessionSuccessResponse } from '../../classes/stt-session-success-response';
 
 @Injectable()
 export class GcpSttService {
@@ -30,40 +41,73 @@ export class GcpSttService {
     if (session) this.endStreamingRecognize(clientId);
 
     // 실시간 스트리밍 생성
-    const init = this.gcpClient
-      .streamingRecognize(gcpStreamingRecognitionConfig)
-      .on('data', (data: IStreamingRecognizeResponse) => {
+    try {
+      const stream = this.gcpClient.streamingRecognize(
+        gcpStreamingRecognitionConfig
+      );
+
+      // (콜백) 스트리밍 데이터 정상 수신
+      stream.on('data', (data: IStreamingRecognizeResponse) => {
         data.results?.forEach((result) => {
           const isFinal = result.isFinal;
           const alternatives = result.alternatives;
 
-          if (alternatives && isFinal) {
-            console.log(result);
-            void this.eventEmitter.emit('meeting-record.created', {
-              meeting: meetingId,
-              content: alternatives[0].transcript,
-              time: Number(result.resultEndTime?.seconds),
-            });
+          if (alternatives && alternatives[0].transcript && isFinal) {
+            void this.eventEmitter.emit(
+              MEETING_RECORD_CREATED,
+              new MeetingRecordCreatedForGcp(meetingId, result)
+            );
           }
 
           if (alternatives) {
-            void this.eventEmitter.emit('response-streaming-recognize', {
-              clientId,
-              result: alternatives[0].transcript,
-              isFinal,
-            });
+            void this.eventEmitter.emit(
+              WRITE_STREAMING_RECOGNIZE,
+              new SttSessionWriteResponseForGcp(clientId, result)
+            );
           }
         });
-      })
-      .on('error', (err) => {
-        // todo 오류 로그
-        this.endStreamingRecognize(clientId);
       });
 
-    // 생성된 실시간 스트리밍 저장
-    this.streams.set(clientId, new SttSession(clientId, init));
+      // (콜백) 스트리밍 오류
+      stream.on('error', (err) => {
+        this.endStreamingRecognize(clientId);
 
-    console.log('good');
+        this.eventEmitter.emit(
+          ERROR_STREAMING_RECOGNIZE,
+          new SttSessionErrorResponse(clientId, err.message)
+        );
+      });
+
+      // (콜백) 스트리밍 일시정지
+      stream.on('pause', () => {
+        this.eventEmitter.emit(
+          PAUSE_STREAMING_RECOGNIZE,
+          new SttSessionSuccessResponse(clientId, 'pause')
+        );
+      });
+
+      // (콜백) 스트리밍 재개
+      stream.on('resume', () => {
+        this.eventEmitter.emit(
+          RESUME_STREAMING_RECOGNIZE,
+          new SttSessionSuccessResponse(clientId, 'resume')
+        );
+      });
+
+      // (콜백) 스트리밍 종료
+      stream.on('end', () => {
+        this.eventEmitter.emit(
+          END_STREAMING_RECOGNIZE,
+          new SttSessionSuccessResponse(clientId, 'end')
+        );
+      });
+
+      // 생성된 실시간 스트리밍 저장
+      this.streams.set(clientId, new SttSession(clientId, stream));
+    } catch (error) {
+      // todo 오류 로그
+      console.error(error);
+    }
   }
 
   /**
