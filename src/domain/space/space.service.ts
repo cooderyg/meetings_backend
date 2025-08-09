@@ -33,6 +33,16 @@ export class SpaceService {
     return await this.spaceRepository.findByWorkspace(workspaceId);
   }
 
+  async findByWorkspaceAndUserId(
+    workspaceId: string,
+    userId: string
+  ): Promise<Space[]> {
+    return await this.spaceRepository.findByWorkspaceAndUserId(
+      workspaceId,
+      userId
+    );
+  }
+
   async create(args: CreateSpaceArgs): Promise<Space> {
     const workspace = await this.em.findOne(Workspace, {
       id: args.workspaceId,

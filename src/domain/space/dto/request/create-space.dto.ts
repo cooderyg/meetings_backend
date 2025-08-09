@@ -19,14 +19,6 @@ export class CreateSpaceDto {
   description?: string;
 
   @ApiProperty({
-    description: 'The workspace ID',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  @IsString()
-  @IsNotEmpty()
-  workspaceId: string;
-
-  @ApiProperty({
     description: 'The parent path',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
