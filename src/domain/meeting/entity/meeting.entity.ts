@@ -6,7 +6,6 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryKey,
   PrimaryKeyProp,
   Property,
 } from '@mikro-orm/core';
@@ -15,7 +14,7 @@ import { Resource } from '../../resource/entity/resource.entity';
 import { Workspace } from '../../workspace/entity/workspace.entity';
 import { MeetingRecord } from '../../meeting-record/entity/meeting-record.entity';
 import { MeetingParticipant } from '../../meeting-participant/entity/meeting-participant.entity';
-import { MeetingSummary } from '../../meeting-summary/entity/meeting-summary.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum MeetingStatus {
   DRAFT = 'DRAFT',
@@ -29,6 +28,11 @@ export class Meeting extends TimestampedEntity {
   [PrimaryKeyProp]?: 'resource';
 
   /** 리소스 */
+  @ApiProperty({
+    description: '아이디 (리소스)',
+    type: String,
+    nullable: false,
+  })
   @OneToOne(() => Resource, {
     joinColumn: 'id',
     primary: true,
@@ -37,10 +41,21 @@ export class Meeting extends TimestampedEntity {
   resource: Resource;
 
   /** 상태 */
+  @ApiProperty({
+    description: '상태',
+    enum: MeetingStatus,
+    nullable: false,
+    default: MeetingStatus.DRAFT,
+  })
   @Enum(() => MeetingStatus)
   status: MeetingStatus = MeetingStatus.DRAFT;
 
   /** 태그 목록 */
+  @ApiProperty({
+    description: '태그 목록',
+    type: [String],
+    nullable: false,
+  })
   @Property({ type: 'varchar[]' })
   tags: string[] = [];
 
@@ -50,10 +65,29 @@ export class Meeting extends TimestampedEntity {
   workspace!: Workspace;
 
   /** 메모 */
+  @ApiProperty({
+    description: '메모',
+    type: String,
+    nullable: true,
+  })
   @Property({ type: 'text', nullable: true })
   memo: string | null = null;
 
+  /** AI 요약 */
+  @ApiProperty({
+    description: 'AI 요약',
+    type: String,
+    nullable: true,
+  })
+  @Property({ type: 'text', nullable: true })
+  summary: string | null = null;
+
   /** 삭제일자 */
+  @ApiProperty({
+    description: '삭제일자',
+    type: Date,
+    nullable: true,
+  })
   @Property({ type: 'timestamptz', nullable: true })
   deletedAt: Date | null = null;
 
@@ -64,8 +98,4 @@ export class Meeting extends TimestampedEntity {
   /** 미팅 참여자 목록 */
   @OneToMany(() => MeetingParticipant, (participant) => participant.meeting)
   participants = new Collection<MeetingParticipant>(this);
-
-  /** 미팅 요약 목록 */
-  @OneToMany(() => MeetingSummary, (summary) => summary.meeting)
-  summaries = new Collection<MeetingSummary>(this);
 }

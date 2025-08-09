@@ -31,4 +31,11 @@ export class MeetingRecordRepository {
     await this.em.persistAndFlush(entity);
     return entity;
   }
+
+  async findByMeeting(meetingId: string) {
+    return this.repository.find(
+      { meeting: meetingId },
+      { orderBy: { time: 'asc' } }
+    );
+  }
 }
