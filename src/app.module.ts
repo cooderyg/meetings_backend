@@ -10,6 +10,7 @@ import { createDatabaseConfig } from './config/database-config';
 import { AuthModule } from './domain/auth/auth.module';
 import { FileModule } from './domain/file/file.module';
 import { MeetingRecordModule } from './domain/meeting-record/meeting-record.module';
+import { SpaceModule } from './domain/space/space.module';
 import { UserModule } from './domain/user/user.module';
 import { WorkspaceMemberModule } from './domain/workspace-member/workspace-member.module';
 import { WorkspaceMemberRoleModule } from './domain/workspace-memer-role/workspace-member-role.module';
@@ -48,6 +49,7 @@ import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
     CacheModule,
     LangchainModule,
     StorageModule,
+    SpaceModule,
     SttModule,
     UserModule,
     AuthModule,
