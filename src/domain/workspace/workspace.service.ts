@@ -64,4 +64,12 @@ export class WorkspaceService {
   async findById(id: string) {
     return await this.workspaceRepository.findOne({ id });
   }
+
+  async findByUserId(userId: string) {
+    return await this.workspaceRepository.find({
+      members: {
+        user: userId,
+      },
+    });
+  }
 }
