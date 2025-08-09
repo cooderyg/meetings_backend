@@ -7,7 +7,6 @@ import {
 import { SttService } from './stt.service';
 import { OnEvent } from '@nestjs/event-emitter';
 import { Server, Socket } from 'socket.io';
-import { ResponseStreamingRecognizeData } from './stt.type';
 import {
   END_STREAMING_RECOGNIZE,
   ERROR_STREAMING_RECOGNIZE,
