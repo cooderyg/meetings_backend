@@ -22,6 +22,10 @@ export class UserRepository {
     return this.em.findOne(User, { uid });
   }
 
+  async findByEmail(email: string) {
+    return this.em.findOne(User, { email });
+  }
+
   async updateUser(user: User) {
     await this.em.persistAndFlush(user);
   }

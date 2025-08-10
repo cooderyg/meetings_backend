@@ -8,6 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { createDatabaseConfig } from './config/database-config';
 import { AuthModule } from './domain/auth/auth.module';
+import { DevTestModule } from './domain/dev-test/dev-test.module';
 import { FileModule } from './domain/file/file.module';
 import { MeetingRecordModule } from './domain/meeting-record/meeting-record.module';
 import { SpaceModule } from './domain/space/space.module';
@@ -23,6 +24,7 @@ import { AppConfig } from './shared/module/app-config/app-config';
 import { AppConfigModule } from './shared/module/app-config/app-config.module';
 import { LoggerModule } from './shared/module/logger/logger.module';
 import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
+import { WorkspaceMiddleware } from './shared/middleware/workspace.middleware';
 
 @Module({
   imports: [
@@ -53,6 +55,7 @@ import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
     SttModule,
     UserModule,
     AuthModule,
+    DevTestModule,
     WorkspaceModule,
     WorkspaceMemberModule,
     WorkspaceMemberRoleModule,
@@ -67,5 +70,6 @@ import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggingMiddleware).forRoutes('*');
+    consumer.apply(WorkspaceMiddleware).forRoutes('dev-test/workspace/:workspaceId/*');
   }
 }

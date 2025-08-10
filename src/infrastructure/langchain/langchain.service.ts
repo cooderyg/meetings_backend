@@ -89,7 +89,11 @@ export class LangchainService implements ILangchainService, OnModuleInit {
       const response = await model.invoke(messages);
       return response.content as string;
     } catch (error) {
-      this.logger.error(`LangChain text generation failed: ${error.message}`, error, 'LangchainService');
+      this.logger.error(
+        `LangChain text generation failed: ${error.message}`,
+        error,
+        'LangchainService'
+      );
       throw new AppException(ERROR_CODES.EXTERNAL_API_ERROR, {
         message: `Failed to generate text: ${error.message}`,
         details: { error: error.message },
@@ -110,7 +114,11 @@ export class LangchainService implements ILangchainService, OnModuleInit {
       const response = await structuredModel.invoke(messages);
       return response as T;
     } catch (error) {
-      this.logger.error(`LangChain structured output generation failed: ${error.message}`, error, 'LangchainService');
+      this.logger.error(
+        `LangChain structured output generation failed: ${error.message}`,
+        error,
+        'LangchainService'
+      );
       throw new AppException(ERROR_CODES.EXTERNAL_API_ERROR, {
         message: `Failed to generate structured output: ${error.message}`,
         details: { error: error.message },

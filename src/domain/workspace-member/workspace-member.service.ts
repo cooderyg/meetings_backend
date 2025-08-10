@@ -1,41 +1,28 @@
-import { EntityManager } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { WorkspaceMember } from './entity/workspace-member.entity';
+import { Injectable } from '@nestjs/common';
 import { IWorkspaceMemberCreateData } from './interfaces/workspace-member-create-data.interface';
+import { WorkspaceMemberRepository } from './workspace-member.repository';
 
+@Injectable()
 export class WorkspaceMemberService {
-  private readonly em: EntityManager;
-
-  constructor(
-    @InjectRepository(WorkspaceMember)
-    private readonly workspaceMemberRepository: EntityRepository<WorkspaceMember>
-  ) {
-    this.em = workspaceMemberRepository.getEntityManager();
-  }
+  constructor(private repository: WorkspaceMemberRepository) {}
 
   async findById(id: string) {
-    return this.em.findOne(WorkspaceMember, { id });
+    return this.repository.findById(id);
   }
 
   async createWorkspaceMember(args: IWorkspaceMemberCreateData) {
-    const newWorkspaceMember = this.workspaceMemberRepository.assign(
-      new WorkspaceMember(),
-      {
-        user: args.user,
-        workspace: args.workspace,
-        workspaceMemberRoles: [
-          {
-            role: args.role,
-          },
-        ],
-        firstName: args.firstName,
-        lastName: args.lastName,
-        imagePath: args.imagePath,
-        isActive: args.isActive,
-      }
+    return this.repository.create(args);
+  }
+
+  async findByUserAndWorkspace(userId: string, workspaceId: string) {
+    return this.repository.findByUserAndWorkspace(userId, workspaceId);
+  }
+
+  async isActiveMember(userId: string, workspaceId: string): Promise<boolean> {
+    const member = await this.repository.findActiveByUserAndWorkspace(
+      userId,
+      workspaceId
     );
-    await this.em.persistAndFlush(newWorkspaceMember);
-    return newWorkspaceMember;
+    return member !== null;
   }
 }
