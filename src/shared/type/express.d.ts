@@ -1,9 +1,12 @@
+import { AccessTokenPayload } from './token.type';
+
 declare global {
   namespace Express {
     interface Request {
       requestId?: string;
       apiVersion?: string;
-      user?: JwtPayload;
+      user?: AccessTokenPayload;
+      workspaceId?: string;
     }
   }
 }
