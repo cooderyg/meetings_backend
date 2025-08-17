@@ -6,6 +6,7 @@ import {
   HttpException,
   BadRequestException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { LoggerService } from '../module/logger/logger.service';
@@ -117,6 +118,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         return this.buildNotFoundErrorResponse(exception);
       }
 
+      // 인증 오류
+      if (exception instanceof UnauthorizedException) {
+        return this.buildUnauthorizedErrorResponse(exception);
+      }
+
       // 기타 HTTP 예외
       if (exception instanceof HttpException) {
         return this.buildHttpExceptionResponse(exception);
@@ -193,6 +199,23 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const errorResponse: ErrorResponse = {
       code: ERROR_CODES.RESOURCE_NOT_FOUND.code,
       message: '요청하신 정보를 찾을 수 없습니다',
+    };
+
+    return errorResponse;
+  }
+
+  /**
+   * 인증 오류에 대한 에러 응답 생성
+   *
+   * @param exception - UnauthorizedException 인스턴스
+   * @returns 에러 응답 객체
+   */
+  private buildUnauthorizedErrorResponse(
+    _exception: UnauthorizedException
+  ): ErrorResponse {
+    const errorResponse: ErrorResponse = {
+      code: ERROR_CODES.AUTH_UNAUTHORIZED.code,
+      message: ERROR_CODES.AUTH_UNAUTHORIZED.message,
     };
 
     return errorResponse;

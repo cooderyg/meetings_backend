@@ -1,20 +1,13 @@
-import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
-import { SpaceRepository } from './space.repository';
-import { Space } from './entity/space.entity';
-import { Resource, ResourceType } from '../resource/entity/resource.entity';
-import { Workspace } from '../workspace/entity/workspace.entity';
-import { WorkspaceMember } from '../workspace-member/entity/workspace-member.entity';
-import { AppException } from '../../shared/exception/app.exception';
+import { Injectable } from '@nestjs/common';
 import { ERROR_CODES } from '../../shared/const';
-
-export interface CreateSpaceDto {
-  title: string;
-  description?: string;
-  workspaceId: string;
-  ownerId: string;
-  parentPath?: string;
-}
+import { AppException } from '../../shared/exception/app.exception';
+import { Resource, ResourceType } from '../resource/entity/resource.entity';
+import { WorkspaceMember } from '../workspace-member/entity/workspace-member.entity';
+import { Workspace } from '../workspace/entity/workspace.entity';
+import { Space } from './entity/space.entity';
+import { CreateSpaceArgs } from './interfaces/args/create-space.args';
+import { SpaceRepository } from './space.repository';
 
 export interface UpdateSpaceDto {
   title?: string;
@@ -40,24 +33,46 @@ export class SpaceService {
     return await this.spaceRepository.findByWorkspace(workspaceId);
   }
 
-  async create(dto: CreateSpaceDto): Promise<Space> {
-    const workspace = this.em.assign(new Workspace(), { id: dto.workspaceId });
-    const owner = this.em.assign(new WorkspaceMember(), { id: dto.ownerId });
+  async findByWorkspaceAndUserId(
+    workspaceId: string,
+    userId: string
+  ): Promise<Space[]> {
+    return await this.spaceRepository.findByWorkspaceAndUserId(
+      workspaceId,
+      userId
+    );
+  }
+
+  async create(args: CreateSpaceArgs): Promise<Space> {
+    const workspace = await this.em.findOne(Workspace, {
+      id: args.workspaceId,
+    });
+    if (!workspace) {
+      throw new AppException(ERROR_CODES.RESOURCE_NOT_FOUND);
+    }
+
+    const owner = await this.em.findOne(WorkspaceMember, {
+      user: args.userId,
+      workspace: args.workspaceId,
+    });
+    if (!owner) {
+      throw new AppException(ERROR_CODES.RESOURCE_NOT_FOUND);
+    }
 
     const resource = this.em.assign(new Resource(), {
       workspace,
       owner,
       type: ResourceType.SPACE,
-      title: dto.title,
-      path: dto.parentPath
-        ? `${dto.parentPath}.${Date.now()}`
+      title: args.title,
+      path: args.parentPath
+        ? `${args.parentPath}.${Date.now()}`
         : String(Date.now()),
     });
 
     const space = this.em.assign(new Space(), {
       resource,
       workspace,
-      ...(dto.description !== undefined && { description: dto.description }),
+      ...(args.description !== undefined && { description: args.description }),
     });
 
     const result = await this.spaceRepository.create(space);

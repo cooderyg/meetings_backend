@@ -1,29 +1,36 @@
-import {
-  Body,
-  Controller,
-  Param,
-  Patch,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { NeedAuth } from '../../shared/decorator/need-auth.decorator';
 import { UserInfo } from '../../shared/decorator/user-info.decorator';
-import { AuthGuard } from '../../shared/guard/auth.guard';
 import { User } from '../user/entity/user.entity';
 import { CreateWorkspaceDto } from './dto/request/create-workspace.dto';
 import { UpdateWorkspaceNameDto } from './dto/request/update-workspace-name.dto';
 import { UpdateWorkspaceNameResDto } from './dto/response/update-workspace-name.res.dto';
-import { SubscriptionTier } from './entity/workspace.entity';
+import { SubscriptionTier, Workspace } from './entity/workspace.entity';
 import { WorkspaceService } from './workspace.service';
 
 @ApiTags('Workspace')
 @Controller('workspace')
 export class WorkspaceController {
   constructor(private readonly workspaceService: WorkspaceService) {}
+  @NeedAuth()
+  @Get()
+  @ApiOperation({
+    summary: 'Get workspaces',
+    description: 'Get all workspaces',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Workspaces fetched successfully',
+    type: () => Workspace,
+    isArray: true,
+  })
+  async getWorkspaces(@UserInfo() user: User): Promise<Workspace[]> {
+    const workspaces = await this.workspaceService.findByUserId(user.id);
+    return workspaces;
+  }
 
-  // @NeedAuth()
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @NeedAuth()
   @ApiOperation({
     summary: 'Create workspace',
     description: 'Create a new workspace',
@@ -44,6 +51,7 @@ export class WorkspaceController {
     return workspace;
   }
 
+  @NeedAuth()
   @Patch('name/:id')
   async updateWorkspaceName(
     @Body() data: UpdateWorkspaceNameDto,
