@@ -1,6 +1,6 @@
 import { Request } from 'express';
-import { User } from '../../domain/user/entity/user.entity';
+import { AccessTokenPayload } from './token.type';
 
 export interface IRequest extends Request {
-  user?: User;
+  user?: AccessTokenPayload;
 }

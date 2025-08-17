@@ -4,9 +4,9 @@
   "settings": {
     "width": 4000,
     "height": 4000,
-    "scrollTop": 0,
-    "scrollLeft": 0,
-    "zoomLevel": 1,
+    "scrollTop": -684.1112,
+    "scrollLeft": -126.6044,
+    "zoomLevel": 0.88,
     "show": 431,
     "database": 4,
     "databaseName": "meetings_backend_v1.0.1",
@@ -106,15 +106,15 @@
           "bgva2ks-Ep2zuJuImN9IB"
         ],
         "ui": {
-          "x": 40.5405,
-          "y": 464.8649,
+          "x": 44.4952,
+          "y": 445.5466,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753507611141,
+          "updateAt": 1754743320292,
           "createAt": 1753010000000
         }
       },
@@ -141,15 +141,15 @@
           "workspaces_updated_at"
         ],
         "ui": {
-          "x": 688.7327,
-          "y": 333.1556,
+          "x": 931.9145,
+          "y": 954.7465,
           "zIndex": 2,
           "widthName": 63,
           "widthComment": 74,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753505638394,
+          "updateAt": 1754741042607,
           "createAt": 1753010000000
         }
       },
@@ -183,15 +183,15 @@
           "workspace_members_updated_at"
         ],
         "ui": {
-          "x": 739.253,
-          "y": 658.5208,
+          "x": 759.7076,
+          "y": 75.5662,
           "zIndex": 2,
           "widthName": 112,
           "widthComment": 101,
           "color": ""
         },
         "meta": {
-          "updateAt": 1754399627076,
+          "updateAt": 1754741020778,
           "createAt": 1753010000000
         }
       },
@@ -216,15 +216,15 @@
           "roles_updated_at"
         ],
         "ui": {
-          "x": 645.0706,
-          "y": 48.5915,
+          "x": 1226.8887,
+          "y": 531.546,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753010754179,
+          "updateAt": 1754741025734,
           "createAt": 1753010000000
         }
       },
@@ -243,15 +243,15 @@
           "permissions_resource_subject"
         ],
         "ui": {
-          "x": 1392.5771,
-          "y": 323.5817,
+          "x": 1581.2136,
+          "y": 392.8998,
           "zIndex": 2,
           "widthName": 65,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753505799633,
+          "updateAt": 1754741013495,
           "createAt": 1753010000000
         }
       },
@@ -270,15 +270,15 @@
           "role_permissions_conditions"
         ],
         "ui": {
-          "x": 1438.4279,
-          "y": 47.6969,
+          "x": 1850.9276,
+          "y": 585.1967,
           "zIndex": 2,
           "widthName": 90,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753505545063,
+          "updateAt": 1754741029897,
           "createAt": 1753010000000
         }
       },
@@ -309,15 +309,15 @@
           "member_resource_permissions_updated_at"
         ],
         "ui": {
-          "x": 1353.0837,
-          "y": 633.9935,
+          "x": 1491.7201,
+          "y": 15.8118,
           "zIndex": 2,
           "widthName": 165,
           "widthComment": 93,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753506074051,
+          "updateAt": 1754741000139,
           "createAt": 1753010000000
         }
       },
@@ -351,15 +351,15 @@
           "resources_updated_at"
         ],
         "ui": {
-          "x": 47.7157,
-          "y": 877.9974,
+          "x": 128.5793,
+          "y": 1203.9975,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": "#FFE6E6"
         },
         "meta": {
-          "updateAt": 1753506085424,
+          "updateAt": 1754741443546,
           "createAt": 1753010000000
         }
       },
@@ -390,15 +390,15 @@
           "spaces_updated_at"
         ],
         "ui": {
-          "x": 17.5483,
-          "y": 1291.3405,
+          "x": 123.23,
+          "y": 874.2957,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": "#E6F3FF"
         },
         "meta": {
-          "updateAt": 1753506082656,
+          "updateAt": 1754741436958,
           "createAt": 1753010000000
         }
       },
@@ -436,15 +436,15 @@
           "aVqpXwehsrQFER9IdgnWT"
         ],
         "ui": {
-          "x": 1257.7924,
-          "y": 1234.7231,
+          "x": 848.7015,
+          "y": 1627.9049,
           "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": "#E6FFE6"
         },
         "meta": {
-          "updateAt": 1753594193213,
+          "updateAt": 1754741037059,
           "createAt": 1753010000000
         }
       },
@@ -516,15 +516,15 @@
           "x1GCEKpQzsuD3DkrVFnrU"
         ],
         "ui": {
-          "x": 827.0119,
-          "y": 1602.5965,
+          "x": 869.0574,
+          "y": 1367.3692,
           "zIndex": 101,
           "widthName": 113,
           "widthComment": 99,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753594239301,
+          "updateAt": 1754741034500,
           "createAt": 1753593690312
         }
       },
@@ -3128,8 +3128,8 @@
           "columnIds": [
             "users_id"
           ],
-          "x": 620.5405,
-          "y": 624.8649,
+          "x": 624.4952,
+          "y": 605.5466,
           "direction": 2
         },
         "end": {
@@ -3137,8 +3137,8 @@
           "columnIds": [
             "workspace_members_user_id"
           ],
-          "x": 739.253,
-          "y": 732.5208,
+          "x": 759.7076,
+          "y": 223.56619999999998,
           "direction": 1
         },
         "meta": {
@@ -3156,18 +3156,18 @@
           "columnIds": [
             "workspaces_id"
           ],
-          "x": 1068.2327,
-          "y": 557.1556,
-          "direction": 8
+          "x": 1058.4144999999999,
+          "y": 954.7465,
+          "direction": 4
         },
         "end": {
           "tableId": "workspace_members_table",
           "columnIds": [
             "workspace_members_workspace_id"
           ],
-          "x": 1106.7530000000002,
-          "y": 658.5208,
-          "direction": 4
+          "x": 1004.7076000000001,
+          "y": 371.5662,
+          "direction": 8
         },
         "meta": {
           "updateAt": 1753010000000,
@@ -3184,18 +3184,18 @@
           "columnIds": [
             "roles_id"
           ],
-          "x": 767.5706,
-          "y": 248.5915,
-          "direction": 8
+          "x": 1226.8887,
+          "y": 581.546,
+          "direction": 1
         },
         "end": {
           "tableId": "workspace_members_table",
           "columnIds": [
             "workspace_members_role_id"
           ],
-          "x": 861.753,
-          "y": 658.5208,
-          "direction": 4
+          "x": 1168.0409333333334,
+          "y": 371.5662,
+          "direction": 8
         },
         "meta": {
           "updateAt": 1753010000000,
@@ -3212,8 +3212,8 @@
           "columnIds": [
             "workspaces_id"
           ],
-          "x": 941.7327,
-          "y": 333.1556,
+          "x": 1311.4144999999999,
+          "y": 954.7465,
           "direction": 4
         },
         "end": {
@@ -3221,9 +3221,9 @@
           "columnIds": [
             "roles_workspace_id"
           ],
-          "x": 1012.5706,
-          "y": 248.5915,
-          "direction": 8
+          "x": 1226.8887,
+          "y": 681.546,
+          "direction": 1
         },
         "meta": {
           "updateAt": 1753010000000,
@@ -3240,8 +3240,8 @@
           "columnIds": [
             "roles_id"
           ],
-          "x": 1135.0706,
-          "y": 148.5915,
+          "x": 1716.8887,
+          "y": 631.546,
           "direction": 2
         },
         "end": {
@@ -3249,8 +3249,8 @@
           "columnIds": [
             "role_permissions_role_id"
           ],
-          "x": 1438.4279,
-          "y": 111.6969,
+          "x": 1850.9276,
+          "y": 649.1967,
           "direction": 1
         },
         "meta": {
@@ -3268,18 +3268,18 @@
           "columnIds": [
             "permissions_id"
           ],
-          "x": 1600.0771,
-          "y": 323.5817,
-          "direction": 4
+          "x": 1996.2136,
+          "y": 456.8998,
+          "direction": 2
         },
         "end": {
           "tableId": "role_permissions_table",
           "columnIds": [
             "role_permissions_permission_id"
           ],
-          "x": 1628.4279,
-          "y": 175.6969,
-          "direction": 8
+          "x": 2040.9276,
+          "y": 585.1967,
+          "direction": 4
         },
         "meta": {
           "updateAt": 1753010000000,
@@ -3296,8 +3296,8 @@
           "columnIds": [
             "workspace_members_id"
           ],
-          "x": 1229.2530000000002,
-          "y": 806.5208,
+          "x": 1249.7076,
+          "y": 223.56619999999998,
           "direction": 2
         },
         "end": {
@@ -3305,8 +3305,8 @@
           "columnIds": [
             "member_resource_permissions_workspace_member_id"
           ],
-          "x": 1353.0837,
-          "y": 769.9935,
+          "x": 1491.7201,
+          "y": 151.8118,
           "direction": 1
         },
         "meta": {
@@ -3324,18 +3324,18 @@
           "columnIds": [
             "permissions_id"
           ],
-          "x": 1600.0771,
-          "y": 451.5817,
-          "direction": 8
+          "x": 1788.7136,
+          "y": 392.8998,
+          "direction": 4
         },
         "end": {
           "tableId": "member_resource_permissions_table",
           "columnIds": [
             "member_resource_permissions_permission_id"
           ],
-          "x": 1635.0837,
-          "y": 633.9935,
-          "direction": 4
+          "x": 1773.7201,
+          "y": 287.8118,
+          "direction": 8
         },
         "meta": {
           "updateAt": 1753010000000,
@@ -3352,8 +3352,8 @@
           "columnIds": [
             "workspaces_id"
           ],
-          "x": 688.7327,
-          "y": 445.1556,
+          "x": 931.9145,
+          "y": 1122.7465,
           "direction": 1
         },
         "end": {
@@ -3361,9 +3361,9 @@
           "columnIds": [
             "resources_workspace_id"
           ],
-          "x": 292.71569999999997,
-          "y": 877.9974,
-          "direction": 4
+          "x": 618.5793,
+          "y": 1305.9975,
+          "direction": 2
         },
         "meta": {
           "updateAt": 1753010000000,
@@ -3380,17 +3380,17 @@
           "columnIds": [
             "workspace_members_id"
           ],
-          "x": 739.253,
-          "y": 880.5208,
-          "direction": 1
+          "x": 841.3742666666667,
+          "y": 371.5662,
+          "direction": 8
         },
         "end": {
           "tableId": "resources_table",
           "columnIds": [
             "resources_owner_id"
           ],
-          "x": 537.7157,
-          "y": 923.3307333333332,
+          "x": 618.5793,
+          "y": 1237.9975,
           "direction": 2
         },
         "meta": {
@@ -3408,18 +3408,18 @@
           "columnIds": [
             "resources_id"
           ],
-          "x": 292.71569999999997,
-          "y": 1149.9974,
-          "direction": 8
+          "x": 373.5793,
+          "y": 1203.9975,
+          "direction": 4
         },
         "end": {
           "tableId": "spaces_table",
           "columnIds": [
             "spaces_id"
           ],
-          "x": 278.5483,
-          "y": 1291.3405,
-          "direction": 4
+          "x": 384.23,
+          "y": 1050.2957000000001,
+          "direction": 8
         },
         "meta": {
           "updateAt": 1753010000000,
@@ -3436,8 +3436,8 @@
           "columnIds": [
             "resources_id"
           ],
-          "x": 537.7157,
-          "y": 1013.9973999999999,
+          "x": 618.5793,
+          "y": 1441.9975,
           "direction": 2
         },
         "end": {
@@ -3445,8 +3445,8 @@
           "columnIds": [
             "meetings_id"
           ],
-          "x": 1257.7924,
-          "y": 1358.7231,
+          "x": 848.7015,
+          "y": 1751.9049,
           "direction": 1
         },
         "meta": {
@@ -3464,8 +3464,8 @@
           "columnIds": [
             "users_id"
           ],
-          "x": 330.5405,
-          "y": 464.8649,
+          "x": 334.4952,
+          "y": 445.5466,
           "direction": 4
         },
         "end": {
@@ -3492,17 +3492,17 @@
           "columnIds": [
             "workspaces_id"
           ],
-          "x": 815.2327,
-          "y": 557.1556,
-          "direction": 8
+          "x": 931.9145,
+          "y": 1010.7465,
+          "direction": 1
         },
         "end": {
           "tableId": "spaces_table",
           "columnIds": [
             "sqLU0Xk-c8H1ZNSSiOpXZ"
           ],
-          "x": 539.5483,
-          "y": 1379.3405,
+          "x": 645.23,
+          "y": 962.2957,
           "direction": 2
         },
         "meta": {
@@ -3520,17 +3520,17 @@
           "columnIds": [
             "workspaces_id"
           ],
-          "x": 1194.7327,
-          "y": 445.1556,
-          "direction": 2
+          "x": 1184.9144999999999,
+          "y": 1178.7465,
+          "direction": 8
         },
         "end": {
           "tableId": "meetings_table",
           "columnIds": [
             "cHY4JcazWPKJJKCfv7T1X"
           ],
-          "x": 1506.7924,
-          "y": 1234.7231,
+          "x": 1222.2015000000001,
+          "y": 1627.9049,
           "direction": 4
         },
         "meta": {
@@ -3548,8 +3548,8 @@
           "columnIds": [
             "resources_id"
           ],
-          "x": 537.7157,
-          "y": 1104.6640666666665,
+          "x": 618.5793,
+          "y": 1373.9975,
           "direction": 2
         },
         "end": {
@@ -3557,8 +3557,8 @@
           "columnIds": [
             "qdd87J9g9ZBMHe9uRcm12"
           ],
-          "x": 827.0119,
-          "y": 1702.5965,
+          "x": 869.0574,
+          "y": 1467.3692,
           "direction": 1
         },
         "meta": {
@@ -3576,18 +3576,18 @@
           "columnIds": [
             "meetings_id"
           ],
-          "x": 1382.2924,
-          "y": 1482.7231,
-          "direction": 8
+          "x": 973.2015,
+          "y": 1627.9049,
+          "direction": 4
         },
         "end": {
           "tableId": "yQAYMYPCCCC1oqZVEcslI",
           "columnIds": [
             "Mq8CfHEeJ99ULdKg9FS6X"
           ],
-          "x": 1318.0119,
-          "y": 1702.5965,
-          "direction": 2
+          "x": 1114.5574000000001,
+          "y": 1567.3692,
+          "direction": 8
         },
         "meta": {
           "updateAt": 1753593860299,
@@ -3604,8 +3604,8 @@
           "columnIds": [
             "meetings_id"
           ],
-          "x": 1755.7924,
-          "y": 1358.7231,
+          "x": 1346.7015000000001,
+          "y": 1689.9049,
           "direction": 2
         },
         "end": {
@@ -3632,9 +3632,9 @@
           "columnIds": [
             "meetings_id"
           ],
-          "x": 1631.2924,
-          "y": 1482.7231,
-          "direction": 8
+          "x": 1346.7015000000001,
+          "y": 1813.9049,
+          "direction": 2
         },
         "end": {
           "tableId": "-tF8ld-PoGml9-PKl5zje",
@@ -3658,15 +3658,15 @@
         "id": "c7mv5W_x9ixH-Gvje4oYB",
         "value": "\b미팅 상태\n  DRAFT = 'DRAFT'\n  IN_PROGRESS = 'IN_PROGRESS'\n  COMPLETED = 'COMPLETED'\n  PAUSED = 'PAUSED'",
         "ui": {
-          "x": 1235.9555,
-          "y": 931.8472,
+          "x": 1564.3646,
+          "y": 909.1199,
           "zIndex": 79,
           "width": 238,
           "height": 100,
           "color": ""
         },
         "meta": {
-          "updateAt": 1753594057233,
+          "updateAt": 1754741040112,
           "createAt": 1753593304521
         }
       }
