@@ -7,8 +7,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable, Logger } from '@nestjs/common';
-import { AppException } from '../../../shared/exception/app.exception';
-import { ERROR_CODES } from '../../../shared/const/error-code.const';
+import { AppError } from '../../../shared/exception/app.error';
 import { AppConfig } from '../../../shared/module/app-config/app-config';
 import {
   IStorageService,
@@ -61,10 +60,7 @@ export class S3Service implements IStorageService {
       return { key, url };
     } catch (error) {
       this.logger.error(`Failed to upload file: ${key}`, error);
-      throw new AppException(ERROR_CODES.STORAGE_UPLOAD_FAILED, {
-        message: `Failed to upload file: ${error.message}`,
-        details: { key, error: error.message },
-      });
+      throw new AppError('storage.upload.failed');
     }
   }
 
@@ -78,10 +74,7 @@ export class S3Service implements IStorageService {
       const response = await this.s3Client.send(command);
 
       if (!response.Body) {
-        throw new AppException(ERROR_CODES.STORAGE_FILE_NOT_FOUND, {
-          message: `File not found: ${key}`,
-          details: { key },
-        });
+        throw new AppError('storage.file.notFound');
       }
 
       const chunks: Uint8Array[] = [];
@@ -94,10 +87,7 @@ export class S3Service implements IStorageService {
       return Buffer.concat(chunks);
     } catch (error) {
       this.logger.error(`Failed to download file: ${key}`, error);
-      throw new AppException(ERROR_CODES.STORAGE_DOWNLOAD_FAILED, {
-        message: `Failed to download file: ${error.message}`,
-        details: { key, error: error.message },
-      });
+      throw new AppError('storage.download.failed');
     }
   }
 
@@ -112,10 +102,7 @@ export class S3Service implements IStorageService {
       this.logger.log(`File deleted successfully: ${key}`);
     } catch (error) {
       this.logger.error(`Failed to delete file: ${key}`, error);
-      throw new AppException(ERROR_CODES.STORAGE_DELETE_FAILED, {
-        message: `Failed to delete file: ${error.message}`,
-        details: { key, error: error.message },
-      });
+      throw new AppError('storage.delete.failed');
     }
   }
 
@@ -133,10 +120,7 @@ export class S3Service implements IStorageService {
       return url;
     } catch (error) {
       this.logger.error(`Failed to generate presigned URL: ${key}`, error);
-      throw new AppException(ERROR_CODES.STORAGE_PRESIGNED_URL_FAILED, {
-        message: `Failed to generate presigned URL: ${error.message}`,
-        details: { key, error: error.message },
-      });
+      throw new AppError('storage.presignedUrl.failed');
     }
   }
 
@@ -158,10 +142,7 @@ export class S3Service implements IStorageService {
       }
 
       this.logger.error(`Failed to check file existence: ${key}`, error);
-      throw new AppException(ERROR_CODES.STORAGE_CHECK_FAILED, {
-        message: `Failed to check file existence: ${error.message}`,
-        details: { key, error: error.message },
-      });
+      throw new AppError('storage.check.failed');
     }
   }
 }

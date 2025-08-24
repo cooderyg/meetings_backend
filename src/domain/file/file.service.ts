@@ -1,7 +1,6 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { STORAGE_SERVICE, IStorageService } from '../../infrastructure/storage';
-import { AppException } from '../../shared/exception/app.exception';
-import { ERROR_CODES } from '../../shared/const/error-code.const';
+import { AppError } from '../../shared/exception/app.error';
 import {
   FileUploadResult,
   FileValidationOptions,
@@ -68,14 +67,7 @@ export class FileService {
           error: error.message,
         }
       );
-      throw new AppException(ERROR_CODES.STORAGE_UPLOAD_FAILED, {
-        message: `파일 업로드에 실패했습니다: ${error.message}`,
-        details: {
-          originalName: file.originalname,
-          size: file.size,
-          contentType: file.mimetype,
-        },
-      });
+      throw new AppError('storage.upload.failed');
     }
   }
 
@@ -84,7 +76,9 @@ export class FileService {
     options?: FileValidationOptions
   ): Promise<FileUploadResult[]> {
     if (!files || files.length === 0) {
-      throw new BadRequestException('업로드할 파일이 없습니다');
+      throw new AppError('validation.form.failed', {
+        fields: { files: ['업로드할 파일이 없습니다'] },
+      });
     }
 
     // 병렬로 업로드 처리
@@ -122,10 +116,7 @@ export class FileService {
         'FileService',
         { key, error: error.message }
       );
-      throw new AppException(ERROR_CODES.STORAGE_PRESIGNED_URL_FAILED, {
-        message: `파일 URL 생성에 실패했습니다: ${error.message}`,
-        details: { key },
-      });
+      throw new AppError('storage.presignedUrl.failed');
     }
   }
 
@@ -140,10 +131,7 @@ export class FileService {
         'FileService',
         { key, error: error.message }
       );
-      throw new AppException(ERROR_CODES.STORAGE_DELETE_FAILED, {
-        message: `파일 삭제에 실패했습니다: ${error.message}`,
-        details: { key },
-      });
+      throw new AppError('storage.delete.failed');
     }
   }
 
@@ -153,9 +141,9 @@ export class FileService {
   ): void {
     // 파일 크기 검증
     if (options.maxSize && file.size > options.maxSize) {
-      throw new BadRequestException(
-        `파일 크기가 너무 큽니다. 최대 ${Math.round(options.maxSize / 1024 / 1024)}MB까지 허용됩니다.`
-      );
+      throw new AppError('validation.form.failed', {
+        fields: { size: [`파일 크기가 너무 큽니다. 최대 ${Math.round(options.maxSize / 1024 / 1024)}MB까지 허용됩니다.`] },
+      });
     }
 
     // MIME 타입 검증
@@ -163,24 +151,26 @@ export class FileService {
       options.allowedMimeTypes &&
       !options.allowedMimeTypes.includes(file.mimetype)
     ) {
-      throw new BadRequestException(
-        `지원하지 않는 파일 형식입니다. 허용된 형식: ${options.allowedMimeTypes.join(', ')}`
-      );
+      throw new AppError('validation.form.failed', {
+        fields: { mimetype: [`지원하지 않는 파일 형식입니다. 허용된 형식: ${options.allowedMimeTypes.join(', ')}`] },
+      });
     }
 
     // 파일 확장자 검증
     if (options.allowedExtensions) {
       const fileExtension = path.extname(file.originalname).toLowerCase();
       if (!options.allowedExtensions.includes(fileExtension)) {
-        throw new BadRequestException(
-          `지원하지 않는 파일 확장자입니다. 허용된 확장자: ${options.allowedExtensions.join(', ')}`
-        );
+        throw new AppError('validation.form.failed', {
+          fields: { extension: [`지원하지 않는 파일 확장자입니다. 허용된 확장자: ${options.allowedExtensions.join(', ')}`] },
+        });
       }
     }
 
     // 기본 검증
     if (!file.buffer || file.buffer.length === 0) {
-      throw new BadRequestException('빈 파일은 업로드할 수 없습니다');
+      throw new AppError('validation.form.failed', {
+        fields: { file: ['빈 파일은 업로드할 수 없습니다'] },
+      });
     }
   }
 

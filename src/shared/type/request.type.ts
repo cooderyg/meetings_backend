@@ -3,4 +3,5 @@ import { AccessTokenPayload } from './token.type';
 
 export interface IRequest extends Request {
   user?: AccessTokenPayload;
+  workspaceMemberId?: string;
 }

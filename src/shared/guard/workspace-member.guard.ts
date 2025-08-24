@@ -1,8 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import type { Request } from 'express';
 import { WorkspaceMemberService } from '../../domain/workspace-member/workspace-member.service';
-import { AppException } from '../exception/app.exception';
-import { ERROR_CODES } from '../const/error-code.const';
+import { AppError } from '../exception/app.error';
+import { IRequest } from '../type/request.type';
 
 @Injectable()
 export class WorkspaceMemberGuard implements CanActivate {
@@ -11,46 +10,36 @@ export class WorkspaceMemberGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
+    const request = context.switchToHttp().getRequest<IRequest>();
     const { workspaceId, user } = request;
 
     if (!user) {
-      throw new AppException(ERROR_CODES.AUTH_UNAUTHORIZED);
+      throw new AppError('auth.validate.failed');
     }
 
     if (!workspaceId) {
-      throw new AppException(ERROR_CODES.AUTH_FORBIDDEN, {
-        message: 'Workspace ID가 필요합니다.',
-      });
+      throw new AppError('auth.authorize.denied');
     }
 
     try {
-      const isActiveMember = await this.workspaceMemberService.isActiveMember(
+      const member = await this.workspaceMemberService.findByUserAndWorkspace(
         user.id,
         workspaceId
       );
 
-      if (!isActiveMember) {
-        throw new AppException(ERROR_CODES.AUTH_FORBIDDEN, {
-          message: '해당 워크스페이스의 멤버가 아닙니다.',
-          details: {
-            userId: user.id,
-            workspaceId,
-          },
-        });
+      if (!member || !member.isActive) {
+        throw new AppError('workspace.access.memberRequired');
       }
+
+      // request에 workspaceMemberId 추가
+      request.workspaceMemberId = member.id;
 
       return true;
     } catch (error) {
-      if (error instanceof AppException) {
+      if (error instanceof AppError) {
         throw error;
       }
-      throw new AppException(ERROR_CODES.AUTH_FORBIDDEN, {
-        message: '워크스페이스 멤버십 확인 중 오류가 발생했습니다.',
-        details: {
-          error: error instanceof Error ? error.message : 'Unknown error',
-        },
-      });
+      throw new AppError('workspace.access.denied');
     }
   }
 }

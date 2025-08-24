@@ -21,6 +21,7 @@ export enum MeetingStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
   PAUSED = 'PAUSED',
+  PUBLISHED = 'PUBLISHED',
 }
 
 @Entity({ tableName: 'meetings' })

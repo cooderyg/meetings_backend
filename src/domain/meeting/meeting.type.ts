@@ -1,8 +1,9 @@
 /* eslint-disable */
 import { Meeting } from './entity/meeting.entity';
+import { Resource } from '../resource/entity/resource.entity';
 
 interface MeetingId {
-  resource: string;
+  resource: Resource;
 }
 
 export interface MeetingUpdate

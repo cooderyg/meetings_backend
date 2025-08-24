@@ -2,8 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ChatOpenAI } from '@langchain/openai';
 import { AppConfig } from '../../shared/module/app-config/app-config';
 import { LoggerService } from '../../shared/module/logger/logger.service';
-import { AppException } from '../../shared/exception/app.exception';
-import { ERROR_CODES } from '../../shared/const/error-code.const';
+import { AppError } from '../../shared/exception/app.error';
 import {
   ILangchainService,
   GenerateOptions,
@@ -24,9 +23,7 @@ export class LangchainService implements ILangchainService, OnModuleInit {
   ) {
     const apiKey = this.appConfig.langchain.openaiApiKey;
     if (!apiKey) {
-      throw new AppException(ERROR_CODES.SYSTEM_INTERNAL_ERROR, {
-        message: 'OpenAI API key is not configured',
-      });
+      throw new AppError('system.internal.error');
     }
 
     this.defaultModel = new ChatOpenAI({
@@ -94,10 +91,7 @@ export class LangchainService implements ILangchainService, OnModuleInit {
         error,
         'LangchainService'
       );
-      throw new AppException(ERROR_CODES.EXTERNAL_API_ERROR, {
-        message: `Failed to generate text: ${error.message}`,
-        details: { error: error.message },
-      });
+      throw new AppError('external.api.error');
     }
   }
 
@@ -119,10 +113,7 @@ export class LangchainService implements ILangchainService, OnModuleInit {
         error,
         'LangchainService'
       );
-      throw new AppException(ERROR_CODES.EXTERNAL_API_ERROR, {
-        message: `Failed to generate structured output: ${error.message}`,
-        details: { error: error.message },
-      });
+      throw new AppError('external.api.error');
     }
   }
 

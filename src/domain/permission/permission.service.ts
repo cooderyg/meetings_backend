@@ -215,14 +215,20 @@ export class PermissionService {
     const member =
       await this.permissionRepository.findMemberWithRolePermissions(memberId);
 
-    if (!member?.workspaceMemberRoles || member.workspaceMemberRoles.length === 0) return false;
+    if (
+      !member?.workspaceMemberRoles ||
+      member.workspaceMemberRoles.length === 0
+    )
+      return false;
 
     // 다중 역할 중 하나라도 권한이 있으면 허용
-    return member.workspaceMemberRoles.getItems().some(wmr =>
-      wmr.role.rolePermissions
-        .getItems()
-        .some((rp) => rp.permission.covers(action, resourceSubject))
-    );
+    return member.workspaceMemberRoles
+      .getItems()
+      .some((wmr) =>
+        wmr.role.rolePermissions
+          .getItems()
+          .some((rp) => rp.permission.covers(action, resourceSubject))
+      );
   }
 
   /**
