@@ -1,227 +1,204 @@
-import { USER_MESSAGES } from './error-message.const';
-
 /**
- * 애플리케이션 에러 정의 객체
+ * 자기 설명적 에러 코드 정의
  *
- * 애플리케이션에서 사용하는 모든 에러를 정의합니다.
- * 각 에러는 카테고리별로 그룹화되어 있으며, 코드, 메시지, HTTP 상태코드를 포함합니다.
+ * 각 에러 코드는 도메인별로 분류되며, 코드명 자체가 의미를 설명합니다.
+ * 클라이언트에서 i18n을 통해 메시지를 처리하므로 서버는 코드와 컨텍스트만 제공합니다.
  *
- * 카테고리 배정:
- * - AUTH_xxx: 인증/권한 관련 (001~099)
- * - VAL_xxx: 입력값 검증 관련 (001~099)
- * - RES_xxx: 리소스 CRUD 관련 (001~099)
- * - BIZ_xxx: 비즈니스 로직 관련 (001~099)
- * - EXT_xxx: 외부 서비스 연동 관련 (001~099)
- * - SYS_xxx: 시스템/서버 관련 (001~099)
+ * 도메인별 분류:
+ * - AUTH_*: 인증/권한 관련
+ * - MEETING_*: 미팅 도메인 관련
+ * - WORKSPACE_*: 워크스페이스 도메인 관련
+ * - RESOURCE_*: 공통 리소스 관련
+ * - VALIDATION_*: 입력값 검증 관련
+ * - STORAGE_*: 파일 저장소 관련
+ * - STT_*: 음성 인식 관련
+ * - SYSTEM_*: 시스템/서버 관련
  *
  * @example
  * ```typescript
- * // 사용법
- * throw new AppException(ERROR_CODES.AUTH_UNAUTHORIZED);
- *
- * // API 응답에서는 코드로 나타남
- * { "code": "AUTH_001", "message": "로그인이 필요합니다" }
+ * throw new AppException('MEETING_CANNOT_PUBLISH_DRAFT', {
+ *   currentStatus: 'DRAFT',
+ *   requiredStatus: 'COMPLETED'
+ * });
+ * 
+ * // API 응답
+ * {
+ *   "error": {
+ *     "code": "MEETING_CANNOT_PUBLISH_DRAFT",
+ *     "context": {
+ *       "currentStatus": "DRAFT",
+ *       "requiredStatus": "COMPLETED"
+ *     }
+ *   }
+ * }
  * ```
  */
+
+// 에러 코드 타입 정의
+export type ErrorCode =
+  // 인증/권한 관련
+  | 'AUTH_UNAUTHORIZED'
+  | 'AUTH_TOKEN_EXPIRED'
+  | 'AUTH_FORBIDDEN'
+  
+  // 미팅 도메인 관련
+  | 'MEETING_CANNOT_PUBLISH_DRAFT'
+  | 'MEETING_ALREADY_PUBLISHED'
+  | 'MEETING_IN_PROGRESS_CANNOT_DELETE'
+  | 'MEETING_COMPLETED_CANNOT_EDIT'
+  | 'MEETING_DELETED_CANNOT_ACCESS'
+  | 'MEETING_OWNER_REQUIRED'
+  | 'MEETING_PARTICIPANT_LIMIT_EXCEEDED'
+  | 'MEETING_INVALID_STATUS_TRANSITION'
+  | 'MEETING_RECORD_NOT_FOUND'
+  | 'MEETING_SUMMARY_GENERATION_FAILED'
+  | 'MEETING_TRANSCRIPTION_IN_PROGRESS'
+  | 'MEETING_TRANSCRIPTION_FAILED'
+  
+  // 워크스페이스 도메인 관련
+  | 'WORKSPACE_MEMBER_REQUIRED'
+  | 'WORKSPACE_ACCESS_DENIED'
+  | 'WORKSPACE_OWNER_REQUIRED'
+  | 'WORKSPACE_INVITATION_EXPIRED'
+  | 'WORKSPACE_MEMBER_LIMIT_EXCEEDED'
+  
+  // 공통 리소스 관련
+  | 'RESOURCE_NOT_FOUND'
+  | 'RESOURCE_DUPLICATE'
+  | 'RESOURCE_ACCESS_DENIED'
+  
+  // 입력값 검증 관련
+  | 'VALIDATION_FAILED'
+  | 'VALIDATION_INVALID_INPUT'
+  | 'VALIDATION_INVALID_PARAM'
+  
+  // 파일 저장소 관련
+  | 'STORAGE_UPLOAD_FAILED'
+  | 'STORAGE_DOWNLOAD_FAILED'
+  | 'STORAGE_DELETE_FAILED'
+  | 'STORAGE_FILE_NOT_FOUND'
+  | 'STORAGE_PRESIGNED_URL_FAILED'
+  | 'STORAGE_CHECK_FAILED'
+  
+  // 음성 인식 관련
+  | 'STT_SERVICE_ERROR'
+  | 'STT_NO_RESULTS'
+  | 'STT_NO_ALTERNATIVES'
+  
+  // 시스템/서버 관련
+  | 'SYSTEM_INTERNAL_ERROR'
+  | 'SYSTEM_SERVICE_UNAVAILABLE'
+  | 'EXTERNAL_API_ERROR'
+  | 'EXTERNAL_DATABASE_ERROR';
+
+/**
+ * 에러 코드별 HTTP 상태코드 및 로그 레벨 정의
+ */
+export const ERROR_DEFINITIONS: Record<ErrorCode, { httpStatus: number; logLevel: 'error' | 'warn' | 'info' | 'debug' | 'verbose' }> = {
+  // 인증/권한
+  AUTH_UNAUTHORIZED: { httpStatus: 401, logLevel: 'warn' },
+  AUTH_TOKEN_EXPIRED: { httpStatus: 401, logLevel: 'warn' },
+  AUTH_FORBIDDEN: { httpStatus: 403, logLevel: 'warn' },
+
+  // 미팅 도메인
+  MEETING_CANNOT_PUBLISH_DRAFT: { httpStatus: 400, logLevel: 'warn' },
+  MEETING_ALREADY_PUBLISHED: { httpStatus: 400, logLevel: 'warn' },
+  MEETING_IN_PROGRESS_CANNOT_DELETE: { httpStatus: 400, logLevel: 'warn' },
+  MEETING_COMPLETED_CANNOT_EDIT: { httpStatus: 400, logLevel: 'warn' },
+  MEETING_DELETED_CANNOT_ACCESS: { httpStatus: 404, logLevel: 'warn' },
+  MEETING_OWNER_REQUIRED: { httpStatus: 403, logLevel: 'warn' },
+  MEETING_PARTICIPANT_LIMIT_EXCEEDED: { httpStatus: 400, logLevel: 'warn' },
+  MEETING_INVALID_STATUS_TRANSITION: { httpStatus: 400, logLevel: 'warn' },
+  MEETING_RECORD_NOT_FOUND: { httpStatus: 404, logLevel: 'info' },
+  MEETING_SUMMARY_GENERATION_FAILED: { httpStatus: 502, logLevel: 'error' },
+  MEETING_TRANSCRIPTION_IN_PROGRESS: { httpStatus: 202, logLevel: 'info' },
+  MEETING_TRANSCRIPTION_FAILED: { httpStatus: 502, logLevel: 'error' },
+
+  // 워크스페이스 도메인
+  WORKSPACE_MEMBER_REQUIRED: { httpStatus: 403, logLevel: 'warn' },
+  WORKSPACE_ACCESS_DENIED: { httpStatus: 403, logLevel: 'warn' },
+  WORKSPACE_OWNER_REQUIRED: { httpStatus: 403, logLevel: 'warn' },
+  WORKSPACE_INVITATION_EXPIRED: { httpStatus: 400, logLevel: 'info' },
+  WORKSPACE_MEMBER_LIMIT_EXCEEDED: { httpStatus: 429, logLevel: 'warn' },
+
+  // 공통 리소스
+  RESOURCE_NOT_FOUND: { httpStatus: 404, logLevel: 'info' },
+  RESOURCE_DUPLICATE: { httpStatus: 409, logLevel: 'warn' },
+  RESOURCE_ACCESS_DENIED: { httpStatus: 403, logLevel: 'warn' },
+
+  // 입력값 검증
+  VALIDATION_FAILED: { httpStatus: 400, logLevel: 'info' },
+  VALIDATION_INVALID_INPUT: { httpStatus: 400, logLevel: 'info' },
+  VALIDATION_INVALID_PARAM: { httpStatus: 400, logLevel: 'info' },
+
+  // 파일 저장소
+  STORAGE_UPLOAD_FAILED: { httpStatus: 502, logLevel: 'error' },
+  STORAGE_DOWNLOAD_FAILED: { httpStatus: 502, logLevel: 'error' },
+  STORAGE_DELETE_FAILED: { httpStatus: 502, logLevel: 'error' },
+  STORAGE_FILE_NOT_FOUND: { httpStatus: 404, logLevel: 'warn' },
+  STORAGE_PRESIGNED_URL_FAILED: { httpStatus: 502, logLevel: 'error' },
+  STORAGE_CHECK_FAILED: { httpStatus: 502, logLevel: 'error' },
+
+  // 음성 인식
+  STT_SERVICE_ERROR: { httpStatus: 502, logLevel: 'error' },
+  STT_NO_RESULTS: { httpStatus: 400, logLevel: 'warn' },
+  STT_NO_ALTERNATIVES: { httpStatus: 400, logLevel: 'warn' },
+
+  // 시스템/서버
+  SYSTEM_INTERNAL_ERROR: { httpStatus: 500, logLevel: 'error' },
+  SYSTEM_SERVICE_UNAVAILABLE: { httpStatus: 503, logLevel: 'error' },
+  EXTERNAL_API_ERROR: { httpStatus: 502, logLevel: 'error' },
+  EXTERNAL_DATABASE_ERROR: { httpStatus: 500, logLevel: 'error' },
+};
+
+// 하위 호환성을 위한 Legacy 상수 (점진적 마이그레이션용)
 export const ERROR_CODES = {
-  // =================
-  // 인증/권한 관련 (001~099)
-  // =================
-  AUTH_UNAUTHORIZED: {
-    code: 'AUTH_001',
-    message: USER_MESSAGES['AUTH_001'],
-    httpStatus: 401,
-    logLevel: 'warn' as const,
-  },
-  AUTH_TOKEN_EXPIRED: {
-    code: 'AUTH_002',
-    message: USER_MESSAGES['AUTH_002'],
-    httpStatus: 401,
-    logLevel: 'warn' as const,
-  },
-  AUTH_FORBIDDEN: {
-    code: 'AUTH_003',
-    message: USER_MESSAGES['AUTH_003'],
-    httpStatus: 403,
-    logLevel: 'warn' as const,
-  },
-
-  // =================
-  // 입력값 검증 관련 (001~099)
-  // =================
-  VALIDATION_FAILED: {
-    code: 'VAL_001',
-    message: USER_MESSAGES['VAL_001'],
-    httpStatus: 400,
-    logLevel: 'info' as const,
-  },
-  VALIDATION_INVALID_INPUT: {
-    code: 'VAL_002',
-    message: USER_MESSAGES['VAL_002'],
-    httpStatus: 400,
-    logLevel: 'info' as const,
-  },
-  VALIDATION_INVALID_PARAM: {
-    code: 'VAL_003',
-    message: USER_MESSAGES['VAL_003'],
-    httpStatus: 400,
-    logLevel: 'info' as const,
-  },
-
-  // =================
-  // 리소스 CRUD 관련 (001~099)
-  // =================
-  RESOURCE_NOT_FOUND: {
-    code: 'RES_001',
-    message: USER_MESSAGES['RES_001'],
-    httpStatus: 404,
-    logLevel: 'info' as const,
-  },
-  RESOURCE_DUPLICATE: {
-    code: 'RES_002',
-    message: USER_MESSAGES['RES_002'],
-    httpStatus: 409,
-    logLevel: 'warn' as const,
-  },
-
-  // =================
-  // 비즈니스 로직 관련 (001~099)
-  // =================
-  BUSINESS_INSUFFICIENT_FUNDS: {
-    code: 'BIZ_001',
-    message: USER_MESSAGES['BIZ_001'],
-    httpStatus: 400,
-    logLevel: 'warn' as const,
-  },
-  BUSINESS_PAYMENT_FAILED: {
-    code: 'BIZ_002',
-    message: USER_MESSAGES['BIZ_002'],
-    httpStatus: 400,
-    logLevel: 'warn' as const,
-  },
-  BUSINESS_ORDER_ALREADY_PROCESSED: {
-    code: 'BIZ_003',
-    message: USER_MESSAGES['BIZ_003'],
-    httpStatus: 400,
-    logLevel: 'warn' as const,
-  },
-  BUSINESS_PRODUCT_OUT_OF_STOCK: {
-    code: 'BIZ_004',
-    message: USER_MESSAGES['BIZ_004'],
-    httpStatus: 400,
-    logLevel: 'warn' as const,
-  },
-  BUSINESS_USER_QUOTA_EXCEEDED: {
-    code: 'BIZ_005',
-    message: USER_MESSAGES['BIZ_005'],
-    httpStatus: 429,
-    logLevel: 'warn' as const,
-  },
-  BUSINESS_SUBSCRIPTION_REQUIRED: {
-    code: 'BIZ_006',
-    message: USER_MESSAGES['BIZ_006'],
-    httpStatus: 402,
-    logLevel: 'warn' as const,
-  },
-  BUSINESS_INVALID_COUPON: {
-    code: 'BIZ_007',
-    message: USER_MESSAGES['BIZ_007'],
-    httpStatus: 400,
-    logLevel: 'warn' as const,
-  },
-  BUSINESS_INVALID_TRANSACTION: {
-    code: 'BIZ_008',
-    message: USER_MESSAGES['BIZ_008'],
-    httpStatus: 400,
-    logLevel: 'warn' as const,
-  },
-
-  // =================
-  // 외부 서비스 연동 관련 (001~099)
-  // =================
-  EXTERNAL_API_ERROR: {
-    code: 'EXT_001',
-    message: USER_MESSAGES['EXT_001'],
-    httpStatus: 502,
-    logLevel: 'error' as const,
-  },
-  EXTERNAL_DATABASE_ERROR: {
-    code: 'EXT_002',
-    message: USER_MESSAGES['EXT_002'],
-    httpStatus: 500,
-    logLevel: 'error' as const,
-  },
-  STT_SERVICE_ERROR: {
-    code: 'EXT_003',
-    message: USER_MESSAGES['EXT_003'],
-    httpStatus: 502,
-    logLevel: 'error' as const,
-  },
-  STT_NO_RESULTS: {
-    code: 'EXT_004',
-    message: USER_MESSAGES['EXT_004'],
-    httpStatus: 400,
-    logLevel: 'warn' as const,
-  },
-  STT_NO_ALTERNATIVES: {
-    code: 'EXT_005',
-    message: USER_MESSAGES['EXT_005'],
-    httpStatus: 400,
-    logLevel: 'warn' as const,
-  },
-  STORAGE_UPLOAD_FAILED: {
-    code: 'EXT_006',
-    message: USER_MESSAGES['EXT_006'],
-    httpStatus: 502,
-    logLevel: 'error' as const,
-  },
-  STORAGE_DOWNLOAD_FAILED: {
-    code: 'EXT_007',
-    message: USER_MESSAGES['EXT_007'],
-    httpStatus: 502,
-    logLevel: 'error' as const,
-  },
-  STORAGE_DELETE_FAILED: {
-    code: 'EXT_008',
-    message: USER_MESSAGES['EXT_008'],
-    httpStatus: 502,
-    logLevel: 'error' as const,
-  },
-  STORAGE_FILE_NOT_FOUND: {
-    code: 'EXT_009',
-    message: USER_MESSAGES['EXT_009'],
-    httpStatus: 404,
-    logLevel: 'warn' as const,
-  },
-  STORAGE_PRESIGNED_URL_FAILED: {
-    code: 'EXT_010',
-    message: USER_MESSAGES['EXT_010'],
-    httpStatus: 502,
-    logLevel: 'error' as const,
-  },
-  STORAGE_CHECK_FAILED: {
-    code: 'EXT_011',
-    message: USER_MESSAGES['EXT_011'],
-    httpStatus: 502,
-    logLevel: 'error' as const,
-  },
-
-  // =================
-  // 시스템/서버 관련 (001~099)
-  // =================
-  SYSTEM_INTERNAL_ERROR: {
-    code: 'SYS_001',
-    message: USER_MESSAGES['SYS_001'],
-    httpStatus: 500,
-    logLevel: 'error' as const,
-  },
-  SYSTEM_SERVICE_UNAVAILABLE: {
-    code: 'SYS_002',
-    message: USER_MESSAGES['SYS_002'],
-    httpStatus: 503,
-    logLevel: 'error' as const,
-  },
+  AUTH_UNAUTHORIZED: 'AUTH_UNAUTHORIZED' as const,
+  AUTH_TOKEN_EXPIRED: 'AUTH_TOKEN_EXPIRED' as const,
+  AUTH_FORBIDDEN: 'AUTH_FORBIDDEN' as const,
+  
+  MEETING_CANNOT_PUBLISH_DRAFT: 'MEETING_CANNOT_PUBLISH_DRAFT' as const,
+  MEETING_ALREADY_PUBLISHED: 'MEETING_ALREADY_PUBLISHED' as const,
+  MEETING_IN_PROGRESS_CANNOT_DELETE: 'MEETING_IN_PROGRESS_CANNOT_DELETE' as const,
+  MEETING_COMPLETED_CANNOT_EDIT: 'MEETING_COMPLETED_CANNOT_EDIT' as const,
+  MEETING_DELETED_CANNOT_ACCESS: 'MEETING_DELETED_CANNOT_ACCESS' as const,
+  MEETING_OWNER_REQUIRED: 'MEETING_OWNER_REQUIRED' as const,
+  MEETING_PARTICIPANT_LIMIT_EXCEEDED: 'MEETING_PARTICIPANT_LIMIT_EXCEEDED' as const,
+  MEETING_INVALID_STATUS_TRANSITION: 'MEETING_INVALID_STATUS_TRANSITION' as const,
+  MEETING_RECORD_NOT_FOUND: 'MEETING_RECORD_NOT_FOUND' as const,
+  MEETING_SUMMARY_GENERATION_FAILED: 'MEETING_SUMMARY_GENERATION_FAILED' as const,
+  MEETING_TRANSCRIPTION_IN_PROGRESS: 'MEETING_TRANSCRIPTION_IN_PROGRESS' as const,
+  MEETING_TRANSCRIPTION_FAILED: 'MEETING_TRANSCRIPTION_FAILED' as const,
+  
+  WORKSPACE_MEMBER_REQUIRED: 'WORKSPACE_MEMBER_REQUIRED' as const,
+  WORKSPACE_ACCESS_DENIED: 'WORKSPACE_ACCESS_DENIED' as const,
+  WORKSPACE_OWNER_REQUIRED: 'WORKSPACE_OWNER_REQUIRED' as const,
+  WORKSPACE_INVITATION_EXPIRED: 'WORKSPACE_INVITATION_EXPIRED' as const,
+  WORKSPACE_MEMBER_LIMIT_EXCEEDED: 'WORKSPACE_MEMBER_LIMIT_EXCEEDED' as const,
+  
+  RESOURCE_NOT_FOUND: 'RESOURCE_NOT_FOUND' as const,
+  RESOURCE_DUPLICATE: 'RESOURCE_DUPLICATE' as const,
+  RESOURCE_ACCESS_DENIED: 'RESOURCE_ACCESS_DENIED' as const,
+  
+  VALIDATION_FAILED: 'VALIDATION_FAILED' as const,
+  VALIDATION_INVALID_INPUT: 'VALIDATION_INVALID_INPUT' as const,
+  VALIDATION_INVALID_PARAM: 'VALIDATION_INVALID_PARAM' as const,
+  
+  STORAGE_UPLOAD_FAILED: 'STORAGE_UPLOAD_FAILED' as const,
+  STORAGE_DOWNLOAD_FAILED: 'STORAGE_DOWNLOAD_FAILED' as const,
+  STORAGE_DELETE_FAILED: 'STORAGE_DELETE_FAILED' as const,
+  STORAGE_FILE_NOT_FOUND: 'STORAGE_FILE_NOT_FOUND' as const,
+  STORAGE_PRESIGNED_URL_FAILED: 'STORAGE_PRESIGNED_URL_FAILED' as const,
+  STORAGE_CHECK_FAILED: 'STORAGE_CHECK_FAILED' as const,
+  
+  STT_SERVICE_ERROR: 'STT_SERVICE_ERROR' as const,
+  STT_NO_RESULTS: 'STT_NO_RESULTS' as const,
+  STT_NO_ALTERNATIVES: 'STT_NO_ALTERNATIVES' as const,
+  
+  SYSTEM_INTERNAL_ERROR: 'SYSTEM_INTERNAL_ERROR' as const,
+  SYSTEM_SERVICE_UNAVAILABLE: 'SYSTEM_SERVICE_UNAVAILABLE' as const,
+  EXTERNAL_API_ERROR: 'EXTERNAL_API_ERROR' as const,
+  EXTERNAL_DATABASE_ERROR: 'EXTERNAL_DATABASE_ERROR' as const,
 } as const;
 
-export type ErrorCodeKey = keyof typeof ERROR_CODES;
-export type ErrorCodeDefinition = (typeof ERROR_CODES)[ErrorCodeKey];
+export type ErrorDefinition = typeof ERROR_DEFINITIONS[ErrorCode];

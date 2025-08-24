@@ -4,8 +4,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { JwtModule } from '@nestjs/jwt';
 import { ClsModule } from 'nestjs-cls';
 import { v4 as uuidv4 } from 'uuid';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { createDatabaseConfig } from './config/database-config';
 import { AuthModule } from './domain/auth/auth.module';
 import { DevTestModule } from './domain/dev-test/dev-test.module';
@@ -14,7 +12,7 @@ import { MeetingRecordModule } from './domain/meeting-record/meeting-record.modu
 import { SpaceModule } from './domain/space/space.module';
 import { UserModule } from './domain/user/user.module';
 import { WorkspaceMemberModule } from './domain/workspace-member/workspace-member.module';
-import { WorkspaceMemberRoleModule } from './domain/workspace-memer-role/workspace-member-role.module';
+import { WorkspaceMemberRoleModule } from './domain/workspace-member-role/workspace-member-role.module';
 import { WorkspaceModule } from './domain/workspace/workspace.module';
 import { CacheModule } from './infrastructure/cache/cache.module';
 import { LangchainModule } from './infrastructure/langchain/langchain.module';
@@ -25,6 +23,7 @@ import { AppConfigModule } from './shared/module/app-config/app-config.module';
 import { LoggerModule } from './shared/module/logger/logger.module';
 import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
 import { WorkspaceMiddleware } from './shared/middleware/workspace.middleware';
+import { ResourceModule } from './domain/resource/resource.module';
 
 @Module({
   imports: [
@@ -59,12 +58,13 @@ import { WorkspaceMiddleware } from './shared/middleware/workspace.middleware';
     WorkspaceModule,
     WorkspaceMemberModule,
     WorkspaceMemberRoleModule,
+    ResourceModule,
     FileModule,
     MeetingRecordModule,
     EventEmitterModule.forRoot(),
   ],
-  controllers: [AppController],
-  providers: [AppService, AppConfig],
+  controllers: [],
+  providers: [AppConfig],
   exports: [AppConfig],
 })
 export class AppModule implements NestModule {

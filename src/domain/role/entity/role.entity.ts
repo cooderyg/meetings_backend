@@ -9,7 +9,7 @@ import {
 } from '@mikro-orm/core';
 import { TimestampedEntity } from '../../../shared/entity/timestamped.entity';
 import { Workspace } from '../../workspace/entity/workspace.entity';
-import { WorkspaceMemberRole } from '../../workspace-memer-role/entity/workspace-member-role.entity';
+import { WorkspaceMemberRole } from '../../workspace-member-role/entity/workspace-member-role.entity';
 import { RolePermission } from '../../permission/entity/role-permission.entity';
 import { SystemRole } from '../enum/system-role.enum';
 
