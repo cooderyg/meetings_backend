@@ -70,6 +70,8 @@ import { WorkspaceMiddleware } from './shared/middleware/workspace.middleware';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggingMiddleware).forRoutes('*');
-    consumer.apply(WorkspaceMiddleware).forRoutes('dev-test/workspace/:workspaceId/*');
+    consumer
+      .apply(WorkspaceMiddleware)
+      .forRoutes('dev-test/workspace/:workspaceId/*');
   }
 }

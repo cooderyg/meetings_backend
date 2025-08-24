@@ -5,8 +5,7 @@ import { Role } from '../role/entity/role.entity';
 import { WorkspaceMemberRole } from './entity/workspace-member-role.entity';
 import { RoleService } from '../role/role.service';
 import { SystemRole } from '../role/enum/system-role.enum';
-import { AppException } from '../../shared/exception/app.exception';
-import { ERROR_CODES } from '../../shared/const';
+import { AppError } from '../../shared/exception/app.error';
 
 @Injectable()
 export class WorkspaceMemberRoleService {
@@ -32,7 +31,7 @@ export class WorkspaceMemberRoleService {
   ) {
     const role = await this.roleService.findOneSystemRole(roleName);
 
-    if (!role) throw new AppException(ERROR_CODES.RESOURCE_NOT_FOUND);
+    if (!role) throw new AppError('role.system.notFound');
 
     const workspaceMemberRole = await this.create(workspaceMember, role);
 

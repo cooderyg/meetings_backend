@@ -5,17 +5,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-
-export interface StandardResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: {
-    code: string;
-    message: string;
-    details?: any;
-  };
-  totalCount?: number;
-}
+import { StandardResponse } from '../type/response.types';
 
 @Injectable()
 export class TransformInterceptor implements NestInterceptor {

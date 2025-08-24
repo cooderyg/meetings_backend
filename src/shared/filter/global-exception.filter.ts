@@ -12,15 +12,10 @@ import { Response, Request } from 'express';
 import { LoggerService } from '../module/logger/logger.service';
 import { ExceptionLogMetadata } from '../module/logger/type/logger.type';
 import { AppException } from '../exception/app.exception';
+import { AppError } from '../exception/app.error';
 import { ERROR_CODES } from '../const/error-code.const';
 import { ErrorResponse } from '../type/error-response.types';
-
-export interface StandardResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: any;
-  timestamp?: string;
-}
+import { StandardResponse } from '../type/response.types';
 
 /**
  * 글로벌 예외 필터
@@ -104,6 +99,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private buildErrorResponse(exception: unknown): ErrorResponse {
     try {
       // 비즈니스 로직 예외 (가장 우선)
+      if (exception instanceof AppError) {
+        return this.buildAppErrorResponse(exception);
+      }
+      
       if (exception instanceof AppException) {
         return this.buildAppExceptionResponse(exception);
       }
@@ -154,6 +153,24 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       code: exception.code,
       message: exception.message,
       ...(exception.details && { details: exception.details }),
+    };
+
+    return errorResponse;
+  }
+
+  /**
+   * AppError에 대한 에러 응답 생성
+   *
+   * 계층적 에러 코드를 기반으로 생성
+   *
+   * @param exception - AppError 인스턴스
+   * @returns 에러 응답 객체
+   */
+  private buildAppErrorResponse(exception: AppError): ErrorResponse {
+    const errorResponse: ErrorResponse = {
+      code: exception.code as string,
+      message: exception.message,
+      ...(exception.context && { context: exception.context }),
     };
 
     return errorResponse;
@@ -289,10 +306,68 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       userAgent: request?.headers?.['user-agent'],
     };
 
-    if (exception instanceof AppException) {
+    if (exception instanceof AppError) {
+      this.logAppError(exception, logMeta);
+    } else if (exception instanceof AppException) {
       this.logAppException(exception, logMeta);
     } else {
       this.logUnhandledException(exception, logMeta);
+    }
+  }
+
+  /**
+   * AppError 로깅 처리
+   *
+   * 예외에 설정된 logLevel에 따라 적절한 로그 레벨로 로깅
+   *
+   * @param exception - AppError 인스턴스
+   * @param logMeta - 로깅 메타데이터
+   */
+  private logAppError(
+    exception: AppError,
+    logMeta: ExceptionLogMetadata
+  ): void {
+    const logMessage = `Business exception: [${String(exception.code)}]`;
+    const logContext = 'BusinessException';
+    // 로깅에 포함할 메타데이터 준비
+    const metaData = {
+      ...logMeta,
+      code: exception.code,
+      context: JSON.stringify(exception.context || {}),
+    };
+
+    // 예외에 설정된 로그 레벨에 따라 로깅
+    const logLevel = exception.logLevel;
+    switch (logLevel) {
+      case 'error':
+        this.loggerService.error(
+          logMessage,
+          exception.stack || 'No stack trace',
+          logContext,
+          metaData
+        );
+        break;
+      case 'warn':
+        this.loggerService.warn(logMessage, logContext, metaData);
+        break;
+      case 'info':
+        this.loggerService.log(logMessage, logContext, metaData);
+        break;
+      case 'debug':
+        this.loggerService.debug(logMessage, logContext, metaData);
+        break;
+      case 'verbose':
+        this.loggerService.verbose(logMessage, logContext, metaData);
+        break;
+      default:
+        // fallback to error level
+        this.loggerService.error(
+          logMessage,
+          exception.stack || 'No stack trace',
+          logContext,
+          metaData
+        );
+        break;
     }
   }
 

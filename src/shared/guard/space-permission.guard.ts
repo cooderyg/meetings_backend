@@ -2,8 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PermissionService } from '../../domain/permission/permission.service';
 import { Action } from '../../domain/permission/entity/permission.entity';
-import { AppException } from '../exception/app.exception';
-import { ERROR_CODES } from '../const/error-code.const';
+import { AppError } from '../exception/app.error';
 
 @Injectable()
 export class SpacePermissionGuard implements CanActivate {
@@ -18,7 +17,7 @@ export class SpacePermissionGuard implements CanActivate {
 
     // 사용자 인증 확인
     if (!user) {
-      throw new AppException(ERROR_CODES.AUTH_UNAUTHORIZED);
+      throw new AppError('auth.validate.failed');
     }
 
     // 메타데이터에서 필요한 권한 액션 가져오기
@@ -33,10 +32,7 @@ export class SpacePermissionGuard implements CanActivate {
     // URL에서 spaceId 추출
     const spaceId = request.params.spaceId || request.params.id;
     if (!spaceId) {
-      throw new AppException(ERROR_CODES.AUTH_FORBIDDEN, {
-        message: 'Space ID가 필요합니다.',
-        details: { resource: 'space', action: requiredAction },
-      });
+      throw new AppError('auth.authorize.denied');
     }
 
     try {
@@ -48,29 +44,15 @@ export class SpacePermissionGuard implements CanActivate {
       );
 
       if (!hasPermission) {
-        throw new AppException(ERROR_CODES.AUTH_FORBIDDEN, {
-          message: `Space에 대한 ${requiredAction} 권한이 없습니다.`,
-          details: {
-            resource: 'space',
-            action: requiredAction,
-            resourceId: spaceId,
-          },
-        });
+        throw new AppError('auth.authorize.denied');
       }
 
       return true;
     } catch (error) {
-      if (error instanceof AppException) {
+      if (error instanceof AppError) {
         throw error;
       }
-      throw new AppException(ERROR_CODES.AUTH_FORBIDDEN, {
-        message: '권한 확인 중 오류가 발생했습니다.',
-        details: {
-          resource: 'space',
-          action: requiredAction,
-          error: error.message,
-        },
-      });
+      throw new AppError('auth.authorize.denied');
     }
   }
 }

@@ -1,7 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { ERROR_CODES } from '../../shared/const';
-import { AppException } from '../../shared/exception/app.exception';
+import { AppError } from '../../shared/exception/app.error';
 import { Resource, ResourceType } from '../resource/entity/resource.entity';
 import { WorkspaceMember } from '../workspace-member/entity/workspace-member.entity';
 import { Workspace } from '../workspace/entity/workspace.entity';
@@ -24,7 +23,7 @@ export class SpaceService {
   async findById(id: string): Promise<Space> {
     const space = await this.spaceRepository.findById(id);
     if (!space) {
-      throw new AppException(ERROR_CODES.RESOURCE_NOT_FOUND);
+      throw new AppError('space.fetch.notFound');
     }
     return space;
   }
@@ -48,7 +47,7 @@ export class SpaceService {
       id: args.workspaceId,
     });
     if (!workspace) {
-      throw new AppException(ERROR_CODES.RESOURCE_NOT_FOUND);
+      throw new AppError('workspace.fetch.notFound');
     }
 
     const owner = await this.em.findOne(WorkspaceMember, {
@@ -56,7 +55,7 @@ export class SpaceService {
       workspace: args.workspaceId,
     });
     if (!owner) {
-      throw new AppException(ERROR_CODES.RESOURCE_NOT_FOUND);
+      throw new AppError('workspace.member.fetch.notFound');
     }
 
     const resource = this.em.assign(new Resource(), {

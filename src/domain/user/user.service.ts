@@ -1,7 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ERROR_CODES } from '../../shared/const';
-import { AppException } from '../../shared/exception/app.exception';
+import { AppError } from '../../shared/exception/app.error';
 import { UpdateUserSettingsDto } from './dto/request/update-user-settings.dto';
 import { User, UserSettings } from './entity/user.entity';
 import { ICreateUser } from './interfaces/create-user.interface';
@@ -28,7 +27,9 @@ export class UserService {
 
   async createUser(user: ICreateUser) {
     if (!user.uid && !user.passwordHash) {
-      throw new BadRequestException('uid and passwordHash are required');
+      throw new AppError('validation.form.failed', {
+        fields: { uid: ['uid or passwordHash is required'] },
+      });
     }
     const createdUser = this.em.assign(new User(), {
       ...user,
@@ -46,7 +47,7 @@ export class UserService {
     // 1. 사용자 찾기 없으면 예외 처리
     const user = await this.userRepository.findById(id);
 
-    if (!user) throw new AppException(ERROR_CODES.RESOURCE_NOT_FOUND);
+    if (!user) throw new AppError('user.fetch.notFound');
 
     // 2. DTO를 UserSettings 형태로 변환
     const updatedSettings = this.mapDtoToSettings(data, user.settings);

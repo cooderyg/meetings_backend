@@ -1,8 +1,7 @@
 import { EntityManager } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ERROR_CODES } from '../../shared/const';
-import { AppException } from '../../shared/exception/app.exception';
+import { AppError } from '../../shared/exception/app.error';
 import { SystemRole } from '../role/enum/system-role.enum';
 import { RoleService } from '../role/role.service';
 import { User } from '../user/entity/user.entity';
@@ -31,7 +30,7 @@ export class WorkspaceService {
 
     const role = await this.roleService.findSystemRoles(SystemRole.OWNER);
     if (!role) {
-      throw new NotFoundException('Role not found'); //TODO: 커스텀 예외로 수정
+      throw new AppError('role.system.notFound');
     }
 
     await this.workspaceMemberService.createWorkspaceMember({
@@ -51,7 +50,7 @@ export class WorkspaceService {
     const workspace = await this.findById(id);
 
     if (!workspace) {
-      throw new AppException(ERROR_CODES.RESOURCE_NOT_FOUND);
+      throw new AppError('workspace.fetch.notFound', { workspaceId: id });
     }
 
     workspace.name = name;

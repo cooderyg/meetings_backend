@@ -12,8 +12,7 @@ import {
   createDocumentBuilder,
   swaggerCustomOptions,
 } from './config/swagger-config';
-import { AppException } from './shared/exception/app.exception';
-import { ERROR_CODES } from './shared/const/error-code.const';
+import { AppError } from './shared/exception/app.error';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -41,10 +40,9 @@ async function bootstrap() {
           acc[error.property] = Object.values(error.constraints || {});
           return acc;
         }, {});
-        // AppException으로 변환 (세부 오류 정보 포함)
-        return new AppException(ERROR_CODES.VALIDATION_FAILED, {
-          message: '입력값이 유효하지 않습니다',
-          details: formattedErrors,
+        // AppError로 변환 (세부 오류 정보 포함)
+        return new AppError('validation.form.failed', {
+          fields: formattedErrors
         });
       },
     })
