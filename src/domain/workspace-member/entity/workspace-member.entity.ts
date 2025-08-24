@@ -11,7 +11,7 @@ import { BaseEntity } from '../../../shared/entity/base.entity';
 import { MemberResourcePermission } from '../../permission/entity/member-resource-permission.entity';
 import { SystemRole } from '../../role/enum/system-role.enum';
 import { User } from '../../user/entity/user.entity';
-import { WorkspaceMemberRole } from '../../workspace-memer-role/entity/workspace-member-role.entity';
+import { WorkspaceMemberRole } from '../../workspace-member-role/entity/workspace-member-role.entity';
 import { Workspace } from '../../workspace/entity/workspace.entity';
 
 @Entity({ tableName: 'workspace_members' })

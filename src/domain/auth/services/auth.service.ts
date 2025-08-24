@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { AppError } from '../../../shared/exception/app.error';
 import { JwtService } from '@nestjs/jwt';
 import { AppConfig } from '../../../shared/module/app-config/app-config';
 import {
@@ -56,7 +57,7 @@ export class AuthService {
 
     const strategy = this.strategies[type];
     if (!strategy) {
-      throw new BadRequestException('Invalid OAuth type');
+      throw new AppError('auth.authorize.denied');
     }
 
     const oauthResult = await strategy.verifyOAuthToken({ code });

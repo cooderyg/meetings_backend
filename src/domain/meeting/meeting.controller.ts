@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { MeetingService } from './meeting.service';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { MeetingFindByIdResponseDto } from './dto/response/meeting-find-by-id-response.dto';
+import { FindByIdMeetingResponseDto } from './dto/response/find-by-id-meeting-response.dto';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
 import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberId } from '../../shared/decorator';
@@ -41,7 +41,7 @@ export class MeetingController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: () => MeetingFindByIdResponseDto })
+  @ApiOkResponse({ type: () => FindByIdMeetingResponseDto })
   async findById(
     @Param('id') id: string,
     @Param('workspaceId') workspaceId: string
