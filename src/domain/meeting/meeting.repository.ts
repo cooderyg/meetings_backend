@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository } from '@mikro-orm/core';
+import { EntityManager, EntityRepository, FilterQuery } from '@mikro-orm/core';
 import { Meeting, MeetingStatus } from './entity/meeting.entity';
 import { MeetingCreate, MeetingUpdate } from './meeting.type';
+import { PaginationQuery } from '../../shared/dto/request/pagination.query';
+import { findPaginated } from '../../shared/util/pagination.util';
 
 @Injectable()
 export class MeetingRepository {
@@ -39,7 +41,7 @@ export class MeetingRepository {
 
   async findById(id: string, workspaceId: string) {
     return this.repository.findOne({
-      resource: id,
+      id: id,
       workspace: workspaceId,
       deletedAt: null,
     });
@@ -52,7 +54,10 @@ export class MeetingRepository {
         status: { $ne: MeetingStatus.DRAFT },
         deletedAt: null,
       },
-      { limit: 100 }
+      { 
+        limit: 100,
+        populate: ['resource', 'resource.owner']
+      }
     );
   }
 
@@ -64,7 +69,64 @@ export class MeetingRepository {
         resource: { owner: workspaceMemberId },
         deletedAt: null,
       },
-      { limit: 100 }
+      { 
+        limit: 100,
+        populate: ['resource', 'resource.owner']
+      }
     );
+  }
+
+  async findByWorkspacePaginated(
+    workspaceId: string,
+    pagination: PaginationQuery,
+    filters?: FilterQuery<Meeting>,
+    orderBy?: Record<string, 'ASC' | 'DESC'>
+  ) {
+    const where: FilterQuery<Meeting> = {
+      workspace: workspaceId,
+      status: { $ne: MeetingStatus.DRAFT },
+      deletedAt: null,
+    };
+
+    // 필터가 있으면 병합
+    if (filters) {
+      Object.assign(where, filters);
+    }
+
+    return findPaginated(this.repository, pagination, {
+      where,
+      orderBy: orderBy || { createdAt: 'DESC' },
+      populate: ['resource', 'resource.owner'] as any,
+      fields: [
+        'id', 'status', 'tags', 'createdAt', 'updatedAt',
+        'resource.id', 'resource.title', 'resource.type', 'resource.visibility', 'resource.path',
+        'resource.owner.id', 'resource.owner.firstName', 'resource.owner.lastName', 'resource.owner.isActive'
+      ] as any,
+    });
+  }
+
+  async findDraftMyPaginated(
+    workspaceId: string,
+    workspaceMemberId: string,
+    pagination: PaginationQuery,
+    orderBy?: Record<string, 'ASC' | 'DESC'>
+  ) {
+    const where: FilterQuery<Meeting> = {
+      workspace: workspaceId,
+      status: MeetingStatus.DRAFT,
+      resource: { owner: workspaceMemberId },
+      deletedAt: null,
+    };
+
+    return findPaginated(this.repository, pagination, {
+      where,
+      orderBy: orderBy || { updatedAt: 'DESC' },
+      populate: ['resource', 'resource.owner'] as any,
+      fields: [
+        'id', 'status', 'tags', 'createdAt', 'updatedAt',
+        'resource.id', 'resource.title', 'resource.type', 'resource.visibility', 'resource.path',
+        'resource.owner.id', 'resource.owner.firstName', 'resource.owner.lastName', 'resource.owner.isActive'
+      ] as any,
+    });
   }
 }

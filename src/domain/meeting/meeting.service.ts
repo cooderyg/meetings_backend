@@ -10,6 +10,10 @@ import { CreateMeetingDto } from './dto/request/create-meeting.dto';
 import { PublishMeetingDto } from './dto/request/publish-meeting.dto';
 import { Meeting, MeetingStatus } from './entity/meeting.entity';
 import { AppError } from '../../shared/exception/app.error';
+import { PaginationQuery } from '../../shared/dto/request/pagination.query';
+import { FilterQuery } from '../../shared/dto/request/filter.query';
+import { SortQuery } from '../../shared/dto/request/sort.query';
+import { responseUtil } from '../../shared/util/response.util';
 
 @Injectable()
 export class MeetingService {
@@ -36,6 +40,7 @@ export class MeetingService {
 
     const meeting = await this.repository.create({
       resource,
+      workspace: resource.workspace,
       memo: null,
       status: MeetingStatus.DRAFT,
       tags: [],
@@ -91,5 +96,48 @@ export class MeetingService {
 
   async findDraftMy(workspaceId: string, workspaceMemberId: string) {
     return this.repository.findDrafyMy(workspaceId, workspaceMemberId);
+  }
+
+  /**
+   * 워크스페이스의 미팅 목록을 페이지네이션으로 조회
+   */
+  async findByWorkspacePaginated(
+    workspaceId: string,
+    pagination: PaginationQuery,
+    filter?: FilterQuery,
+    sort?: SortQuery
+  ) {
+    const filters = filter?.parseFilters<Meeting>();
+    const orderBy = sort?.orderBy;
+
+    const result = await this.repository.findByWorkspacePaginated(
+      workspaceId,
+      pagination,
+      filters,
+      orderBy
+    );
+
+    return responseUtil(result);
+  }
+
+  /**
+   * 나의 임시저장 미팅 목록을 페이지네이션으로 조회
+   */
+  async findDraftMyPaginated(
+    workspaceId: string,
+    workspaceMemberId: string,
+    pagination: PaginationQuery,
+    sort?: SortQuery
+  ) {
+    const orderBy = sort?.orderBy;
+
+    const result = await this.repository.findDraftMyPaginated(
+      workspaceId,
+      workspaceMemberId,
+      pagination,
+      orderBy
+    );
+
+    return responseUtil(result);
   }
 }

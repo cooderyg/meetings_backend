@@ -1,8 +1,8 @@
 import { IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { FilterQuery } from '@mikro-orm/core';
+import { FilterQuery as MikroFilterQuery } from '@mikro-orm/core';
 
-export class FilterRequest {
+export class FilterQuery {
   @ApiPropertyOptional({
     description: '검색어 (name 필드에 적용)',
     example: 'John',
@@ -22,8 +22,8 @@ export class FilterRequest {
   /**
    * 필터 문자열을 파싱하여 MikroORM FilterQuery로 변환
    */
-  parseFilters<T extends object>(): FilterQuery<T> {
-    const filters: FilterQuery<T> = {};
+  parseFilters<T extends object>(): MikroFilterQuery<T> {
+    const filters: MikroFilterQuery<T> = {};
 
     // 검색어가 있으면 name 필드에 적용
     if (this.search) {

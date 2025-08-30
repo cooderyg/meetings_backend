@@ -11,7 +11,8 @@ export class WorkspaceMemberGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<IRequest>();
-    const { workspaceId, user } = request;
+    const { user } = request;
+    const workspaceId = request.params?.workspaceId;
 
     if (!user) {
       throw new AppError('auth.validate.failed');
@@ -31,7 +32,8 @@ export class WorkspaceMemberGuard implements CanActivate {
         throw new AppError('workspace.access.memberRequired');
       }
 
-      // request에 workspaceMemberId 추가
+      // request에 workspaceId와 workspaceMemberId 추가
+      request.workspaceId = workspaceId;
       request.workspaceMemberId = member.id;
 
       return true;

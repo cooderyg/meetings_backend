@@ -11,7 +11,6 @@ import {
 import { Response, Request } from 'express';
 import { LoggerService } from '../module/logger/logger.service';
 import { ExceptionLogMetadata } from '../module/logger/type/logger.type';
-import { AppException } from '../exception/app.exception';
 import { AppError } from '../exception/app.error';
 import { ERROR_CODES } from '../const/error-code.const';
 import { ErrorResponse } from '../type/error-response.types';
@@ -23,7 +22,7 @@ import { StandardResponse } from '../type/response.types';
  * 애플리케이션에서 발생하는 모든 예외를 캐치하여 표준화된 에러 응답을 생성합니다.
  *
  * 처리 순서:
- * 1. AppException - 비즈니스 로직 예외
+ * 1. AppError - 비즈니스 로직 예외
  * 2. BadRequestException - 유효성 검증 오류
  * 3. NotFoundException - 리소스 누락 오류
  * 4. HttpException - 기타 HTTP 예외
@@ -74,7 +73,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    */
   private getHttpStatus(exception: unknown): number {
     if (
-      exception instanceof AppException ||
+      exception instanceof AppError ||
       exception instanceof HttpException
     ) {
       return exception.getStatus();
@@ -87,7 +86,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    * 예외 타입에 따른 에러 응답 객체 생성
    *
    * 예외 타입 우선순위:
-   * 1. AppException (가장 구체적)
+   * 1. AppError (가장 구체적)
    * 2. BadRequestException (유효성 검증 오류)
    * 3. NotFoundException (리소스 누락)
    * 4. HttpException (기타 HTTP 예외)
@@ -101,10 +100,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       // 비즈니스 로직 예외 (가장 우선)
       if (exception instanceof AppError) {
         return this.buildAppErrorResponse(exception);
-      }
-      
-      if (exception instanceof AppException) {
-        return this.buildAppExceptionResponse(exception);
       }
 
       // 유효성 검증 오류
@@ -140,23 +135,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
   }
 
-  /**
-   * AppException에 대한 에러 응답 생성
-   *
-   * ERROR_DEFINITIONS에 정의된 에러 정보를 기반으로 생성
-   *
-   * @param exception - AppException 인스턴스
-   * @returns 에러 응답 객체
-   */
-  private buildAppExceptionResponse(exception: AppException): ErrorResponse {
-    const errorResponse: ErrorResponse = {
-      code: exception.code,
-      message: exception.message,
-      ...(exception.details && { details: exception.details }),
-    };
-
-    return errorResponse;
-  }
 
   /**
    * AppError에 대한 에러 응답 생성
@@ -196,7 +174,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       : [response.message || _exception.message];
 
     const errorResponse: ErrorResponse = {
-      code: ERROR_CODES.VALIDATION_FAILED.code,
+      code: ERROR_CODES.VALIDATION_FAILED,
       message: '입력한 정보를 다시 확인해주세요',
       details: { validationErrors: messages },
     };
@@ -214,7 +192,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     _exception: NotFoundException
   ): ErrorResponse {
     const errorResponse: ErrorResponse = {
-      code: ERROR_CODES.RESOURCE_NOT_FOUND.code,
+      code: ERROR_CODES.RESOURCE_NOT_FOUND,
       message: '요청하신 정보를 찾을 수 없습니다',
     };
 
@@ -231,8 +209,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     _exception: UnauthorizedException
   ): ErrorResponse {
     const errorResponse: ErrorResponse = {
-      code: ERROR_CODES.AUTH_UNAUTHORIZED.code,
-      message: ERROR_CODES.AUTH_UNAUTHORIZED.message,
+      code: ERROR_CODES.AUTH_UNAUTHORIZED,
+      message: '인증이 필요합니다',
     };
 
     return errorResponse;
@@ -246,7 +224,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    */
   private buildHttpExceptionResponse(_exception: HttpException): ErrorResponse {
     const errorResponse: ErrorResponse = {
-      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR.code,
+      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR,
       message: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     };
 
@@ -261,7 +239,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    */
   private buildUnknownExceptionResponse(_exception: unknown): ErrorResponse {
     const errorResponse: ErrorResponse = {
-      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR.code,
+      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR,
       message: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     };
 
@@ -275,7 +253,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    */
   private buildFallbackErrorResponse(): ErrorResponse {
     return {
-      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR.code,
+      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR,
       message: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     };
   }
@@ -284,7 +262,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    * 예외 로깅 처리
    *
    * 예외 타입에 따라 적절한 로그 레벨로 로깅합니다.
-   * AppException은 설정된 logLevel을 사용하고,
+   * AppError는 설정된 logLevel을 사용하고,
    * 기타 예외는 error 레벨로 로깅합니다.
    *
    * @param exception - 발생한 예외
@@ -308,8 +286,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof AppError) {
       this.logAppError(exception, logMeta);
-    } else if (exception instanceof AppException) {
-      this.logAppException(exception, logMeta);
     } else {
       this.logUnhandledException(exception, logMeta);
     }
@@ -371,63 +347,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
   }
 
-  /**
-   * AppException 로깅 처리
-   *
-   * 예외에 설정된 logLevel에 따라 적절한 로그 레벨로 로깅
-   *
-   * @param exception - AppException 인스턴스
-   * @param logMeta - 로깅 메타데이터
-   * @param requestId - 요청 ID (옵션)
-   */
-  private logAppException(
-    exception: AppException,
-    logMeta: ExceptionLogMetadata
-  ): void {
-    const logMessage = `Business exception: [${exception.errorDef.code}] ${exception.message || 'No message'}`;
-    const logContext = 'BusinessException';
-    // 로깅에 포함할 메타데이터 준비
-    const metaData = {
-      ...logMeta,
-      code: exception.code,
-      details: exception.details,
-      errorCode: exception.errorDef.code,
-    };
-
-    // 예외에 설정된 로그 레벨에 따라 로깅
-    const logLevel = exception.logLevel;
-    switch (logLevel) {
-      case 'error':
-        this.loggerService.error(
-          logMessage,
-          exception.stack || 'No stack trace',
-          logContext,
-          metaData
-        );
-        break;
-      case 'warn':
-        this.loggerService.warn(logMessage, logContext, metaData);
-        break;
-      case 'info':
-        this.loggerService.log(logMessage, logContext, metaData);
-        break;
-      case 'debug':
-        this.loggerService.debug(logMessage, logContext, metaData);
-        break;
-      case 'verbose':
-        this.loggerService.verbose(logMessage, logContext, metaData);
-        break;
-      default:
-        // fallback to error level
-        this.loggerService.error(
-          logMessage,
-          exception.stack || 'No stack trace',
-          logContext,
-          metaData
-        );
-        break;
-    }
-  }
 
   /**
    * 예상치 못한 예외 로깅 처리
