@@ -15,6 +15,10 @@ export interface CreateResourceDto {
   parentPath?: string;
 }
 
+export interface CreateResourceOptions {
+  flush?: boolean;
+}
+
 @Injectable()
 export class ResourceService {
   constructor(
@@ -23,7 +27,7 @@ export class ResourceService {
     private readonly workspaceMemberService: WorkspaceMemberService
   ) {}
 
-  async create(data: CreateResourceDto): Promise<Resource> {
+  async create(data: CreateResourceDto, options: CreateResourceOptions = { flush: true }): Promise<Resource> {
     // 워크스페이스 검증
     const workspace = await this.workspaceService.findById(data.workspaceId);
     if (!workspace) {
@@ -49,7 +53,7 @@ export class ResourceService {
       title: data.title,
       visibility: data.visibility,
       path,
-    });
+    }, { flush: options.flush });
   }
 
   async update(id: string, data: UpdateResourceData) {

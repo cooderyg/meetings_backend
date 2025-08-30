@@ -9,12 +9,12 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+import { v4 } from 'uuid';
 import { TimestampedEntity } from '../../../shared/entity/timestamped.entity';
 import { Resource } from '../../resource/entity/resource.entity';
 import { Workspace } from '../../workspace/entity/workspace.entity';
 import { MeetingRecord } from '../../meeting-record/entity/meeting-record.entity';
 import { MeetingParticipant } from '../../meeting-participant/entity/meeting-participant.entity';
-import { ApiProperty } from '@nestjs/swagger';
 
 export enum MeetingStatus {
   DRAFT = 'DRAFT',
@@ -26,16 +26,9 @@ export enum MeetingStatus {
 
 @Entity({ tableName: 'meetings' })
 export class Meeting extends TimestampedEntity {
-  /** 미팅 ID */
-  @ApiProperty({
-    description: '미팅 ID',
-    type: String,
-    nullable: false,
-  })
   @PrimaryKey({ type: 'uuid' })
-  id: string;
+  id: string = v4();
 
-  /** 리소스 (메타데이터) */
   @OneToOne(() => Resource, {
     eager: false,
     nullable: false,
@@ -43,62 +36,28 @@ export class Meeting extends TimestampedEntity {
   @Index()
   resource!: Resource;
 
-  /** 상태 */
-  @ApiProperty({
-    description: '상태',
-    enum: MeetingStatus,
-    nullable: false,
-    default: MeetingStatus.DRAFT,
-  })
   @Enum(() => MeetingStatus)
   status: MeetingStatus = MeetingStatus.DRAFT;
 
-  /** 태그 목록 */
-  @ApiProperty({
-    description: '태그 목록',
-    type: [String],
-    nullable: false,
-  })
   @Property({ type: 'varchar[]' })
   tags: string[] = [];
 
-  /** 워크스페이스 */
   @ManyToOne(() => Workspace)
   @Index()
   workspace!: Workspace;
 
-  /** 메모 */
-  @ApiProperty({
-    description: '메모',
-    type: String,
-    nullable: true,
-  })
   @Property({ type: 'text', nullable: true })
   memo: string | null = null;
 
-  /** AI 요약 */
-  @ApiProperty({
-    description: 'AI 요약',
-    type: String,
-    nullable: true,
-  })
   @Property({ type: 'text', nullable: true })
   summary: string | null = null;
 
-  /** 삭제일자 */
-  @ApiProperty({
-    description: '삭제일자',
-    type: Date,
-    nullable: true,
-  })
   @Property({ type: 'timestamptz', nullable: true })
   deletedAt: Date | null = null;
 
-  /** 미팅 기록 목록 */
   @OneToMany(() => MeetingRecord, (record) => record.meeting)
   records = new Collection<MeetingRecord>(this);
 
-  /** 미팅 참여자 목록 */
   @OneToMany(() => MeetingParticipant, (participant) => participant.meeting)
   participants = new Collection<MeetingParticipant>(this);
 }

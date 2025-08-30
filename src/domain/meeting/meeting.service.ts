@@ -6,15 +6,13 @@ import {
   ResourceType,
   ResourceVisibility,
 } from '../resource/entity/resource.entity';
-import { CreateMeetingDto } from './dto/request/create-meeting.dto';
-import { PublishMeetingDto } from './dto/request/publish-meeting.dto';
+import { CreateMeetingArgs } from './interfaces/args/create-meeting.args';
+import { PublishMeetingArgs } from './interfaces/args/publish-meeting.args';
 import { Meeting, MeetingStatus } from './entity/meeting.entity';
 import { AppError } from '../../shared/exception/app.error';
 import { PaginationQuery } from '../../shared/dto/request/pagination.query';
 import { FilterQuery } from '../../shared/dto/request/filter.query';
 import { SortQuery } from '../../shared/dto/request/sort.query';
-import { responseUtil } from '../../shared/util/response.util';
-
 @Injectable()
 export class MeetingService {
   constructor(
@@ -22,21 +20,15 @@ export class MeetingService {
     private readonly resourceService: ResourceService
   ) {}
 
-  async create(
-    workspaceId: string,
-    workspaceMemberId: string,
-    data: CreateMeetingDto
-  ) {
-    const { parentPath } = data;
-
+  async create(args: CreateMeetingArgs): Promise<Meeting> {
     const resource = await this.resourceService.create({
-      ownerId: workspaceMemberId,
-      workspaceId,
+      ownerId: args.workspaceMemberId,
+      workspaceId: args.workspaceId,
       title: 'Untitled',
       type: ResourceType.MEETING,
-      parentPath,
+      parentPath: args.parentPath,
       visibility: ResourceVisibility.PUBLIC,
-    });
+    }, { flush: false });
 
     const meeting = await this.repository.create({
       resource,
@@ -58,16 +50,12 @@ export class MeetingService {
     return this.repository.delete(id);
   }
 
-  async publish(
-    id: string,
-    workspaceId: string,
-    workspaceMemberId: string,
-    data: PublishMeetingDto
-  ): Promise<Meeting> {
+  async publish(args: PublishMeetingArgs): Promise<Meeting> {
+    const { id, workspaceId, data } = args;
     const { visibility } = data;
 
     // 조회
-    const meeting = await this.findById(id, workspaceId);
+    const meeting = await this.repository.findById(id, workspaceId);
     if (!meeting) {
       throw new AppError('meeting.fetch.notFound', { meetingId: id });
     }
@@ -81,20 +69,22 @@ export class MeetingService {
 
     await this.resourceService.update(id, { visibility });
 
-    return await this.repository.update(id, {
+    const updatedMeeting = await this.repository.update(id, {
       status: MeetingStatus.PUBLISHED,
     });
+
+    return updatedMeeting;
   }
 
-  async findById(id: string, workspaceId: string) {
+  async findById(id: string, workspaceId: string): Promise<Meeting | null> {
     return this.repository.findById(id, workspaceId);
   }
 
-  async findByWorkspace(workspaceId: string) {
+  async findByWorkspace(workspaceId: string): Promise<Meeting[]> {
     return this.repository.findByWorkspace(workspaceId);
   }
 
-  async findDraftMy(workspaceId: string, workspaceMemberId: string) {
+  async findDraftMy(workspaceId: string, workspaceMemberId: string): Promise<Meeting[]> {
     return this.repository.findDrafyMy(workspaceId, workspaceMemberId);
   }
 
@@ -117,7 +107,10 @@ export class MeetingService {
       orderBy
     );
 
-    return responseUtil(result);
+    return {
+      data: result.data,
+      totalCount: result.totalCount
+    };
   }
 
   /**
@@ -138,6 +131,9 @@ export class MeetingService {
       orderBy
     );
 
-    return responseUtil(result);
+    return {
+      data: result.data,
+      totalCount: result.totalCount
+    };
   }
 }

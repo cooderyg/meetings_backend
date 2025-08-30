@@ -1,15 +1,34 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserInfo } from '../../shared/decorator/user-info.decorator';
 import { User } from '../user/entity/user.entity';
-import { WorkspaceIdParamDto } from '../workspace/dto/request/workspace-id-param.dto';
 import { CreateSpaceDto } from './dto/request/create-space.dto';
-import { Space } from './entity/space.entity';
 import { SpaceService } from './space.service';
 import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
+import { WorkspaceMemberId } from '../../shared/decorator';
+import { ApiSpaceResponse } from '../../shared/decorator/api-field-response.decorator';
+import { SPACE_LIST_FIELDS, SPACE_DETAIL_FIELDS } from './constants/space-fields';
 
 @ApiTags('Spaces')
+@ApiBearerAuth()
+@ApiParam({
+  name: 'workspaceId',
+  example: 'e720eee0-2997-4d27-af68-d5de5b84f911',
+})
 @UseGuards(AuthGuard, WorkspaceMemberGuard)
 @Controller('workspace/:workspaceId/spaces')
 export class SpaceController {
@@ -17,18 +36,16 @@ export class SpaceController {
 
   @Get()
   @ApiOperation({ summary: 'Get all spaces' })
-  @ApiResponse({
-    status: 200,
-    description: 'Spaces fetched successfully',
-    type: () => Space,
+  @ApiSpaceResponse(SPACE_LIST_FIELDS, {
     isArray: true,
+    description: '워크스페이스의 스페이스 목록을 조회합니다.'
   })
   async getSpaces(
-    @Param() param: WorkspaceIdParamDto,
+    @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
     @UserInfo() user: User
-  ): Promise<Space[]> {
+  ) {
     const spaces = await this.spaceService.findByWorkspaceAndUserId(
-      param.workspaceId,
+      workspaceId,
       user.id
     );
     return spaces;
@@ -36,20 +53,18 @@ export class SpaceController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new space' })
-  @ApiResponse({
-    status: 201,
-    description: 'The space has been successfully created.',
-    type: Space,
+  @ApiSpaceResponse(SPACE_DETAIL_FIELDS, {
+    description: '새로운 스페이스를 생성합니다.'
   })
   async create(
     @Body() dto: CreateSpaceDto,
-    @Param() param: WorkspaceIdParamDto,
-    @UserInfo() user: User
-  ): Promise<Space> {
+    @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
+    @WorkspaceMemberId() workspaceMemberId: string
+  ) {
     return this.spaceService.create({
       ...dto,
-      userId: user.id,
-      workspaceId: param.workspaceId,
+      workspaceMemberId,
+      workspaceId,
     });
   }
 }

@@ -22,10 +22,9 @@ export class ErrorResponse {
   details?: any;
 }
 
-// 공통 응답 스키마 속성
-const getBaseSchema = (): Record<string, any> => ({
+// 성공 응답 스키마 속성 (error 필드 제외)
+const getSuccessBaseSchema = (): Record<string, any> => ({
   success: { type: 'boolean', example: true },
-  error: { $ref: getSchemaPath(ErrorResponse), nullable: true },
 });
 
 // StandardResponse를 위한 Swagger 데코레이터
@@ -33,7 +32,7 @@ export const ApiStandardResponse = <T extends ClassConstructor>(
   model?: T,
   options?: { isArray?: boolean; hasTotalCount?: boolean; isPaginated?: boolean }
 ) => {
-  const baseSchema = getBaseSchema();
+  const baseSchema = getSuccessBaseSchema();
 
   // totalCount가 있는 경우 totalCount 필드 추가
   if (options?.hasTotalCount || options?.isPaginated) {
