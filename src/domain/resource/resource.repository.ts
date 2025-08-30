@@ -20,6 +20,10 @@ export interface UpdateResourceData {
   visibility?: ResourceVisibility;
 }
 
+export interface CreateResourceOptions {
+  flush?: boolean;
+}
+
 @Injectable()
 export class ResourceRepository {
   constructor(
@@ -31,7 +35,7 @@ export class ResourceRepository {
 
   em: EntityManager;
 
-  async create(data: CreateResourceData): Promise<Resource> {
+  async create(data: CreateResourceData, options: CreateResourceOptions = { flush: true }): Promise<Resource> {
     const { visibility, ...rest } = data;
 
     const resource = new Resource();
@@ -40,7 +44,12 @@ export class ResourceRepository {
       visibility: visibility || ResourceVisibility.PUBLIC,
     });
 
-    await this.em.persistAndFlush(resource);
+    if (options.flush) {
+      await this.em.persistAndFlush(resource);
+    } else {
+      this.em.persist(resource);
+    }
+    
     return resource;
   }
 

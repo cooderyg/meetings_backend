@@ -1,6 +1,6 @@
 export interface CreateSpaceArgs {
   title: string;
-  userId: string;
+  workspaceMemberId: string;
   description?: string;
   workspaceId: string;
   parentPath?: string;

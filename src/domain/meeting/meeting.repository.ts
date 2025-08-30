@@ -5,6 +5,8 @@ import { Meeting, MeetingStatus } from './entity/meeting.entity';
 import { MeetingCreate, MeetingUpdate } from './meeting.type';
 import { PaginationQuery } from '../../shared/dto/request/pagination.query';
 import { findPaginated } from '../../shared/util/pagination.util';
+import { extractPopulateFromFields } from '../../shared/util/field.util';
+import { MEETING_LIST_FIELDS, MEETING_DETAIL_FIELDS, MEETING_DRAFT_FIELDS } from './constants/meeting-fields';
 
 @Injectable()
 export class MeetingRepository {
@@ -20,11 +22,21 @@ export class MeetingRepository {
   async create(data: MeetingCreate) {
     const entity = this.repository.assign(new Meeting(), data);
     await this.em.persistAndFlush(entity);
+    await this.em.populate(entity, extractPopulateFromFields(MEETING_DETAIL_FIELDS) as any);
     return entity;
   }
 
   async update(id: string, data: MeetingUpdate) {
-    const entity = this.em.getReference(Meeting, id);
+    const entity = await this.repository.findOne(
+      { id },
+      { 
+        populate: extractPopulateFromFields(MEETING_DETAIL_FIELDS) as any,
+        fields: MEETING_DETAIL_FIELDS as any
+      }
+    );
+    if (!entity) {
+      throw new Error('Meeting not found');
+    }
     const updateEntity = this.repository.assign(entity, data);
     await this.em.persistAndFlush(updateEntity);
     return entity;
@@ -40,11 +52,17 @@ export class MeetingRepository {
   }
 
   async findById(id: string, workspaceId: string) {
-    return this.repository.findOne({
-      id: id,
-      workspace: workspaceId,
-      deletedAt: null,
-    });
+    return this.repository.findOne(
+      {
+        id: id,
+        workspace: workspaceId,
+        deletedAt: null,
+      },
+      {
+        populate: extractPopulateFromFields(MEETING_DETAIL_FIELDS) as any,
+        fields: MEETING_DETAIL_FIELDS as any,
+      }
+    );
   }
 
   async findByWorkspace(workspaceId: string) {
@@ -56,7 +74,8 @@ export class MeetingRepository {
       },
       { 
         limit: 100,
-        populate: ['resource', 'resource.owner']
+        populate: extractPopulateFromFields(MEETING_LIST_FIELDS) as any,
+        fields: MEETING_LIST_FIELDS as any
       }
     );
   }
@@ -71,7 +90,8 @@ export class MeetingRepository {
       },
       { 
         limit: 100,
-        populate: ['resource', 'resource.owner']
+        populate: extractPopulateFromFields(MEETING_DRAFT_FIELDS) as any,
+        fields: MEETING_DRAFT_FIELDS as any
       }
     );
   }
@@ -96,12 +116,8 @@ export class MeetingRepository {
     return findPaginated(this.repository, pagination, {
       where,
       orderBy: orderBy || { createdAt: 'DESC' },
-      populate: ['resource', 'resource.owner'] as any,
-      fields: [
-        'id', 'status', 'tags', 'createdAt', 'updatedAt',
-        'resource.id', 'resource.title', 'resource.type', 'resource.visibility', 'resource.path',
-        'resource.owner.id', 'resource.owner.firstName', 'resource.owner.lastName', 'resource.owner.isActive'
-      ] as any,
+      populate: extractPopulateFromFields(MEETING_LIST_FIELDS) as any,
+      fields: MEETING_LIST_FIELDS as any,
     });
   }
 
@@ -121,12 +137,8 @@ export class MeetingRepository {
     return findPaginated(this.repository, pagination, {
       where,
       orderBy: orderBy || { updatedAt: 'DESC' },
-      populate: ['resource', 'resource.owner'] as any,
-      fields: [
-        'id', 'status', 'tags', 'createdAt', 'updatedAt',
-        'resource.id', 'resource.title', 'resource.type', 'resource.visibility', 'resource.path',
-        'resource.owner.id', 'resource.owner.firstName', 'resource.owner.lastName', 'resource.owner.isActive'
-      ] as any,
+      populate: extractPopulateFromFields(MEETING_DRAFT_FIELDS) as any,
+      fields: MEETING_DRAFT_FIELDS as any,
     });
   }
 }

@@ -1,13 +1,10 @@
-import { EntityManager } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { AppError } from '../../shared/exception/app.error';
-import { Resource, ResourceType } from '../resource/entity/resource.entity';
-import { WorkspaceMember } from '../workspace-member/entity/workspace-member.entity';
-import { Workspace } from '../workspace/entity/workspace.entity';
+import { ResourceService } from '../resource/resource.service';
+import { ResourceType } from '../resource/entity/resource.entity';
 import { Space } from './entity/space.entity';
 import { CreateSpaceArgs } from './interfaces/args/create-space.args';
 import { SpaceRepository } from './space.repository';
-
 export interface UpdateSpaceDto {
   title?: string;
   description?: string;
@@ -17,7 +14,7 @@ export interface UpdateSpaceDto {
 export class SpaceService {
   constructor(
     private readonly spaceRepository: SpaceRepository,
-    private readonly em: EntityManager
+    private readonly resourceService: ResourceService
   ) {}
 
   async findById(id: string): Promise<Space> {
@@ -29,75 +26,66 @@ export class SpaceService {
   }
 
   async findByWorkspace(workspaceId: string): Promise<Space[]> {
-    return await this.spaceRepository.findByWorkspace(workspaceId);
+    return this.spaceRepository.findByWorkspace(workspaceId);
   }
 
   async findByWorkspaceAndUserId(
     workspaceId: string,
     userId: string
   ): Promise<Space[]> {
-    return await this.spaceRepository.findByWorkspaceAndUserId(
-      workspaceId,
-      userId
-    );
+    return this.spaceRepository.findByWorkspaceAndUserId(workspaceId, userId);
   }
 
   async create(args: CreateSpaceArgs): Promise<Space> {
-    const workspace = await this.em.findOne(Workspace, {
-      id: args.workspaceId,
-    });
-    if (!workspace) {
-      throw new AppError('workspace.fetch.notFound');
-    }
+    // ResourceService를 통해 Resource 생성 (flush: false로 원자성 보장)
+    const resource = await this.resourceService.create(
+      {
+        ownerId: args.workspaceMemberId,
+        workspaceId: args.workspaceId,
+        title: args.title,
+        type: ResourceType.SPACE,
+        parentPath: args.parentPath,
+      },
+      { flush: false }
+    );
 
-    const owner = await this.em.findOne(WorkspaceMember, {
-      user: args.userId,
-      workspace: args.workspaceId,
-    });
-    if (!owner) {
-      throw new AppError('workspace.member.fetch.notFound');
-    }
-
-    const resource = this.em.assign(new Resource(), {
-      workspace,
-      owner,
-      type: ResourceType.SPACE,
-      title: args.title,
-      path: args.parentPath
-        ? `${args.parentPath}.${Date.now()}`
-        : String(Date.now()),
-    });
-
-    const space = this.em.assign(new Space(), {
+    // Space 생성 (Resource와 함께 flush)
+    const space = await this.spaceRepository.create({
       resource,
-      workspace,
+      workspace: resource.workspace,
       ...(args.description !== undefined && { description: args.description }),
     });
 
-    const result = await this.spaceRepository.create(space);
-    await this.em.flush();
-    return result;
+    return space;
   }
 
   async update(id: string, dto: UpdateSpaceDto): Promise<Space> {
-    const space = await this.findById(id);
+    const space = await this.spaceRepository.findById(id);
+    if (!space) {
+      throw new AppError('space.fetch.notFound');
+    }
 
     if (dto.title) {
-      this.em.assign(space.resource, { title: dto.title });
+      await this.resourceService.update(space.resource.id, {
+        title: dto.title,
+      });
     }
 
+    let updatedSpace = space;
     if (dto.description !== undefined) {
-      this.em.assign(space, { description: dto.description });
+      updatedSpace = await this.spaceRepository.updateSpace(space, {
+        description: dto.description,
+      });
     }
 
-    const result = await this.spaceRepository.update(space);
-    await this.em.flush();
-    return result;
+    return updatedSpace;
   }
 
   async delete(id: string): Promise<void> {
-    await this.findById(id);
+    const space = await this.spaceRepository.findById(id);
+    if (!space) {
+      throw new AppError('space.fetch.notFound');
+    }
     await this.spaceRepository.delete(id);
-    await this.em.flush();
   }
 }
