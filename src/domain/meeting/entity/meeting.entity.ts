@@ -6,7 +6,7 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryKeyProp,
+  PrimaryKey,
   Property,
 } from '@mikro-orm/core';
 import { TimestampedEntity } from '../../../shared/entity/timestamped.entity';
@@ -26,20 +26,22 @@ export enum MeetingStatus {
 
 @Entity({ tableName: 'meetings' })
 export class Meeting extends TimestampedEntity {
-  [PrimaryKeyProp]?: 'resource';
-
-  /** 리소스 */
+  /** 미팅 ID */
   @ApiProperty({
-    description: '아이디 (리소스)',
+    description: '미팅 ID',
     type: String,
     nullable: false,
   })
+  @PrimaryKey({ type: 'uuid' })
+  id: string;
+
+  /** 리소스 (메타데이터) */
   @OneToOne(() => Resource, {
-    joinColumn: 'id',
-    primary: true,
+    eager: false,
+    nullable: false,
   })
   @Index()
-  resource: Resource;
+  resource!: Resource;
 
   /** 상태 */
   @ApiProperty({

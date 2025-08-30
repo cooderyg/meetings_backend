@@ -31,12 +31,12 @@ const getBaseSchema = (): Record<string, any> => ({
 // StandardResponse를 위한 Swagger 데코레이터
 export const ApiStandardResponse = <T extends ClassConstructor>(
   model?: T,
-  options?: { isArray?: boolean; hasTotalCount?: boolean }
+  options?: { isArray?: boolean; hasTotalCount?: boolean; isPaginated?: boolean }
 ) => {
   const baseSchema = getBaseSchema();
 
   // totalCount가 있는 경우 totalCount 필드 추가
-  if (options?.hasTotalCount) {
+  if (options?.hasTotalCount || options?.isPaginated) {
     baseSchema.totalCount = { type: 'number', example: 100 };
   }
 

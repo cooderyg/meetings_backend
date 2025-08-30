@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, Matches } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class SortRequest {
+export class SortQuery {
   @ApiPropertyOptional({
     description: '정렬 옵션 (예: createdAt:DESC,name:ASC)',
     example: 'createdAt:DESC',
