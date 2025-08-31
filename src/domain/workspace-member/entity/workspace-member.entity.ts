@@ -13,6 +13,7 @@ import { SystemRole } from '../../role/enum/system-role.enum';
 import { User } from '../../user/entity/user.entity';
 import { WorkspaceMemberRole } from '../../workspace-member-role/entity/workspace-member-role.entity';
 import { Workspace } from '../../workspace/entity/workspace.entity';
+import { MeetingParticipant } from '../../meeting-participant/entity/meeting-participant.entity';
 
 @Entity({ tableName: 'workspace_members' })
 @Unique({ properties: ['user', 'workspace'] })
@@ -41,6 +42,9 @@ export class WorkspaceMember extends BaseEntity {
 
   @OneToMany(() => WorkspaceMemberRole, (wmr) => wmr.workspaceMember)
   workspaceMemberRoles = new Collection<WorkspaceMemberRole>(this);
+
+  @OneToMany(() => MeetingParticipant, (participant) => participant.workspaceMember)
+  meetingParticipants = new Collection<MeetingParticipant>(this);
 
   getDisplayName(): string {
     return [this.firstName, this.lastName].filter(Boolean).join(' ');

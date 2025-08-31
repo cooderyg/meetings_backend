@@ -45,6 +45,14 @@ export interface HierarchicalErrorContextMap {
   };
 
   // ===================
+  // 미팅 참여자 도메인 (meetingParticipant.*.*)
+  // ===================
+  'meetingParticipant.create.meetingNotFound': undefined;
+  'meetingParticipant.create.memberNotFound': undefined;
+  'meetingParticipant.create.alreadyParticipating': undefined;
+  'meetingParticipant.delete.notFound': undefined;
+
+  // ===================
   // 워크스페이스 도메인 (workspace.*.*)
   // ===================
   'workspace.join.alreadyMember': {

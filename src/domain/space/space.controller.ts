@@ -21,7 +21,10 @@ import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
 import { WorkspaceMemberId } from '../../shared/decorator';
 import { ApiSpaceResponse } from '../../shared/decorator/api-field-response.decorator';
-import { SPACE_LIST_FIELDS, SPACE_DETAIL_FIELDS } from './constants/space-fields';
+import {
+  SPACE_LIST_FIELDS,
+  SPACE_DETAIL_FIELDS,
+} from './constant/space-fields';
 
 @ApiTags('Spaces')
 @ApiBearerAuth()
@@ -38,7 +41,7 @@ export class SpaceController {
   @ApiOperation({ summary: 'Get all spaces' })
   @ApiSpaceResponse(SPACE_LIST_FIELDS, {
     isArray: true,
-    description: '워크스페이스의 스페이스 목록을 조회합니다.'
+    description: '워크스페이스의 스페이스 목록을 조회합니다.',
   })
   async getSpaces(
     @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
@@ -54,7 +57,7 @@ export class SpaceController {
   @Post()
   @ApiOperation({ summary: 'Create a new space' })
   @ApiSpaceResponse(SPACE_DETAIL_FIELDS, {
-    description: '새로운 스페이스를 생성합니다.'
+    description: '새로운 스페이스를 생성합니다.',
   })
   async create(
     @Body() dto: CreateSpaceDto,

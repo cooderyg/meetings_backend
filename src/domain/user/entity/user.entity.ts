@@ -8,7 +8,6 @@ import {
 } from '@mikro-orm/core';
 import { JsonType } from '@mikro-orm/postgresql';
 import { BaseEntity } from '../../../shared/entity/base.entity';
-import { MeetingParticipant } from '../../meeting-participant/entity/meeting-participant.entity';
 import { WorkspaceMember } from '../../workspace-member/entity/workspace-member.entity';
 
 export interface UserSettings {
@@ -54,9 +53,6 @@ export class User extends BaseEntity {
 
   @OneToMany(() => WorkspaceMember, (member) => member.user)
   workspaceMemberships = new Collection<WorkspaceMember>(this);
-
-  @OneToMany(() => MeetingParticipant, (participant) => participant.user)
-  meetingParticipants = new Collection<MeetingParticipant>(this);
 
   getWorkspaceIds(): string[] {
     return this.workspaceMemberships

@@ -27,7 +27,11 @@ import { FilterQuery } from '../../shared/dto/request/filter.query';
 import { SortQuery } from '../../shared/dto/request/sort.query';
 import { ErrorResponse } from '../../shared/decorator/api-standard-response.decorator';
 import { ApiMeetingResponse } from '../../shared/decorator/api-field-response.decorator';
-import { MEETING_LIST_FIELDS, MEETING_DETAIL_FIELDS, MEETING_DRAFT_FIELDS } from './constants/meeting-fields';
+import {
+  MEETING_LIST_FIELDS,
+  MEETING_DETAIL_FIELDS,
+  MEETING_DRAFT_FIELDS,
+} from './constant/meeting-fields';
 
 @ApiTags('Meetings')
 @ApiParam({
@@ -43,7 +47,7 @@ export class MeetingController {
 
   @Post()
   @ApiMeetingResponse(MEETING_DETAIL_FIELDS, {
-    description: '미팅을 생성합니다.'
+    description: '미팅을 생성합니다.',
   })
   async create(
     @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
@@ -59,7 +63,7 @@ export class MeetingController {
 
   @Patch('publish/:id')
   @ApiMeetingResponse(MEETING_DETAIL_FIELDS, {
-    description: '미팅을 발행합니다.'
+    description: '미팅을 발행합니다.',
   })
   async publish(
     @Param('id', ParseUUIDPipe) id: string,
@@ -77,7 +81,7 @@ export class MeetingController {
 
   @Get(':id')
   @ApiMeetingResponse(MEETING_DETAIL_FIELDS, {
-    description: '미팅 상세 정보를 조회합니다.'
+    description: '미팅 상세 정보를 조회합니다.',
   })
   async findById(
     @Param('id', ParseUUIDPipe) id: string,
@@ -94,7 +98,7 @@ export class MeetingController {
   })
   @ApiMeetingResponse(MEETING_LIST_FIELDS, {
     hasTotalCount: true,
-    description: '워크스페이스 미팅 목록이 조회되었습니다.'
+    description: '워크스페이스 미팅 목록이 조회되었습니다.',
   })
   async findByWorkspace(
     @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
@@ -117,7 +121,7 @@ export class MeetingController {
   })
   @ApiMeetingResponse(MEETING_DRAFT_FIELDS, {
     hasTotalCount: true,
-    description: '나의 임시저장 미팅 목록이 조회되었습니다.'
+    description: '나의 임시저장 미팅 목록이 조회되었습니다.',
   })
   async findDraftMy(
     @Param('workspaceId', ParseUUIDPipe) workspaceId: string,

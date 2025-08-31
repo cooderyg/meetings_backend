@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { MeetingRepository } from './meeting.repository';
-import { MeetingUpdate } from './meeting.type';
 import { ResourceService } from '../resource/resource.service';
 import {
   ResourceType,
   ResourceVisibility,
 } from '../resource/entity/resource.entity';
-import { CreateMeetingArgs } from './interfaces/args/create-meeting.args';
-import { PublishMeetingArgs } from './interfaces/args/publish-meeting.args';
+import { CreateMeetingArgs } from './interface/args/create-meeting.args';
+import { PublishMeetingArgs } from './interface/args/publish-meeting.args';
 import { Meeting, MeetingStatus } from './entity/meeting.entity';
 import { AppError } from '../../shared/exception/app.error';
 import { PaginationQuery } from '../../shared/dto/request/pagination.query';
 import { FilterQuery } from '../../shared/dto/request/filter.query';
 import { SortQuery } from '../../shared/dto/request/sort.query';
+import { UpdateMeetingData } from './interface/data/update-meeting.data';
 @Injectable()
 export class MeetingService {
   constructor(
@@ -21,14 +21,17 @@ export class MeetingService {
   ) {}
 
   async create(args: CreateMeetingArgs): Promise<Meeting> {
-    const resource = await this.resourceService.create({
-      ownerId: args.workspaceMemberId,
-      workspaceId: args.workspaceId,
-      title: 'Untitled',
-      type: ResourceType.MEETING,
-      parentPath: args.parentPath,
-      visibility: ResourceVisibility.PUBLIC,
-    }, { flush: false });
+    const resource = await this.resourceService.create(
+      {
+        ownerId: args.workspaceMemberId,
+        workspaceId: args.workspaceId,
+        title: 'Untitled',
+        type: ResourceType.MEETING,
+        parentPath: args.parentPath,
+        visibility: ResourceVisibility.PUBLIC,
+      },
+      { flush: false }
+    );
 
     const meeting = await this.repository.create({
       resource,
@@ -42,7 +45,7 @@ export class MeetingService {
     return meeting;
   }
 
-  async update(id: string, data: MeetingUpdate): Promise<Meeting> {
+  async update(id: string, data: UpdateMeetingData): Promise<Meeting> {
     return this.repository.update(id, data);
   }
 
@@ -76,15 +79,22 @@ export class MeetingService {
     return updatedMeeting;
   }
 
-  async findById(id: string, workspaceId: string): Promise<Meeting | null> {
-    return this.repository.findById(id, workspaceId);
+  async findById(
+    id: string,
+    workspaceId: string,
+    includeParticipants = false
+  ): Promise<Meeting | null> {
+    return this.repository.findById(id, workspaceId, includeParticipants);
   }
 
   async findByWorkspace(workspaceId: string): Promise<Meeting[]> {
     return this.repository.findByWorkspace(workspaceId);
   }
 
-  async findDraftMy(workspaceId: string, workspaceMemberId: string): Promise<Meeting[]> {
+  async findDraftMy(
+    workspaceId: string,
+    workspaceMemberId: string
+  ): Promise<Meeting[]> {
     return this.repository.findDrafyMy(workspaceId, workspaceMemberId);
   }
 
@@ -109,7 +119,7 @@ export class MeetingService {
 
     return {
       data: result.data,
-      totalCount: result.totalCount
+      totalCount: result.totalCount,
     };
   }
 
@@ -133,7 +143,7 @@ export class MeetingService {
 
     return {
       data: result.data,
-      totalCount: result.totalCount
+      totalCount: result.totalCount,
     };
   }
 }

@@ -64,6 +64,14 @@ export const MEETING_DRAFT_FIELDS = [
   'workspace.name',
 ] as const;
 
+/** 미팅 참여자 검증용 필드 (participants 포함) */
+export const MEETING_WITH_PARTICIPANTS_FIELDS = [
+  ...MEETING_DETAIL_FIELDS,
+  'participants.id',
+  'participants.workspaceMember.id',
+] as const;
+
 export type MeetingListField = (typeof MEETING_LIST_FIELDS)[number];
 export type MeetingDetailField = (typeof MEETING_DETAIL_FIELDS)[number];
 export type MeetingDraftField = (typeof MEETING_DRAFT_FIELDS)[number];
+export type MeetingWithParticipantsField = (typeof MEETING_WITH_PARTICIPANTS_FIELDS)[number];
