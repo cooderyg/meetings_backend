@@ -24,6 +24,8 @@ import { LoggerModule } from './shared/module/logger/logger.module';
 import { LoggingMiddleware } from './shared/module/logger/logging.middleware';
 import { WorkspaceMiddleware } from './shared/middleware/workspace.middleware';
 import { ResourceModule } from './domain/resource/resource.module';
+import { MeetingModule } from './domain/meeting/meeting.module';
+import { MeetingParticipantModule } from './domain/meeting-participant/meeting-participant.module';
 
 @Module({
   imports: [
@@ -60,7 +62,9 @@ import { ResourceModule } from './domain/resource/resource.module';
     WorkspaceMemberRoleModule,
     ResourceModule,
     FileModule,
+    MeetingModule,
     MeetingRecordModule,
+    MeetingParticipantModule,
     EventEmitterModule.forRoot(),
   ],
   controllers: [],
