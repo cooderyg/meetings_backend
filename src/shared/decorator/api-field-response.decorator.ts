@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOkResponse, ApiExtraModels } from '@nestjs/swagger';
-import { createFieldBasedSchema } from '../util/swagger-schema.util';
+import { createFieldBasedSchema } from '../swagger';
 
 export interface ApiFieldResponseOptions {
   /** 배열 응답 여부 */
@@ -86,4 +86,14 @@ export function ApiSpaceResponse(
   options: Omit<ApiFieldResponseOptions, 'entityName'> = {}
 ) {
   return ApiFieldResponse(fields, { ...options, entityName: 'Space' });
+}
+
+/**
+ * MeetingParticipant 전용 응답 데코레이터
+ */
+export function ApiMeetingParticipantResponse(
+  fields: readonly string[],
+  options: Omit<ApiFieldResponseOptions, 'entityName'> = {}
+) {
+  return ApiFieldResponse(fields, { ...options, entityName: 'MeetingParticipant' });
 }

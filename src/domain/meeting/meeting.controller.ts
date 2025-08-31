@@ -26,7 +26,8 @@ import { PaginationQuery } from '../../shared/dto/request/pagination.query';
 import { FilterQuery } from '../../shared/dto/request/filter.query';
 import { SortQuery } from '../../shared/dto/request/sort.query';
 import { ErrorResponse } from '../../shared/decorator/api-standard-response.decorator';
-import { ApiMeetingResponse } from '../../shared/decorator/api-field-response.decorator';
+import { ApiEntity, ApiEntityPaginated } from '../../shared/decorator/api-entity.decorator';
+import { Meeting } from './entity/meeting.entity';
 import {
   MEETING_LIST_FIELDS,
   MEETING_DETAIL_FIELDS,
@@ -46,7 +47,7 @@ export class MeetingController {
   constructor(private readonly service: MeetingService) {}
 
   @Post()
-  @ApiMeetingResponse(MEETING_DETAIL_FIELDS, {
+  @ApiEntity(Meeting, MEETING_DETAIL_FIELDS, {
     description: '미팅을 생성합니다.',
   })
   async create(
@@ -62,7 +63,7 @@ export class MeetingController {
   }
 
   @Patch('publish/:id')
-  @ApiMeetingResponse(MEETING_DETAIL_FIELDS, {
+  @ApiEntity(Meeting, MEETING_DETAIL_FIELDS, {
     description: '미팅을 발행합니다.',
   })
   async publish(
@@ -80,7 +81,7 @@ export class MeetingController {
   }
 
   @Get(':id')
-  @ApiMeetingResponse(MEETING_DETAIL_FIELDS, {
+  @ApiEntity(Meeting, MEETING_DETAIL_FIELDS, {
     description: '미팅 상세 정보를 조회합니다.',
   })
   async findById(
@@ -96,10 +97,9 @@ export class MeetingController {
     description:
       '워크스페이스의 미팅 목록을 페이지네이션, 필터링, 정렬하여 조회합니다.',
   })
-  @ApiMeetingResponse(MEETING_LIST_FIELDS, {
-    hasTotalCount: true,
-    description: '워크스페이스 미팅 목록이 조회되었습니다.',
-  })
+  @ApiEntityPaginated(Meeting, MEETING_LIST_FIELDS,
+    '워크스페이스 미팅 목록이 조회되었습니다.'
+  )
   async findByWorkspace(
     @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
     @Query() pagination: PaginationQuery,
@@ -119,10 +119,9 @@ export class MeetingController {
     summary: '나의 임시저장 미팅 목록 조회',
     description: '나의 임시저장 미팅 목록을 페이지네이션, 정렬하여 조회합니다.',
   })
-  @ApiMeetingResponse(MEETING_DRAFT_FIELDS, {
-    hasTotalCount: true,
-    description: '나의 임시저장 미팅 목록이 조회되었습니다.',
-  })
+  @ApiEntityPaginated(Meeting, MEETING_DRAFT_FIELDS,
+    '나의 임시저장 미팅 목록이 조회되었습니다.'
+  )
   async findDraftMy(
     @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
     @WorkspaceMemberId() workspaceMemberId: string,

@@ -7,6 +7,7 @@ import {
   Property,
   Unique,
 } from '@mikro-orm/core';
+import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '../../../shared/entity/base.entity';
 import { MemberResourcePermission } from '../../permission/entity/member-resource-permission.entity';
 import { SystemRole } from '../../role/enum/system-role.enum';
@@ -25,16 +26,35 @@ export class WorkspaceMember extends BaseEntity {
   @ManyToOne(() => Workspace)
   workspace!: Workspace;
 
-  @Property({ default: true })
+  @Property({ type: 'boolean', default: true })
+  // @ApiProperty({
+  //   description: '워크스페이스 멤버 활성화 상태',
+  //   type: 'boolean',
+  //   example: true
+  // })
   isActive: boolean = true;
 
   @Property()
+  @ApiProperty({
+    description: '사용자 이름',
+    example: '홍길'
+  })
   firstName!: string;
 
   @Property()
+  @ApiProperty({
+    description: '사용자 성',
+    example: '동'
+  })
   lastName!: string;
 
   @Property({ nullable: true })
+  @ApiProperty({
+    description: '프로필 이미지 경로',
+    example: '/images/profile/user123.jpg',
+    required: false,
+    nullable: true
+  })
   imagePath: string | null = null;
 
   @OneToMany(() => MemberResourcePermission, (urp) => urp.workspaceMember)
