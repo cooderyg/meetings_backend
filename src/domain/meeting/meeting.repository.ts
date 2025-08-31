@@ -94,38 +94,7 @@ export class MeetingRepository {
     );
   }
 
-  async findByWorkspace(workspaceId: string) {
-    return this.repository.find(
-      {
-        workspace: workspaceId,
-        status: { $ne: MeetingStatus.DRAFT },
-        deletedAt: null,
-      },
-      {
-        limit: 100,
-        populate: MEETING_LIST_POPULATE as any,
-        fields: MEETING_LIST_FIELDS as any,
-      }
-    );
-  }
-
-  async findDrafyMy(workspaceId: string, workspaceMemberId: string) {
-    return this.repository.find(
-      {
-        workspace: workspaceId,
-        status: MeetingStatus.DRAFT,
-        resource: { owner: workspaceMemberId },
-        deletedAt: null,
-      },
-      {
-        limit: 100,
-        populate: MEETING_DRAFT_POPULATE as any,
-        fields: MEETING_DRAFT_FIELDS as any,
-      }
-    );
-  }
-
-  async findByWorkspacePaginated(
+  async findByWorkspace(
     workspaceId: string,
     pagination: PaginationQuery,
     filters?: FilterQuery<Meeting>,
@@ -150,7 +119,7 @@ export class MeetingRepository {
     });
   }
 
-  async findDraftMyPaginated(
+  async findDraftMy(
     workspaceId: string,
     workspaceMemberId: string,
     pagination: PaginationQuery,
