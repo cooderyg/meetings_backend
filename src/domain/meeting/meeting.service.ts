@@ -96,21 +96,10 @@ export class MeetingService {
     return this.repository.findByIdWithParticipants(id, workspaceId);
   }
 
-  async findByWorkspace(workspaceId: string): Promise<Meeting[]> {
-    return this.repository.findByWorkspace(workspaceId);
-  }
-
-  async findDraftMy(
-    workspaceId: string,
-    workspaceMemberId: string
-  ): Promise<Meeting[]> {
-    return this.repository.findDrafyMy(workspaceId, workspaceMemberId);
-  }
-
   /**
    * 워크스페이스의 미팅 목록을 페이지네이션으로 조회
    */
-  async findByWorkspacePaginated(
+  async findByWorkspace(
     workspaceId: string,
     pagination: PaginationQuery,
     filter?: FilterQuery,
@@ -119,7 +108,7 @@ export class MeetingService {
     const filters = filter?.parseFilters<Meeting>();
     const orderBy = sort?.orderBy;
 
-    const result = await this.repository.findByWorkspacePaginated(
+    const result = await this.repository.findByWorkspace(
       workspaceId,
       pagination,
       filters,
@@ -135,7 +124,7 @@ export class MeetingService {
   /**
    * 나의 임시저장 미팅 목록을 페이지네이션으로 조회
    */
-  async findDraftMyPaginated(
+  async findDraftMy(
     workspaceId: string,
     workspaceMemberId: string,
     pagination: PaginationQuery,
@@ -143,7 +132,7 @@ export class MeetingService {
   ) {
     const orderBy = sort?.orderBy;
 
-    const result = await this.repository.findDraftMyPaginated(
+    const result = await this.repository.findDraftMy(
       workspaceId,
       workspaceMemberId,
       pagination,

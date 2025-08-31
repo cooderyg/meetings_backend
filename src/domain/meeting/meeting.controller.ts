@@ -111,12 +111,7 @@ export class MeetingController {
     @Query() filter: FilterQuery,
     @Query() sort: SortQuery
   ) {
-    return this.service.findByWorkspacePaginated(
-      workspaceId,
-      pagination,
-      filter,
-      sort
-    );
+    return this.service.findByWorkspace(workspaceId, pagination, filter, sort);
   }
 
   @Get('drafts/my')
@@ -135,7 +130,7 @@ export class MeetingController {
     @Query() pagination: PaginationQuery,
     @Query() sort: SortQuery
   ) {
-    return this.service.findDraftMyPaginated(
+    return this.service.findDraftMy(
       workspaceId,
       workspaceMemberId,
       pagination,
