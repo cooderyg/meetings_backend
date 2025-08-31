@@ -15,9 +15,9 @@ export class DevTestController {
   constructor(private readonly devTestService: DevTestService) {}
 
   @Post('login')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: '개발용 직접 로그인 (OAuth 우회)',
-    description: '개발환경에서만 사용 가능한 테스트용 로그인 엔드포인트입니다.' 
+    description: '개발환경에서만 사용 가능한 테스트용 로그인 엔드포인트입니다.',
   })
   async devLogin(@Body() dto: DevLoginDto): Promise<TokenResponseDto> {
     return this.devTestService.devLogin(dto.email);
@@ -25,9 +25,9 @@ export class DevTestController {
 
   @Get('auth-test')
   @NeedAuth()
-  @ApiOperation({ 
+  @ApiOperation({
     summary: '인증 테스트',
-    description: 'JWT 토큰 인증이 제대로 작동하는지 테스트합니다.' 
+    description: 'JWT 토큰 인증이 제대로 작동하는지 테스트합니다.',
   })
   async authTest(@UserInfo() user: AccessTokenPayload) {
     return {
@@ -42,14 +42,14 @@ export class DevTestController {
   @Get('workspace/:workspaceId/member-test')
   @NeedAuth()
   @UseGuards(WorkspaceMemberGuard)
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'WorkspaceMemberGuard 테스트',
-    description: '사용자가 해당 워크스페이스의 멤버인지 확인합니다.' 
+    description: '사용자가 해당 워크스페이스의 멤버인지 확인합니다.',
   })
   @ApiParam({
     name: 'workspaceId',
     description: '워크스페이스 ID',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   async workspaceMemberTest(
     @Param('workspaceId') workspaceId: string,
@@ -69,20 +69,24 @@ export class DevTestController {
   @Post('workspace/:workspaceId/action-test')
   @UseGuards(WorkspaceMemberGuard)
   @NeedAuth()
-  @ApiOperation({ 
+  @ApiOperation({
     summary: '워크스페이스 액션 테스트',
-    description: 'WorkspaceMiddleware + WorkspaceMemberGuard 조합 테스트' 
+    description: 'WorkspaceMiddleware + WorkspaceMemberGuard 조합 테스트',
   })
   @ApiParam({
     name: 'workspaceId',
     description: '워크스페이스 ID',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   async workspaceActionTest(
     @Param('workspaceId') workspaceId: string,
     @Body() dto: WorkspaceActionDto,
     @UserInfo() user: AccessTokenPayload
   ) {
-    return this.devTestService.performWorkspaceAction(workspaceId, dto.message, user);
+    return this.devTestService.performWorkspaceAction(
+      workspaceId,
+      dto.message,
+      user
+    );
   }
 }

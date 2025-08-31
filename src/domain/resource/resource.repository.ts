@@ -35,7 +35,10 @@ export class ResourceRepository {
 
   em: EntityManager;
 
-  async create(data: CreateResourceData, options: CreateResourceOptions = { flush: true }): Promise<Resource> {
+  async create(
+    data: CreateResourceData,
+    options: CreateResourceOptions = { flush: true }
+  ): Promise<Resource> {
     const { visibility, ...rest } = data;
 
     const resource = new Resource();
@@ -49,7 +52,7 @@ export class ResourceRepository {
     } else {
       this.em.persist(resource);
     }
-    
+
     return resource;
   }
 

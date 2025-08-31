@@ -11,7 +11,7 @@ export class MeetingParticipant extends BaseEntity {
     description: '게스트 참여자 이름',
     example: '홍길동',
     required: false,
-    nullable: true
+    nullable: true,
   })
   guestName: string | null = null;
 
@@ -19,13 +19,13 @@ export class MeetingParticipant extends BaseEntity {
   @ApiProperty({
     description: '워크스페이스 멤버 정보',
     required: false,
-    nullable: true
+    nullable: true,
   })
   workspaceMember: WorkspaceMember | null = null;
 
   @ManyToOne()
   @ApiProperty({
-    description: '참여 중인 미팅'
+    description: '참여 중인 미팅',
   })
   meeting: Meeting;
 }

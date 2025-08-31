@@ -6,7 +6,7 @@ export interface HierarchicalErrorContextMap {
   // 검증 관련 (auth.validate.*)
   'auth.validate.failed': undefined;
   'auth.validate.expired': undefined;
-  
+
   // 승인 관련 (auth.authorize.*)
   'auth.authorize.denied': undefined;
 
@@ -49,7 +49,7 @@ export interface HierarchicalErrorContextMap {
   // ===================
   'meetingParticipant.create.meetingNotFound': undefined;
   'meetingParticipant.create.memberNotFound': undefined;
-  'meetingParticipant.create.alreadyParticipating': undefined;
+  'meetingParticipant.create.duplicate': undefined;
   'meetingParticipant.delete.notFound': undefined;
 
   // ===================
@@ -91,10 +91,10 @@ export interface HierarchicalErrorContextMap {
     resourceType?: string;
   };
   'resource.fetch.duplicate': undefined;
-  
+
   // 접근 관련 (resource.access.*)
   'resource.access.denied': undefined;
-  
+
   // ===================
   // 검증 도메인 (validation.*.*)
   // ===================
@@ -103,10 +103,10 @@ export interface HierarchicalErrorContextMap {
     fields?: Record<string, string[]>;
     reason?: string;
   };
-  
+
   // 입력 관련 (validation.input.*)
   'validation.input.invalid': undefined;
-  
+
   // 매개변수 관련 (validation.param.*)
   'validation.param.invalid': undefined;
 
@@ -144,19 +144,19 @@ export interface HierarchicalErrorContextMap {
   'stt.service.error': undefined;
   'stt.results.none': undefined;
   'stt.alternatives.none': undefined;
-  
+
   // ===================
   // 시스템 도메인 (system.*.*)
   // ===================
   'system.internal.error': undefined;
   'system.service.unavailable': undefined;
-  
+
   // ===================
   // 외부 서비스 도메인 (external.*.*)
   // ===================
   'external.api.error': undefined;
   'external.database.error': undefined;
-  
+
   // ===================
   // 일반 에러 (general.*.*)
   // ===================
@@ -164,29 +164,29 @@ export interface HierarchicalErrorContextMap {
   'general.notFound': undefined;
   'general.internalError': undefined;
   'general.serviceUnavailable': undefined;
-  
+
   // ===================
   // 사용자 도메인 (user.*.*)
   // ===================
   'user.fetch.notFound': undefined;
-  
+
   // ===================
   // 스페이스 도메인 (space.*.*)
   // ===================
   'space.fetch.notFound': undefined;
-  
+
   // ===================
   // 역할 도메인 (role.*.*)
   // ===================
   'role.system.notFound': undefined;
-  
+
   // ===================
   // LangChain 도메인 (langchain.*.*)
   // ===================
   'langchain.config.missingApiKey': undefined;
   'langchain.generation.failed': undefined;
   'langchain.structuredOutput.failed': undefined;
-  
+
   // ===================
   // 레거시 에러 코드 (점진적 마이그레이션) - 3계층으로 변경
   // ===================

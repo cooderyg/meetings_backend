@@ -142,7 +142,11 @@ export class FileService {
     // 파일 크기 검증
     if (options.maxSize && file.size > options.maxSize) {
       throw new AppError('validation.form.failed', {
-        fields: { size: [`파일 크기가 너무 큽니다. 최대 ${Math.round(options.maxSize / 1024 / 1024)}MB까지 허용됩니다.`] },
+        fields: {
+          size: [
+            `파일 크기가 너무 큽니다. 최대 ${Math.round(options.maxSize / 1024 / 1024)}MB까지 허용됩니다.`,
+          ],
+        },
       });
     }
 
@@ -152,7 +156,11 @@ export class FileService {
       !options.allowedMimeTypes.includes(file.mimetype)
     ) {
       throw new AppError('validation.form.failed', {
-        fields: { mimetype: [`지원하지 않는 파일 형식입니다. 허용된 형식: ${options.allowedMimeTypes.join(', ')}`] },
+        fields: {
+          mimetype: [
+            `지원하지 않는 파일 형식입니다. 허용된 형식: ${options.allowedMimeTypes.join(', ')}`,
+          ],
+        },
       });
     }
 
@@ -161,7 +169,11 @@ export class FileService {
       const fileExtension = path.extname(file.originalname).toLowerCase();
       if (!options.allowedExtensions.includes(fileExtension)) {
         throw new AppError('validation.form.failed', {
-          fields: { extension: [`지원하지 않는 파일 확장자입니다. 허용된 확장자: ${options.allowedExtensions.join(', ')}`] },
+          fields: {
+            extension: [
+              `지원하지 않는 파일 확장자입니다. 허용된 확장자: ${options.allowedExtensions.join(', ')}`,
+            ],
+          },
         });
       }
     }

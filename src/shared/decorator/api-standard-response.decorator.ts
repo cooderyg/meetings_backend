@@ -30,7 +30,11 @@ const getSuccessBaseSchema = (): Record<string, any> => ({
 // StandardResponse를 위한 Swagger 데코레이터
 export const ApiStandardResponse = <T extends ClassConstructor>(
   model?: T,
-  options?: { isArray?: boolean; hasTotalCount?: boolean; isPaginated?: boolean }
+  options?: {
+    isArray?: boolean;
+    hasTotalCount?: boolean;
+    isPaginated?: boolean;
+  }
 ) => {
   const baseSchema = getSuccessBaseSchema();
 

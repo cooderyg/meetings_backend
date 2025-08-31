@@ -9,7 +9,7 @@ import { WorkspaceMemberModule } from '../workspace-member/workspace-member.modu
 
 @Module({
   imports: [
-    MikroOrmModule.forFeature([Meeting]), 
+    MikroOrmModule.forFeature([Meeting]),
     ResourceModule,
     WorkspaceMemberModule,
   ],

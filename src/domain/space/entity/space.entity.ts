@@ -1,4 +1,11 @@
-import { Entity, Property, OneToOne, ManyToOne, Index, PrimaryKey } from '@mikro-orm/core';
+import {
+  Entity,
+  Property,
+  OneToOne,
+  ManyToOne,
+  Index,
+  PrimaryKey,
+} from '@mikro-orm/core';
 import { v4 } from 'uuid';
 import { TimestampedEntity } from '../../../shared/entity/timestamped.entity';
 import { Resource } from '../../resource/entity/resource.entity';

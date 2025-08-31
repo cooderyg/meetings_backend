@@ -19,6 +19,13 @@ export const MEETING_PARTICIPANT_DETAIL_FIELDS = [
   'meeting.resource.title',
 ] as const;
 
+/** MEETING_PARTICIPANT_DETAIL_FIELDS에 대응하는 populate 배열 */
+export const MEETING_PARTICIPANT_DETAIL_POPULATE = [
+  'workspaceMember',
+  'meeting',
+  'meeting.resource',
+] as const;
+
 // 타입 안전성을 위한 유니온 타입 정의
 export type MeetingParticipantDetailField =
   (typeof MEETING_PARTICIPANT_DETAIL_FIELDS)[number];

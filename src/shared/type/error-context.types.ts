@@ -10,7 +10,10 @@ export interface ErrorContextMap {
 
   // 미팅 관련
   MEETING_NOT_FOUND: { meetingId: string };
-  MEETING_CANNOT_PUBLISH_DRAFT: { currentStatus: string; requiredStatus: string };
+  MEETING_CANNOT_PUBLISH_DRAFT: {
+    currentStatus: string;
+    requiredStatus: string;
+  };
   MEETING_NO_RESOURCES: undefined;
   MEETING_UNAUTHORIZED_ACTION: { userId: string; meetingId: string };
   MEETING_PUBLISHED_CANNOT_DELETE: { resourceCount: number };
@@ -24,7 +27,11 @@ export interface ErrorContextMap {
   WORKSPACE_CANNOT_LEAVE_LAST_OWNER: undefined;
   WORKSPACE_NAME_DUPLICATE: { name: string };
   WORKSPACE_FEATURE_NOT_ALLOWED: { feature: string; requiredPlan: string };
-  WORKSPACE_QUOTA_EXCEEDED: { resource: string; currentCount: number; maxCount: number };
+  WORKSPACE_QUOTA_EXCEEDED: {
+    resource: string;
+    currentCount: number;
+    maxCount: number;
+  };
 
   // 리소스 관련
   RESOURCE_NOT_FOUND: { resourceType: string; resourceId?: string };

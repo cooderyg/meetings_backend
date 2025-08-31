@@ -28,13 +28,15 @@ import { ErrorContextMap } from '../type/error-context.types';
  * });
  * ```
  */
-export class AppException<T extends keyof ErrorContextMap = keyof ErrorContextMap> extends HttpException {
+export class AppException<
+  T extends keyof ErrorContextMap = keyof ErrorContextMap,
+> extends HttpException {
   /** API 응답에 사용되는 자기 설명적 에러 코드 */
   public readonly code: T;
-  
+
   /** 에러와 관련된 타입 안전한 컨텍스트 정보 */
   public readonly context?: ErrorContextMap[T];
-  
+
   /** 로깅 시 사용할 로그 레벨 */
   public readonly logLevel: 'error' | 'warn' | 'info' | 'debug' | 'verbose';
 

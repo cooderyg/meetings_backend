@@ -16,11 +16,7 @@ export class MeetingParticipantService {
   async create(args: CreateMeetingParticipantArgs) {
     const { meetingId, workspaceId, workspaceMemberId, guestName } = args;
 
-    const meeting = await this.meetingService.findById(
-      meetingId,
-      workspaceId,
-      true
-    );
+    const meeting = await this.meetingService.findById(meetingId, workspaceId);
 
     if (!meeting) {
       throw new AppError('meetingParticipant.create.meetingNotFound');
@@ -35,14 +31,13 @@ export class MeetingParticipantService {
       }
 
       // 중복 참여 검증
-      const isAlreadyParticipating = meeting.participants
-        ?.toArray()
-        .some(
-          (participant) => participant.workspaceMember?.id === workspaceMemberId
-        );
+      const isDuplicate = await this.findByMeetingAndMember(
+        meetingId,
+        workspaceMemberId
+      );
 
-      if (isAlreadyParticipating) {
-        throw new AppError('meetingParticipant.create.alreadyParticipating');
+      if (isDuplicate) {
+        throw new AppError('meetingParticipant.create.duplicate');
       }
 
       return await this.repository.create({ meeting, workspaceMember });
@@ -59,5 +54,12 @@ export class MeetingParticipantService {
     }
 
     await this.repository.delete(meetingParticipant);
+  }
+
+  async findByMeetingAndMember(meetingId: string, workspaceMemberId: string) {
+    return await this.repository.findByMeetingAndMember(
+      meetingId,
+      workspaceMemberId
+    );
   }
 }

@@ -31,7 +31,7 @@ export class Meeting extends TimestampedEntity {
   @ApiProperty({
     description: '미팅 고유 식별자',
     format: 'uuid',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   id: string = v4();
 
@@ -46,7 +46,7 @@ export class Meeting extends TimestampedEntity {
   @ApiProperty({
     description: '미팅 진행 상태',
     enum: MeetingStatus,
-    example: MeetingStatus.DRAFT
+    example: MeetingStatus.DRAFT,
   })
   status: MeetingStatus = MeetingStatus.DRAFT;
 
@@ -55,7 +55,7 @@ export class Meeting extends TimestampedEntity {
     description: '미팅 태그 목록',
     type: [String],
     example: ['중요', '주간회의', '기획'],
-    isArray: true
+    isArray: true,
   })
   tags: string[] = [];
 
@@ -68,7 +68,7 @@ export class Meeting extends TimestampedEntity {
     description: '미팅 메모',
     example: '이번 회의는 중요한 안건을 다룹니다.',
     required: false,
-    nullable: true
+    nullable: true,
   })
   memo: string | null = null;
 
@@ -77,7 +77,7 @@ export class Meeting extends TimestampedEntity {
     description: 'AI 생성 미팅 요약',
     example: '회의에서 논의된 주요 안건과 결정 사항입니다.',
     required: false,
-    nullable: true
+    nullable: true,
   })
   summary: string | null = null;
 

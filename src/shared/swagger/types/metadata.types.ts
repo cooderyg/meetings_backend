@@ -3,7 +3,14 @@
  */
 export interface EntityFieldInfo {
   type: 'string' | 'number' | 'boolean' | 'object' | 'array';
-  format?: 'uuid' | 'date-time' | 'email' | 'url' | 'password' | 'byte' | 'binary';
+  format?:
+    | 'uuid'
+    | 'date-time'
+    | 'email'
+    | 'url'
+    | 'password'
+    | 'byte'
+    | 'binary';
   description?: string;
   example?: any;
   enum?: readonly any[];
@@ -28,7 +35,8 @@ export type MetadataCollection = Record<string, EntityMetadata>;
 /**
  * Enum 추출 유틸리티 타입
  */
-export type EnumValues<T extends Record<string | number, string | number>> = T[keyof T][];
+export type EnumValues<T extends Record<string | number, string | number>> =
+  T[keyof T][];
 
 /**
  * 메타데이터 검증 결과

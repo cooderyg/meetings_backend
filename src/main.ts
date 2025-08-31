@@ -42,7 +42,7 @@ async function bootstrap() {
         }, {});
         // AppError로 변환 (세부 오류 정보 포함)
         return new AppError('validation.form.failed', {
-          fields: formattedErrors
+          fields: formattedErrors,
         });
       },
     })
