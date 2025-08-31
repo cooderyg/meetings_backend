@@ -19,5 +19,6 @@ export const MEETING_PARTICIPANT_DETAIL_FIELDS = [
   'meeting.resource.title',
 ] as const;
 
+// 타입 안전성을 위한 유니온 타입 정의
 export type MeetingParticipantDetailField =
   (typeof MEETING_PARTICIPANT_DETAIL_FIELDS)[number];

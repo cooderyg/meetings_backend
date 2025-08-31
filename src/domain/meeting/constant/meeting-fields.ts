@@ -71,7 +71,9 @@ export const MEETING_WITH_PARTICIPANTS_FIELDS = [
   'participants.workspaceMember.id',
 ] as const;
 
+// 타입 안전성을 위한 유니온 타입 정의
 export type MeetingListField = (typeof MEETING_LIST_FIELDS)[number];
 export type MeetingDetailField = (typeof MEETING_DETAIL_FIELDS)[number];
 export type MeetingDraftField = (typeof MEETING_DRAFT_FIELDS)[number];
-export type MeetingWithParticipantsField = (typeof MEETING_WITH_PARTICIPANTS_FIELDS)[number];
+export type MeetingWithParticipantsField =
+  (typeof MEETING_WITH_PARTICIPANTS_FIELDS)[number];

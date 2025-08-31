@@ -22,7 +22,8 @@ import { MeetingParticipantService } from './meeting-participant.service';
 import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
 import { ErrorResponse } from '../../shared/decorator/api-standard-response.decorator';
-import { ApiFieldResponse } from '../../shared/decorator/api-field-response.decorator';
+import { ApiEntity } from '../../shared/decorator/api-entity.decorator';
+import { MeetingParticipant } from './entity/meeting-participant.entity';
 import { MEETING_PARTICIPANT_DETAIL_FIELDS } from './constant/meeting-participant-fields';
 
 @ApiTags('Meeting Participants')
@@ -42,7 +43,7 @@ export class MeetingParticipantController {
     summary: '미팅 참여자 추가',
     description: '미팅에 참여자를 추가합니다.',
   })
-  @ApiFieldResponse(MEETING_PARTICIPANT_DETAIL_FIELDS, {
+  @ApiEntity(MeetingParticipant, MEETING_PARTICIPANT_DETAIL_FIELDS, {
     description: '미팅 참여자가 성공적으로 추가되었습니다.',
   })
   async create(
