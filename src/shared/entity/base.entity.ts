@@ -7,7 +7,7 @@ export abstract class BaseEntity {
   @ApiProperty({
     description: '고유 식별자',
     format: 'uuid',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   id: string = v4();
 
@@ -16,7 +16,7 @@ export abstract class BaseEntity {
     description: '생성일시',
     type: 'string',
     format: 'date-time',
-    example: '2025-08-31T09:28:30.974Z'
+    example: '2025-08-31T09:28:30.974Z',
   })
   createdAt: Date = new Date();
 
@@ -29,7 +29,7 @@ export abstract class BaseEntity {
     description: '수정일시',
     type: 'string',
     format: 'date-time',
-    example: '2025-08-31T09:28:30.974Z'
+    example: '2025-08-31T09:28:30.974Z',
   })
   updatedAt: Date = new Date();
 }

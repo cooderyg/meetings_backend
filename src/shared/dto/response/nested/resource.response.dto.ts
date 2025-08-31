@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ResourceType, ResourceVisibility } from '../../../../domain/resource/entity/resource.entity';
+import {
+  ResourceType,
+  ResourceVisibility,
+} from '../../../../domain/resource/entity/resource.entity';
 
 export class OwnerResponseDto {
   @ApiProperty({

@@ -24,7 +24,7 @@ export function ApiFieldResponse(
     isArray = false,
     hasTotalCount = false,
     entityName = 'Meeting', // 기본값
-    description
+    description,
   } = options;
 
   // 기본 스키마 생성
@@ -39,21 +39,21 @@ export function ApiFieldResponse(
       properties: {
         data: {
           type: 'array',
-          items: baseSchema
+          items: baseSchema,
         },
         totalCount: {
           type: 'number',
           description: '전체 항목 수',
-          example: 42
-        }
+          example: 42,
+        },
       },
-      required: ['data', 'totalCount']
+      required: ['data', 'totalCount'],
     };
   } else if (isArray) {
-    // 단순 배열 응답  
+    // 단순 배열 응답
     responseSchema = {
       type: 'array',
-      items: baseSchema
+      items: baseSchema,
     };
   } else {
     // 단일 객체 응답
@@ -63,7 +63,7 @@ export function ApiFieldResponse(
   return applyDecorators(
     ApiOkResponse({
       description: description || '성공적으로 조회되었습니다.',
-      schema: responseSchema
+      schema: responseSchema,
     })
   );
 }
@@ -95,5 +95,8 @@ export function ApiMeetingParticipantResponse(
   fields: readonly string[],
   options: Omit<ApiFieldResponseOptions, 'entityName'> = {}
 ) {
-  return ApiFieldResponse(fields, { ...options, entityName: 'MeetingParticipant' });
+  return ApiFieldResponse(fields, {
+    ...options,
+    entityName: 'MeetingParticipant',
+  });
 }

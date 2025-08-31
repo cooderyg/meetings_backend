@@ -14,7 +14,7 @@ export class EitherOrConstraint implements ValidatorConstraintInterface {
   validate(value: any, args: ValidationArguments) {
     const [relatedPropertyName] = args.constraints;
     const relatedValue = (args.object as any)[relatedPropertyName];
-    
+
     // 둘 중 하나라도 있으면 true
     return !!(value || relatedValue);
   }
@@ -30,8 +30,11 @@ export class EitherOrConstraint implements ValidatorConstraintInterface {
  * @param property 다른 필드명
  * @param validationOptions validation 옵션
  */
-export function IsEitherOr(property: string, validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+export function IsEitherOr(
+  property: string,
+  validationOptions?: ValidationOptions
+) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,

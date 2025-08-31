@@ -2,10 +2,11 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { Space } from './entity/space.entity';
-import { extractPopulateFromFields } from '../../shared/util/field.util';
 import {
   SPACE_LIST_FIELDS,
   SPACE_DETAIL_FIELDS,
+  SPACE_LIST_POPULATE,
+  SPACE_DETAIL_POPULATE,
 } from './constant/space-fields';
 
 @Injectable()
@@ -23,7 +24,7 @@ export class SpaceRepository {
     return await this.repository.findOne(
       { id },
       {
-        populate: extractPopulateFromFields(SPACE_DETAIL_FIELDS) as any,
+        populate: SPACE_DETAIL_POPULATE as any,
         fields: SPACE_DETAIL_FIELDS as any,
       }
     );
@@ -33,7 +34,7 @@ export class SpaceRepository {
     return await this.repository.find(
       { workspace: workspaceId },
       {
-        populate: extractPopulateFromFields(SPACE_LIST_FIELDS) as any,
+        populate: SPACE_LIST_POPULATE as any,
         fields: SPACE_LIST_FIELDS as any,
       }
     );
@@ -49,7 +50,7 @@ export class SpaceRepository {
         resource: { owner: { user: userId } },
       },
       {
-        populate: extractPopulateFromFields(SPACE_LIST_FIELDS) as any,
+        populate: SPACE_LIST_POPULATE as any,
         fields: SPACE_LIST_FIELDS as any,
       }
     );
@@ -58,10 +59,7 @@ export class SpaceRepository {
   async create(data: Partial<Space>): Promise<Space> {
     const entity = this.repository.assign(new Space(), data);
     await this.em.persistAndFlush(entity);
-    await this.em.populate(
-      entity,
-      extractPopulateFromFields(SPACE_DETAIL_FIELDS) as any
-    );
+    await this.em.populate(entity, SPACE_DETAIL_POPULATE as any);
     return entity;
   }
 

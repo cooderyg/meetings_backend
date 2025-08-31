@@ -72,10 +72,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    * @returns HTTP 상태 코드
    */
   private getHttpStatus(exception: unknown): number {
-    if (
-      exception instanceof AppError ||
-      exception instanceof HttpException
-    ) {
+    if (exception instanceof AppError || exception instanceof HttpException) {
       return exception.getStatus();
     }
     // 예상치 못한 예외는 500 오류로 처리
@@ -134,7 +131,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       return this.buildFallbackErrorResponse();
     }
   }
-
 
   /**
    * AppError에 대한 에러 응답 생성
@@ -346,7 +342,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         break;
     }
   }
-
 
   /**
    * 예상치 못한 예외 로깅 처리

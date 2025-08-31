@@ -20,4 +20,9 @@ export * from './metadata/auth.metadata';
 export * from './metadata/permission.metadata';
 
 // 편의를 위한 re-export
-export { FIELD_METADATA, createFieldBasedSchema, validateEntityMetadata, checkMetadataCompleteness } from './schema/schema-builder';
+export {
+  FIELD_METADATA,
+  createFieldBasedSchema,
+  validateEntityMetadata,
+  checkMetadataCompleteness,
+} from './schema/schema-builder';

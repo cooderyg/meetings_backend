@@ -4,12 +4,15 @@ import { EntityManager, EntityRepository, FilterQuery } from '@mikro-orm/core';
 import { Meeting, MeetingStatus } from './entity/meeting.entity';
 import { PaginationQuery } from '../../shared/dto/request/pagination.query';
 import { findPaginated } from '../../shared/util/pagination.util';
-import { extractPopulateFromFields } from '../../shared/util/field.util';
 import {
   MEETING_LIST_FIELDS,
   MEETING_DETAIL_FIELDS,
   MEETING_DRAFT_FIELDS,
   MEETING_WITH_PARTICIPANTS_FIELDS,
+  MEETING_LIST_POPULATE,
+  MEETING_DETAIL_POPULATE,
+  MEETING_DRAFT_POPULATE,
+  MEETING_WITH_PARTICIPANTS_POPULATE,
 } from './constant/meeting-fields';
 import { CreateMeetingData } from './interface/data/create-meeting.data';
 import { UpdateMeetingData } from './interface/data/update-meeting.data';
@@ -28,10 +31,7 @@ export class MeetingRepository {
   async create(data: CreateMeetingData) {
     const entity = this.repository.assign(new Meeting(), data);
     await this.em.persistAndFlush(entity);
-    await this.em.populate(
-      entity,
-      extractPopulateFromFields(MEETING_DETAIL_FIELDS) as any
-    );
+    await this.em.populate(entity, MEETING_DETAIL_POPULATE as any);
     return entity;
   }
 
@@ -39,7 +39,7 @@ export class MeetingRepository {
     const entity = await this.repository.findOne(
       { id },
       {
-        populate: extractPopulateFromFields(MEETING_DETAIL_FIELDS) as any,
+        populate: MEETING_DETAIL_POPULATE as any,
         fields: MEETING_DETAIL_FIELDS as any,
       }
     );
@@ -60,9 +60,10 @@ export class MeetingRepository {
     return entity;
   }
 
-  async findById(id: string, workspaceId: string, includeParticipants = false) {
-    const fields = includeParticipants ? MEETING_WITH_PARTICIPANTS_FIELDS : MEETING_DETAIL_FIELDS;
-    
+  /**
+   * 기본 미팅 상세 정보 조회 (참여자 제외)
+   */
+  async findById(id: string, workspaceId: string) {
     return this.repository.findOne(
       {
         id: id,
@@ -70,8 +71,25 @@ export class MeetingRepository {
         deletedAt: null,
       },
       {
-        populate: extractPopulateFromFields(fields) as any,
-        fields: fields as any,
+        populate: MEETING_DETAIL_POPULATE as any,
+        fields: MEETING_DETAIL_FIELDS as any,
+      }
+    );
+  }
+
+  /**
+   * 참여자 정보를 포함한 미팅 조회
+   */
+  async findByIdWithParticipants(id: string, workspaceId: string) {
+    return this.repository.findOne(
+      {
+        id: id,
+        workspace: workspaceId,
+        deletedAt: null,
+      },
+      {
+        populate: MEETING_WITH_PARTICIPANTS_POPULATE as any,
+        fields: MEETING_WITH_PARTICIPANTS_FIELDS as any,
       }
     );
   }
@@ -85,7 +103,7 @@ export class MeetingRepository {
       },
       {
         limit: 100,
-        populate: extractPopulateFromFields(MEETING_LIST_FIELDS) as any,
+        populate: MEETING_LIST_POPULATE as any,
         fields: MEETING_LIST_FIELDS as any,
       }
     );
@@ -101,7 +119,7 @@ export class MeetingRepository {
       },
       {
         limit: 100,
-        populate: extractPopulateFromFields(MEETING_DRAFT_FIELDS) as any,
+        populate: MEETING_DRAFT_POPULATE as any,
         fields: MEETING_DRAFT_FIELDS as any,
       }
     );
@@ -127,7 +145,7 @@ export class MeetingRepository {
     return findPaginated(this.repository, pagination, {
       where,
       orderBy: orderBy || { createdAt: 'DESC' },
-      populate: extractPopulateFromFields(MEETING_LIST_FIELDS) as any,
+      populate: MEETING_LIST_POPULATE as any,
       fields: MEETING_LIST_FIELDS as any,
     });
   }
@@ -148,7 +166,7 @@ export class MeetingRepository {
     return findPaginated(this.repository, pagination, {
       where,
       orderBy: orderBy || { updatedAt: 'DESC' },
-      populate: extractPopulateFromFields(MEETING_DRAFT_FIELDS) as any,
+      populate: MEETING_DRAFT_POPULATE as any,
       fields: MEETING_DRAFT_FIELDS as any,
     });
   }

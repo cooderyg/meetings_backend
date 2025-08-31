@@ -27,7 +27,10 @@ export class ResourceService {
     private readonly workspaceMemberService: WorkspaceMemberService
   ) {}
 
-  async create(data: CreateResourceDto, options: CreateResourceOptions = { flush: true }): Promise<Resource> {
+  async create(
+    data: CreateResourceDto,
+    options: CreateResourceOptions = { flush: true }
+  ): Promise<Resource> {
     // 워크스페이스 검증
     const workspace = await this.workspaceService.findById(data.workspaceId);
     if (!workspace) {
@@ -46,14 +49,17 @@ export class ResourceService {
     const path = this.generatePath(data.parentPath);
 
     // Repository에 위임
-    return this.resourceRepository.create({
-      workspace,
-      owner,
-      type: data.type,
-      title: data.title,
-      visibility: data.visibility,
-      path,
-    }, { flush: options.flush });
+    return this.resourceRepository.create(
+      {
+        workspace,
+        owner,
+        type: data.type,
+        title: data.title,
+        visibility: data.visibility,
+        path,
+      },
+      { flush: options.flush }
+    );
   }
 
   async update(id: string, data: UpdateResourceData) {

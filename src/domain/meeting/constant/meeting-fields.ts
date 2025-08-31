@@ -19,6 +19,11 @@ export const MEETING_LIST_FIELDS = [
   'resource.owner.firstName',
   'resource.owner.lastName',
   'resource.owner.isActive',
+  'participants.id',
+  'participants.guestName',
+  'participants.workspaceMember.id',
+  'participants.workspaceMember.firstName',
+  'participants.workspaceMember.lastName',
 ] as const;
 
 /** 미팅 상세 조회용 필드 (전체 정보) */
@@ -69,6 +74,42 @@ export const MEETING_WITH_PARTICIPANTS_FIELDS = [
   ...MEETING_DETAIL_FIELDS,
   'participants.id',
   'participants.workspaceMember.id',
+] as const;
+
+/**
+ * 미리 계산된 Populate 상수들 (성능 최적화)
+ * 런타임 계산 없이 즉시 사용 가능한 populate 배열들
+ */
+
+/** MEETING_LIST_FIELDS에 대응하는 populate 배열 */
+export const MEETING_LIST_POPULATE = [
+  'resource',
+  'resource.owner',
+  'participants',
+  'participants.workspaceMember',
+] as const;
+
+/** MEETING_DETAIL_FIELDS에 대응하는 populate 배열 */
+export const MEETING_DETAIL_POPULATE = [
+  'resource',
+  'resource.owner',
+  'workspace',
+] as const;
+
+/** MEETING_DRAFT_FIELDS에 대응하는 populate 배열 */
+export const MEETING_DRAFT_POPULATE = [
+  'resource',
+  'resource.owner',
+  'workspace',
+] as const;
+
+/** MEETING_WITH_PARTICIPANTS_FIELDS에 대응하는 populate 배열 */
+export const MEETING_WITH_PARTICIPANTS_POPULATE = [
+  'resource',
+  'resource.owner',
+  'workspace',
+  'participants',
+  'participants.workspaceMember',
 ] as const;
 
 // 타입 안전성을 위한 유니온 타입 정의

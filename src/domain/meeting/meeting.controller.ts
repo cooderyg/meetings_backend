@@ -26,7 +26,10 @@ import { PaginationQuery } from '../../shared/dto/request/pagination.query';
 import { FilterQuery } from '../../shared/dto/request/filter.query';
 import { SortQuery } from '../../shared/dto/request/sort.query';
 import { ErrorResponse } from '../../shared/decorator/api-standard-response.decorator';
-import { ApiEntity, ApiEntityPaginated } from '../../shared/decorator/api-entity.decorator';
+import {
+  ApiEntity,
+  ApiEntityPaginated,
+} from '../../shared/decorator/api-entity.decorator';
 import { Meeting } from './entity/meeting.entity';
 import {
   MEETING_LIST_FIELDS,
@@ -97,7 +100,9 @@ export class MeetingController {
     description:
       '워크스페이스의 미팅 목록을 페이지네이션, 필터링, 정렬하여 조회합니다.',
   })
-  @ApiEntityPaginated(Meeting, MEETING_LIST_FIELDS,
+  @ApiEntityPaginated(
+    Meeting,
+    MEETING_LIST_FIELDS,
     '워크스페이스 미팅 목록이 조회되었습니다.'
   )
   async findByWorkspace(
@@ -119,7 +124,9 @@ export class MeetingController {
     summary: '나의 임시저장 미팅 목록 조회',
     description: '나의 임시저장 미팅 목록을 페이지네이션, 정렬하여 조회합니다.',
   })
-  @ApiEntityPaginated(Meeting, MEETING_DRAFT_FIELDS,
+  @ApiEntityPaginated(
+    Meeting,
+    MEETING_DRAFT_FIELDS,
     '나의 임시저장 미팅 목록이 조회되었습니다.'
   )
   async findDraftMy(

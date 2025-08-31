@@ -3,8 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { MeetingParticipant } from './entity/meeting-participant.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { CreateMeetingParticipantData } from './interface/data/create-meeting-participant.data';
-import { extractPopulateFromFields } from '../../shared/util/field.util';
-import { MEETING_PARTICIPANT_DETAIL_FIELDS } from './constant/meeting-participant-fields';
+import {
+  MEETING_PARTICIPANT_DETAIL_FIELDS,
+  MEETING_PARTICIPANT_DETAIL_POPULATE,
+} from './constant/meeting-participant-fields';
 
 @Injectable()
 export class MeetingParticipantRepository {
@@ -24,7 +26,7 @@ export class MeetingParticipantRepository {
 
     await this.em.populate(
       meetingParticipant,
-      extractPopulateFromFields(MEETING_PARTICIPANT_DETAIL_FIELDS) as any
+      MEETING_PARTICIPANT_DETAIL_POPULATE as any
     );
 
     return meetingParticipant;
@@ -38,9 +40,16 @@ export class MeetingParticipantRepository {
     return await this.repository.findOne(
       { id },
       {
-        populate: extractPopulateFromFields(MEETING_PARTICIPANT_DETAIL_FIELDS) as any,
+        populate: MEETING_PARTICIPANT_DETAIL_POPULATE as any,
         fields: MEETING_PARTICIPANT_DETAIL_FIELDS as any,
       }
     );
+  }
+
+  async findByMeetingAndMember(meetingId: string, workspaceMemberId: string) {
+    return await this.repository.findOne({
+      meeting: meetingId,
+      workspaceMember: workspaceMemberId,
+    });
   }
 }

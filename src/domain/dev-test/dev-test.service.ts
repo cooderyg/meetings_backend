@@ -33,7 +33,7 @@ export class DevTestService {
 
     // 이메일로 사용자 찾기
     let user = await this.userService.getUserByEmail(email);
-    
+
     // 사용자가 없으면 생성
     if (!user) {
       const testUid = `dev-test-${email}-${Date.now()}`;
@@ -62,11 +62,11 @@ export class DevTestService {
   private parseEmailToName(email: string): [string, string] {
     const localPart = email.split('@')[0];
     const parts = localPart.split('.');
-    
+
     if (parts.length >= 2) {
       return [parts[0], parts[1]];
     }
-    
+
     return [localPart, 'User'];
   }
 
@@ -90,8 +90,8 @@ export class DevTestService {
   }
 
   async performWorkspaceAction(
-    workspaceId: string, 
-    message: string, 
+    workspaceId: string,
+    message: string,
     user: AccessTokenPayload
   ) {
     // 개발환경에서만 동작

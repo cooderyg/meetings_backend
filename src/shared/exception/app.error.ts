@@ -1,5 +1,8 @@
 import { HttpException } from '@nestjs/common';
-import { HierarchicalErrorCode, HIERARCHICAL_ERROR_DEFINITIONS } from '../const/hierarchical-error-code.const';
+import {
+  HierarchicalErrorCode,
+  HIERARCHICAL_ERROR_DEFINITIONS,
+} from '../const/hierarchical-error-code.const';
 import { HierarchicalErrorContextMap } from '../type/hierarchical-error-context.types';
 
 /**
@@ -10,7 +13,7 @@ import { HierarchicalErrorContextMap } from '../type/hierarchical-error-context.
  *
  * 계층적 구조의 장점:
  * ✅ 그룹화 가능: meeting.publish.* 로 발행 관련 모든 에러를 검색
- * ✅ 확장성: 새로운 액션/원인을 논리적 위치에 추가  
+ * ✅ 확장성: 새로운 액션/원인을 논리적 위치에 추가
  * ✅ 가독성: domain.action.reason 구조로 명확한 의미 전달
  * ✅ 관리성: 관련 에러들을 논리적으로 그룹화
  *
@@ -31,22 +34,25 @@ import { HierarchicalErrorContextMap } from '../type/hierarchical-error-context.
  * }
  * ```
  */
-export class AppError<T extends keyof HierarchicalErrorContextMap = keyof HierarchicalErrorContextMap> extends HttpException {
+export class AppError<
+  T extends
+    keyof HierarchicalErrorContextMap = keyof HierarchicalErrorContextMap,
+> extends HttpException {
   /** API 응답에 사용되는 계층적 에러 코드 (domain.action.reason) */
   public readonly code: T;
-  
+
   /** 에러와 관련된 타입 안전한 컨텍스트 정보 */
   public readonly context?: HierarchicalErrorContextMap[T];
-  
+
   /** 로깅 시 사용할 로그 레벨 */
   public readonly logLevel: 'error' | 'warn' | 'info' | 'debug' | 'verbose';
 
   /** 도메인 정보 (첫 번째 세그먼트) */
   public readonly domain: string;
-  
+
   /** 액션 정보 (두 번째 세그먼트, 있는 경우) */
   public readonly action?: string;
-  
+
   /** 원인 정보 (세 번째 세그먼트, 있는 경우) */
   public readonly reason?: string;
 
@@ -57,7 +63,8 @@ export class AppError<T extends keyof HierarchicalErrorContextMap = keyof Hierar
    * @param context - 타입 안전한 컨텍스트 정보 (i18n 템플릿 변수용)
    */
   constructor(code: T, context?: HierarchicalErrorContextMap[T]) {
-    const definition = HIERARCHICAL_ERROR_DEFINITIONS[code as HierarchicalErrorCode];
+    const definition =
+      HIERARCHICAL_ERROR_DEFINITIONS[code as HierarchicalErrorCode];
     if (!definition) {
       throw new Error(`Unknown hierarchical error code: ${String(code)}`);
     }
@@ -128,7 +135,9 @@ export class AppError<T extends keyof HierarchicalErrorContextMap = keyof Hierar
    */
   static create<T extends keyof HierarchicalErrorContextMap>(
     code: T,
-    ...args: HierarchicalErrorContextMap[T] extends undefined ? [] : [HierarchicalErrorContextMap[T]]
+    ...args: HierarchicalErrorContextMap[T] extends undefined
+      ? []
+      : [HierarchicalErrorContextMap[T]]
   ): AppError<T> {
     return new AppError(code, args[0]);
   }
@@ -138,28 +147,36 @@ export class AppError<T extends keyof HierarchicalErrorContextMap = keyof Hierar
    */
   static meeting<T extends HierarchicalErrorCode>(
     code: T extends `meeting.${string}` ? T : never,
-    ...args: HierarchicalErrorContextMap[T] extends undefined ? [] : [HierarchicalErrorContextMap[T]]
+    ...args: HierarchicalErrorContextMap[T] extends undefined
+      ? []
+      : [HierarchicalErrorContextMap[T]]
   ) {
     return new AppError(code, args[0]);
   }
 
   static workspace<T extends HierarchicalErrorCode>(
     code: T extends `workspace.${string}` ? T : never,
-    ...args: HierarchicalErrorContextMap[T] extends undefined ? [] : [HierarchicalErrorContextMap[T]]
+    ...args: HierarchicalErrorContextMap[T] extends undefined
+      ? []
+      : [HierarchicalErrorContextMap[T]]
   ) {
     return new AppError(code, args[0]);
   }
 
   static auth<T extends HierarchicalErrorCode>(
     code: T extends `auth.${string}` ? T : never,
-    ...args: HierarchicalErrorContextMap[T] extends undefined ? [] : [HierarchicalErrorContextMap[T]]
+    ...args: HierarchicalErrorContextMap[T] extends undefined
+      ? []
+      : [HierarchicalErrorContextMap[T]]
   ) {
     return new AppError(code, args[0]);
   }
 
   static storage<T extends HierarchicalErrorCode>(
     code: T extends `storage.${string}` ? T : never,
-    ...args: HierarchicalErrorContextMap[T] extends undefined ? [] : [HierarchicalErrorContextMap[T]]
+    ...args: HierarchicalErrorContextMap[T] extends undefined
+      ? []
+      : [HierarchicalErrorContextMap[T]]
   ) {
     return new AppError(code, args[0]);
   }

@@ -37,14 +37,14 @@ export class WorkspaceMember extends BaseEntity {
   @Property()
   @ApiProperty({
     description: '사용자 이름',
-    example: '홍길'
+    example: '홍길',
   })
   firstName!: string;
 
   @Property()
   @ApiProperty({
     description: '사용자 성',
-    example: '동'
+    example: '동',
   })
   lastName!: string;
 
@@ -53,7 +53,7 @@ export class WorkspaceMember extends BaseEntity {
     description: '프로필 이미지 경로',
     example: '/images/profile/user123.jpg',
     required: false,
-    nullable: true
+    nullable: true,
   })
   imagePath: string | null = null;
 
@@ -63,7 +63,10 @@ export class WorkspaceMember extends BaseEntity {
   @OneToMany(() => WorkspaceMemberRole, (wmr) => wmr.workspaceMember)
   workspaceMemberRoles = new Collection<WorkspaceMemberRole>(this);
 
-  @OneToMany(() => MeetingParticipant, (participant) => participant.workspaceMember)
+  @OneToMany(
+    () => MeetingParticipant,
+    (participant) => participant.workspaceMember
+  )
   meetingParticipants = new Collection<MeetingParticipant>(this);
 
   getDisplayName(): string {

@@ -8,7 +8,11 @@ import { WorkspaceMemberModule } from '../workspace-member/workspace-member.modu
 import { ResourceModule } from '../resource/resource.module';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Space]), WorkspaceMemberModule, ResourceModule],
+  imports: [
+    MikroOrmModule.forFeature([Space]),
+    WorkspaceMemberModule,
+    ResourceModule,
+  ],
   controllers: [SpaceController],
   providers: [SpaceService, SpaceRepository],
   exports: [SpaceService],

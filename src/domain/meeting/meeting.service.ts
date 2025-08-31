@@ -79,12 +79,21 @@ export class MeetingService {
     return updatedMeeting;
   }
 
-  async findById(
+  /**
+   * 기본 미팅 상세 정보 조회
+   */
+  async findById(id: string, workspaceId: string): Promise<Meeting | null> {
+    return this.repository.findById(id, workspaceId);
+  }
+
+  /**
+   * 참여자 정보를 포함한 미팅 조회
+   */
+  async findByIdWithParticipants(
     id: string,
-    workspaceId: string,
-    includeParticipants = false
+    workspaceId: string
   ): Promise<Meeting | null> {
-    return this.repository.findById(id, workspaceId, includeParticipants);
+    return this.repository.findByIdWithParticipants(id, workspaceId);
   }
 
   async findByWorkspace(workspaceId: string): Promise<Meeting[]> {

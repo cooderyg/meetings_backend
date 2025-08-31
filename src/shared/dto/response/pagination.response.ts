@@ -26,9 +26,9 @@ export class PaginatedResponse<T> {
 
   constructor(data: T[], totalCount: number, page: number, limit: number) {
     this.data = data;
-    
+
     const totalPages = Math.ceil(totalCount / limit);
-    
+
     this.meta = {
       totalCount,
       page,
