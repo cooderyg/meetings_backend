@@ -23,6 +23,7 @@ import { LANGCHAIN_SERVICE } from '../../../langchain/const/langchain.const';
 import { MeetingRecordService } from '../../../../domain/meeting-record/meeting-record.service';
 import { MeetingService } from '../../../../domain/meeting/meeting.service';
 import IStreamingRecognizeResponse = google.cloud.speech.v1.IStreamingRecognizeResponse;
+import { MeetingStatus } from '../../../../domain/meeting/entity/meeting.entity';
 
 @Injectable()
 export class GcpSttService {
@@ -121,7 +122,11 @@ export class GcpSttService {
             `.trim(),
           });
 
-          await this.meetingService.update(meetingId, { summary });
+          // 미팅 요약 업데이트
+          await this.meetingService.update(meetingId, {
+            summary,
+            status: MeetingStatus.COMPLETED,
+          });
 
           this.eventEmitter.emit(
             END_STREAMING_RECOGNIZE,

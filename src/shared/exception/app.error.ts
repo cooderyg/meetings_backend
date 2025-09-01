@@ -69,8 +69,8 @@ export class AppError<
       throw new Error(`Unknown hierarchical error code: ${String(code)}`);
     }
 
-    // HttpException 부모 클래스 초기화 (에러 코드를 메시지로 사용)
-    super(String(code), definition.httpStatus);
+    // HttpException 부모 클래스 초기화 (클라이언트에서 i18n 처리하므로 일반적인 메시지 사용)
+    super('Application Error', definition.httpStatus);
 
     this.code = code;
     this.context = context;

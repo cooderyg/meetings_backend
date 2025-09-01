@@ -45,22 +45,28 @@ export class MeetingService {
     return meeting;
   }
 
-  async update(id: string, data: UpdateMeetingData): Promise<Meeting> {
-    return this.repository.update(id, data);
+  async update(id: string, data: UpdateMeetingData) {
+    const meeting = await this.repository.update(id, data);
+
+    if (!meeting) {
+      throw new AppError('meeting.update.notFound', { meetingId: id });
+    }
+
+    return meeting;
   }
 
   async delete(id: string) {
     return this.repository.delete(id);
   }
 
-  async publish(args: PublishMeetingArgs): Promise<Meeting> {
+  async publish(args: PublishMeetingArgs) {
     const { id, workspaceId, data } = args;
     const { visibility } = data;
 
     // 조회
     const meeting = await this.repository.findById(id, workspaceId);
     if (!meeting) {
-      throw new AppError('meeting.fetch.notFound', { meetingId: id });
+      throw new AppError('meeting.publish.notFound', { meetingId: id });
     }
     // 발행가능한지 확인()
     if (meeting.status !== MeetingStatus.COMPLETED) {
@@ -72,7 +78,8 @@ export class MeetingService {
 
     await this.resourceService.update(id, { visibility });
 
-    const updatedMeeting = await this.repository.update(id, {
+    // 이미 조회한 엔티티를 재사용하여 중복 조회 방지
+    const updatedMeeting = await this.repository.updateEntity(meeting, {
       status: MeetingStatus.PUBLISHED,
     });
 
@@ -82,17 +89,14 @@ export class MeetingService {
   /**
    * 기본 미팅 상세 정보 조회
    */
-  async findById(id: string, workspaceId: string): Promise<Meeting | null> {
+  async findById(id: string, workspaceId: string) {
     return this.repository.findById(id, workspaceId);
   }
 
   /**
    * 참여자 정보를 포함한 미팅 조회
    */
-  async findByIdWithParticipants(
-    id: string,
-    workspaceId: string
-  ): Promise<Meeting | null> {
+  async findByIdWithParticipants(id: string, workspaceId: string) {
     return this.repository.findByIdWithParticipants(id, workspaceId);
   }
 

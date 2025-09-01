@@ -44,6 +44,7 @@ export type HierarchicalErrorCode =
   | 'meeting.publish.alreadyPublished'
   | 'meeting.publish.noResources'
   | 'meeting.publish.notAuthorized'
+  | 'meeting.publish.notFound'
 
   // 삭제 관련
   | 'meeting.delete.inProgress'
@@ -77,6 +78,12 @@ export type HierarchicalErrorCode =
 
   // 조회 관련 (meeting.fetch.*)
   | 'meeting.fetch.notFound' // 기존 'meeting.notFound'
+  
+  // 수정 관련 (meeting.update.*)
+  | 'meeting.update.notFound' // 수정하려는 미팅을 찾을 수 없음
+  
+  // 삭제 관련 (meeting.delete.*)
+  | 'meeting.delete.notFound' // 삭제하려는 미팅을 찾을 수 없음
 
   // ===================
   // 미팅 참여자 도메인 (meetingParticipant.*.*)
@@ -252,6 +259,7 @@ export const HIERARCHICAL_ERROR_DEFINITIONS: Record<
   'meeting.publish.alreadyPublished': { httpStatus: 400, logLevel: 'warn' },
   'meeting.publish.noResources': { httpStatus: 400, logLevel: 'warn' },
   'meeting.publish.notAuthorized': { httpStatus: 403, logLevel: 'warn' },
+  'meeting.publish.notFound': { httpStatus: 404, logLevel: 'info' },
   'meeting.delete.inProgress': { httpStatus: 400, logLevel: 'warn' },
   'meeting.delete.hasPublishedResources': { httpStatus: 400, logLevel: 'warn' },
   'meeting.delete.notAuthorized': { httpStatus: 403, logLevel: 'warn' },
@@ -265,6 +273,8 @@ export const HIERARCHICAL_ERROR_DEFINITIONS: Record<
   'meeting.transcription.inProgress': { httpStatus: 202, logLevel: 'info' },
   'meeting.transcription.failed': { httpStatus: 502, logLevel: 'error' },
   'meeting.fetch.notFound': { httpStatus: 404, logLevel: 'info' },
+  'meeting.update.notFound': { httpStatus: 404, logLevel: 'info' },
+  'meeting.delete.notFound': { httpStatus: 404, logLevel: 'info' },
 
   // 미팅 참여자 도메인
   'meetingParticipant.create.meetingNotFound': {

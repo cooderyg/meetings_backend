@@ -30,6 +30,10 @@ import {
   ApiEntity,
   ApiEntityPaginated,
 } from '../../shared/decorator/api-entity.decorator';
+import {
+  ApiDomainErrors,
+  ApiCommonErrors,
+} from '../../shared/decorator/api-domain-errors.decorator';
 import { Meeting } from './entity/meeting.entity';
 import {
   MEETING_LIST_FIELDS,
@@ -53,6 +57,7 @@ export class MeetingController {
   @ApiEntity(Meeting, MEETING_DETAIL_FIELDS, {
     description: '미팅을 생성합니다.',
   })
+  @ApiCommonErrors()
   async create(
     @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
     @WorkspaceMemberId() workspaceMemberId: string,
@@ -68,6 +73,10 @@ export class MeetingController {
   @Patch('publish/:id')
   @ApiEntity(Meeting, MEETING_DETAIL_FIELDS, {
     description: '미팅을 발행합니다.',
+  })
+  @ApiDomainErrors('meeting.publish', {
+    includeCommon: true,
+    description: '미팅 발행 중 발생할 수 있는 에러들',
   })
   async publish(
     @Param('id', ParseUUIDPipe) id: string,
@@ -87,6 +96,10 @@ export class MeetingController {
   @ApiEntity(Meeting, MEETING_DETAIL_FIELDS, {
     description: '미팅 상세 정보를 조회합니다.',
   })
+  @ApiDomainErrors('meeting.fetch', {
+    includeCommon: true,
+    description: '미팅 조회 중 발생할 수 있는 에러들',
+  })
   async findById(
     @Param('id', ParseUUIDPipe) id: string,
     @Param('workspaceId', ParseUUIDPipe) workspaceId: string
@@ -105,6 +118,7 @@ export class MeetingController {
     MEETING_LIST_FIELDS,
     '워크스페이스 미팅 목록이 조회되었습니다.'
   )
+  @ApiCommonErrors()
   async findByWorkspace(
     @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
     @Query() pagination: PaginationQuery,
@@ -124,6 +138,7 @@ export class MeetingController {
     MEETING_DRAFT_FIELDS,
     '나의 임시저장 미팅 목록이 조회되었습니다.'
   )
+  @ApiCommonErrors()
   async findDraftMy(
     @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
     @WorkspaceMemberId() workspaceMemberId: string,
