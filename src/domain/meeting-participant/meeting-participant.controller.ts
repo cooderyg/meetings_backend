@@ -23,6 +23,7 @@ import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
 import { ErrorResponse } from '../../shared/decorator/api-standard-response.decorator';
 import { ApiEntity } from '../../shared/decorator/api-entity.decorator';
+import { ApiDomainErrors } from '../../shared/decorator/api-domain-errors.decorator';
 import { MeetingParticipant } from './entity/meeting-participant.entity';
 import { MEETING_PARTICIPANT_DETAIL_FIELDS } from './constant/meeting-participant-fields';
 
@@ -46,6 +47,10 @@ export class MeetingParticipantController {
   @ApiEntity(MeetingParticipant, MEETING_PARTICIPANT_DETAIL_FIELDS, {
     description: '미팅 참여자가 성공적으로 추가되었습니다.',
   })
+  @ApiDomainErrors('meetingParticipant.create', {
+    includeCommon: true,
+    description: '미팅 참여자 생성 중 발생할 수 있는 에러들',
+  })
   async create(
     @Body() dto: CreateMeetingParticipantDto,
     @Param('workspaceId', ParseUUIDPipe) workspaceId: string
@@ -67,6 +72,10 @@ export class MeetingParticipantController {
     name: 'id',
     description: '미팅 참여자 고유 식별자',
     example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiDomainErrors('meetingParticipant.delete', {
+    includeCommon: true,
+    description: '미팅 참여자 삭제 중 발생할 수 있는 에러들',
   })
   async delete(@Param('id', ParseUUIDPipe) id: string) {
     await this.service.delete(id);

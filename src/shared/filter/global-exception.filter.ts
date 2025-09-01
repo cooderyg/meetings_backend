@@ -12,7 +12,6 @@ import { Response, Request } from 'express';
 import { LoggerService } from '../module/logger/logger.service';
 import { ExceptionLogMetadata } from '../module/logger/type/logger.type';
 import { AppError } from '../exception/app.error';
-import { ERROR_CODES } from '../const/error-code.const';
 import { ErrorResponse } from '../type/error-response.types';
 import { StandardResponse } from '../type/response.types';
 
@@ -83,44 +82,21 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    * 예외 타입에 따른 에러 응답 객체 생성
    *
    * 예외 타입 우선순위:
-   * 1. AppError (가장 구체적)
-   * 2. BadRequestException (유효성 검증 오류)
-   * 3. NotFoundException (리소스 누락)
-   * 4. HttpException (기타 HTTP 예외)
-   * 5. Unknown (예상치 못한 예외)
+   * 1. AppError (계층적 에러 코드)
+   * 2. 기타 모든 예외 (일반 시스템 에러)
    *
    * @param exception - 발생한 예외
    * @returns 표준화된 에러 응답 객체
    */
   private buildErrorResponse(exception: unknown): ErrorResponse {
     try {
-      // 비즈니스 로직 예외 (가장 우선)
+      // 비즈니스 로직 예외 (계층적 에러 코드)
       if (exception instanceof AppError) {
         return this.buildAppErrorResponse(exception);
       }
 
-      // 유효성 검증 오류
-      if (exception instanceof BadRequestException) {
-        return this.buildValidationErrorResponse(exception);
-      }
-
-      // 리소스 누락 오류
-      if (exception instanceof NotFoundException) {
-        return this.buildNotFoundErrorResponse(exception);
-      }
-
-      // 인증 오류
-      if (exception instanceof UnauthorizedException) {
-        return this.buildUnauthorizedErrorResponse(exception);
-      }
-
-      // 기타 HTTP 예외
-      if (exception instanceof HttpException) {
-        return this.buildHttpExceptionResponse(exception);
-      }
-
-      // 예상치 못한 예외
-      return this.buildUnknownExceptionResponse(exception);
+      // 기타 모든 예외는 일반 시스템 에러로 처리
+      return this.buildGenericErrorResponse(exception);
     } catch (error) {
       // 에러 응답 생성 중 오류 발생 시 로깅 후 기본 에러 응답 반환
       this.loggerService.error(
@@ -136,6 +112,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    * AppError에 대한 에러 응답 생성
    *
    * 계층적 에러 코드를 기반으로 생성
+   * 클라이언트에서 i18n 처리하므로 메시지는 제외하고 코드와 컨텍스트만 제공
    *
    * @param exception - AppError 인스턴스
    * @returns 에러 응답 객체
@@ -143,7 +120,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private buildAppErrorResponse(exception: AppError): ErrorResponse {
     const errorResponse: ErrorResponse = {
       code: exception.code as string,
-      message: exception.message,
       ...(exception.context && { context: exception.context }),
     };
 
@@ -151,92 +127,44 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   }
 
   /**
-   * 유효성 검증 오류에 대한 에러 응답 생성
+   * 일반 예외에 대한 에러 응답 생성
    *
-   * ValidationPipe에서 발생하는 BadRequestException을 처리
+   * AppError가 아닌 모든 예외를 처리
+   * ValidationPipe, NotFoundException, UnauthorizedException 등 포함
    *
-   * @param exception - BadRequestException 인스턴스
+   * @param exception - 예외 인스턴스
    * @returns 에러 응답 객체
    */
-  private buildValidationErrorResponse(
-    _exception: BadRequestException
-  ): ErrorResponse {
-    const response = _exception.getResponse() as {
-      message?: string[] | string;
-    };
-    // 메시지가 배열인지 문자열인지 확인 후 배열로 변환
-    const messages = Array.isArray(response.message)
-      ? response.message
-      : [response.message || _exception.message];
+  private buildGenericErrorResponse(exception: unknown): ErrorResponse {
+    let errorCode = 'system.internal.error';
+    let message = '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+    let details: any = undefined;
+
+    // 특정 예외 타입에 따른 처리
+    if (exception instanceof BadRequestException) {
+      errorCode = 'validation.form.failed';
+      message = '입력한 정보를 다시 확인해주세요';
+
+      const response = exception.getResponse() as {
+        message?: string[] | string;
+      };
+      const messages = Array.isArray(response.message)
+        ? response.message
+        : [response.message || exception.message];
+
+      details = { validationErrors: messages };
+    } else if (exception instanceof NotFoundException) {
+      errorCode = 'general.notFound';
+      message = '요청하신 정보를 찾을 수 없습니다';
+    } else if (exception instanceof UnauthorizedException) {
+      errorCode = 'auth.access.denied';
+      message = '인증이 필요합니다';
+    }
 
     const errorResponse: ErrorResponse = {
-      code: ERROR_CODES.VALIDATION_FAILED,
-      message: '입력한 정보를 다시 확인해주세요',
-      details: { validationErrors: messages },
-    };
-
-    return errorResponse;
-  }
-
-  /**
-   * 리소스 누락 오류에 대한 에러 응답 생성
-   *
-   * @param exception - NotFoundException 인스턴스
-   * @returns 에러 응답 객체
-   */
-  private buildNotFoundErrorResponse(
-    _exception: NotFoundException
-  ): ErrorResponse {
-    const errorResponse: ErrorResponse = {
-      code: ERROR_CODES.RESOURCE_NOT_FOUND,
-      message: '요청하신 정보를 찾을 수 없습니다',
-    };
-
-    return errorResponse;
-  }
-
-  /**
-   * 인증 오류에 대한 에러 응답 생성
-   *
-   * @param exception - UnauthorizedException 인스턴스
-   * @returns 에러 응답 객체
-   */
-  private buildUnauthorizedErrorResponse(
-    _exception: UnauthorizedException
-  ): ErrorResponse {
-    const errorResponse: ErrorResponse = {
-      code: ERROR_CODES.AUTH_UNAUTHORIZED,
-      message: '인증이 필요합니다',
-    };
-
-    return errorResponse;
-  }
-
-  /**
-   * 기타 HTTP 예외에 대한 에러 응답 생성
-   *
-   * @param exception - HttpException 인스턴스
-   * @returns 에러 응답 객체
-   */
-  private buildHttpExceptionResponse(_exception: HttpException): ErrorResponse {
-    const errorResponse: ErrorResponse = {
-      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR,
-      message: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-    };
-
-    return errorResponse;
-  }
-
-  /**
-   * 예상치 못한 예외에 대한 에러 응답 생성
-   *
-   * @param exception - 예상치 못한 예외
-   * @returns 에러 응답 객체
-   */
-  private buildUnknownExceptionResponse(_exception: unknown): ErrorResponse {
-    const errorResponse: ErrorResponse = {
-      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR,
-      message: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      code: errorCode,
+      message,
+      ...(details && { details }),
     };
 
     return errorResponse;
@@ -249,7 +177,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
    */
   private buildFallbackErrorResponse(): ErrorResponse {
     return {
-      code: ERROR_CODES.SYSTEM_INTERNAL_ERROR,
+      code: 'system.internal.error',
       message: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     };
   }

@@ -23,6 +23,9 @@ export interface HierarchicalErrorContextMap {
     meetingId: string;
   };
   'meeting.publish.alreadyPublished': undefined;
+  'meeting.publish.notFound': {
+    meetingId: string;
+  };
   'meeting.delete.hasPublishedResources': {
     resourceCount: number;
   };
@@ -41,6 +44,12 @@ export interface HierarchicalErrorContextMap {
   'meeting.transcription.inProgress': undefined;
   'meeting.transcription.failed': undefined;
   'meeting.fetch.notFound': {
+    meetingId: string;
+  };
+  'meeting.update.notFound': {
+    meetingId: string;
+  };
+  'meeting.delete.notFound': {
     meetingId: string;
   };
 

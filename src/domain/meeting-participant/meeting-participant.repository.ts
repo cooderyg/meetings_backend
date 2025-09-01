@@ -20,13 +20,16 @@ export class MeetingParticipantRepository {
   em: EntityManager;
 
   async create(data: CreateMeetingParticipantData) {
-    const meetingParticipant = this.em.assign(new MeetingParticipant(), data);
+    const meetingParticipant = this.repository.assign(
+      new MeetingParticipant(),
+      data
+    );
 
     await this.em.persistAndFlush(meetingParticipant);
 
     await this.em.populate(
       meetingParticipant,
-      MEETING_PARTICIPANT_DETAIL_POPULATE as any
+      MEETING_PARTICIPANT_DETAIL_POPULATE
     );
 
     return meetingParticipant;
@@ -37,11 +40,10 @@ export class MeetingParticipantRepository {
   }
 
   async findById(id: string) {
-    return await this.repository.findOne(
+    return this.repository.findOne(
       { id },
       {
-        populate: MEETING_PARTICIPANT_DETAIL_POPULATE as any,
-        fields: MEETING_PARTICIPANT_DETAIL_FIELDS as any,
+        populate: MEETING_PARTICIPANT_DETAIL_POPULATE,
       }
     );
   }
