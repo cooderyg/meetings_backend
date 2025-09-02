@@ -3,6 +3,10 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { WorkspaceMember } from './entity/workspace-member.entity';
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { IWorkspaceMemberCreateData } from './interfaces/workspace-member-create-data.interface';
+import {
+  WORKSPACE_MEMBER_LIST_FIELDS,
+  WORKSPACE_MEMBER_LIST_POPULATE,
+} from './constant/workspace-member-fields';
 
 @Injectable()
 export class WorkspaceMemberRepository {
@@ -42,6 +46,16 @@ export class WorkspaceMemberRepository {
       user: userId,
       workspace: workspaceId,
     });
+  }
+
+  async findByWorkspace(workspaceId: string) {
+    return this.repository.find(
+      { workspace: workspaceId, isActive: true },
+      {
+        populate: WORKSPACE_MEMBER_LIST_POPULATE as any,
+        fields: WORKSPACE_MEMBER_LIST_FIELDS as any,
+      }
+    );
   }
 
   async findActiveByUserAndWorkspace(userId: string, workspaceId: string) {
