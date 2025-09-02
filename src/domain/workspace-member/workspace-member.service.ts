@@ -6,12 +6,16 @@ import { WorkspaceMemberRepository } from './workspace-member.repository';
 export class WorkspaceMemberService {
   constructor(private repository: WorkspaceMemberRepository) {}
 
+  async createWorkspaceMember(args: IWorkspaceMemberCreateData) {
+    return this.repository.create(args);
+  }
+
   async findById(id: string) {
     return this.repository.findById(id);
   }
 
-  async createWorkspaceMember(args: IWorkspaceMemberCreateData) {
-    return this.repository.create(args);
+  async findByWorkspace(workspaceId: string) {
+    return this.repository.findByWorkspace(workspaceId);
   }
 
   async findByUserAndWorkspace(userId: string, workspaceId: string) {

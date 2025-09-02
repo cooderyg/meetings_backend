@@ -27,11 +27,11 @@ export class WorkspaceMember extends BaseEntity {
   workspace!: Workspace;
 
   @Property({ type: 'boolean', default: true })
-  // @ApiProperty({
-  //   description: '워크스페이스 멤버 활성화 상태',
-  //   type: 'boolean',
-  //   example: true
-  // })
+  @ApiProperty({
+    description: '워크스페이스 멤버 활성화 상태',
+    type: 'boolean',
+    example: true,
+  })
   isActive: boolean = true;
 
   @Property()
