@@ -29,4 +29,8 @@ export class WorkspaceMemberService {
     );
     return member !== null;
   }
+
+  async findByUserAndWorkspaceForAuth(userId: string, workspaceId: string) {
+    return this.repository.findByUserAndWorkspaceForAuth(userId, workspaceId);
+  }
 }

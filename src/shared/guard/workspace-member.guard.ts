@@ -23,10 +23,12 @@ export class WorkspaceMemberGuard implements CanActivate {
     }
 
     try {
-      const member = await this.workspaceMemberService.findByUserAndWorkspace(
-        user.id,
-        workspaceId
-      );
+      // 인증에 필요한 최소 필드만 조회하여 Identity Map 오염 방지
+      const member =
+        await this.workspaceMemberService.findByUserAndWorkspaceForAuth(
+          user.id,
+          workspaceId
+        );
 
       if (!member || !member.isActive) {
         throw new AppError('workspace.access.memberRequired');
