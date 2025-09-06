@@ -6,6 +6,7 @@ import { IWorkspaceMemberCreateData } from './interfaces/workspace-member-create
 import {
   WORKSPACE_MEMBER_LIST_FIELDS,
   WORKSPACE_MEMBER_LIST_POPULATE,
+  WORKSPACE_MEMBER_AUTH_FIELDS,
 } from './constant/workspace-member-fields';
 
 @Injectable()
@@ -64,5 +65,17 @@ export class WorkspaceMemberRepository {
       workspace: workspaceId,
       isActive: true,
     });
+  }
+
+  async findByUserAndWorkspaceForAuth(userId: string, workspaceId: string) {
+    return this.repository.findOne(
+      {
+        user: userId,
+        workspace: workspaceId,
+      },
+      {
+        fields: WORKSPACE_MEMBER_AUTH_FIELDS as any,
+      }
+    );
   }
 }

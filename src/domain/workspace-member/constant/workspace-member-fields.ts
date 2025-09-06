@@ -93,3 +93,12 @@ export const WORKSPACE_MEMBER_DETAIL_POPULATE = [
  * 최소한의 관계 데이터만 포함
  */
 export const WORKSPACE_MEMBER_SIMPLE_POPULATE = ['user'] as const;
+
+/**
+ * 워크스페이스 멤버 인증/인가용 필드
+ *
+ * Guard에서 인증 및 인가 확인에 필요한 최소한의 정보만 포함
+ * - 기본 정보: id, 활성화 상태
+ * Identity Map 오염을 방지하기 위해 user 관계는 포함하지 않음
+ */
+export const WORKSPACE_MEMBER_AUTH_FIELDS = ['id', 'isActive'] as const;
