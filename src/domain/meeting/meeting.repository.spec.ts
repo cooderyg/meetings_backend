@@ -30,19 +30,8 @@ describe('MeetingRepository', () => {
     em.clear();
   });
 
-  afterEach(async () => {
-    // Clean up test data - safe approach using DELETE instead of TRUNCATE
-    await em.execute('DELETE FROM meeting_participants');
-    await em.execute('DELETE FROM meetings');
-    await em.execute('DELETE FROM resources');
-    await em.execute('DELETE FROM workspace_member_roles');
-    await em.execute('DELETE FROM workspace_members');
-    await em.execute('DELETE FROM roles');
-    await em.execute('DELETE FROM workspaces');
-    await em.execute('DELETE FROM users');
-  });
-
   afterAll(async () => {
+    // 워커 전용 스키마 삭제 (모든 테이블 포함)
     await cleanupTestDatabase(orm);
     await orm.close();
   });

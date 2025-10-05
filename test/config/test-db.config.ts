@@ -2,6 +2,7 @@ import { Options } from '@mikro-orm/core';
 import { defineConfig } from '@mikro-orm/postgresql';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { AppConfig } from '../../src/shared/module/app-config/app-config';
+import { getWorkerSchemaName } from '../utils/test-db-manager';
 
 // 명시적 엔티티 import (glob 검색 제거로 성능 향상)
 import { LoginEvent } from '../../src/domain/auth/entity/login-event.entity';
@@ -22,10 +23,20 @@ import { Workspace } from '../../src/domain/workspace/entity/workspace.entity';
 /**
  * 테스트 DB 설정
  * - Schema Generator 사용 (마이그레이션 불필요)
- * - 각 테스트 전 스키마 생성, 후 삭제
+ * - 워커별 독립 스키마 격리 (병렬 테스트 안정성)
  * - 성능 최적화: 명시적 엔티티 import, reflect-metadata 사용
  */
 export function createTestDatabaseConfig(appConfig: AppConfig): Options {
+  // 워커별 고유 스키마 이름 (병렬 테스트 격리)
+  let schema: string | undefined;
+  try {
+    schema = getWorkerSchemaName();
+  } catch (error) {
+    // JEST_WORKER_ID가 없는 경우 (global-setup/teardown)
+    // 스키마를 지정하지 않음 (기본 public 스키마 사용)
+    schema = undefined;
+  }
+
   return {
     // 명시적 엔티티 배열 (glob 검색 제거)
     entities: [
@@ -56,6 +67,9 @@ export function createTestDatabaseConfig(appConfig: AppConfig): Options {
     user: appConfig.database.username,
     password: appConfig.database.password,
     dbName: appConfig.database.name,
+
+    // 워커별 스키마 격리
+    ...(schema && { schema }),
 
     // 성능 최적화
     debug: false,

@@ -1,36 +1,33 @@
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
+import { createWorkerSchema, dropWorkerSchema } from './test-db-manager';
 
 /**
- * 테스트 DB 초기화
- * - 스키마 생성 (테이블, 인덱스, 제약조건)
- * - ltree 확장 활성화 (Resource path 필드용)
+ * 테스트 DB 초기화 (워커별 스키마 격리)
+ * - 워커 전용 스키마 생성
+ * - 해당 스키마 내에 테이블 생성
+ * - ltree 확장은 global-setup.ts에서 이미 활성화됨
  */
 export async function initializeTestDatabase(orm: MikroORM): Promise<void> {
   const generator = orm.getSchemaGenerator();
+
+  // 데이터베이스가 존재하는지 확인 (global-setup에서 이미 생성했지만 안전성 확보)
   await generator.ensureDatabase();
 
-  // Enable ltree extension for Resource path field
-  const em = orm.em.fork() as EntityManager;
-  await em.execute('CREATE EXTENSION IF NOT EXISTS ltree');
+  // 워커 전용 스키마 생성 (예: test_schema_1, test_schema_2)
+  await createWorkerSchema(orm as any);
 
-  // Drop existing schema to avoid conflicts in parallel test execution
-  try {
-    await generator.dropSchema();
-  } catch (error) {
-    // Ignore if schema doesn't exist
-  }
-
+  // 워커 스키마 내에 테이블 생성 (다른 워커와 충돌 없음)
   await generator.createSchema();
 }
 
 /**
- * 테스트 DB 정리
- * - 스키마 삭제
+ * 테스트 DB 정리 (워커별 스키마 격리)
+ * - 워커 전용 스키마 삭제 (CASCADE로 모든 테이블 함께 삭제)
  */
 export async function cleanupTestDatabase(orm: MikroORM): Promise<void> {
-  const generator = orm.getSchemaGenerator();
-  await generator.dropSchema();
+  // 워커 전용 스키마 삭제 (다른 워커와 충돌 없음)
+  await dropWorkerSchema(orm as any);
 }
 
 /**
