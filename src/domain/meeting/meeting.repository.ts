@@ -59,7 +59,7 @@ export class MeetingRepository {
     const deleteEntity = this.repository.assign(entity, {
       deletedAt: new Date(),
     });
-    await this.em.persist(deleteEntity);
+    await this.em.persistAndFlush(deleteEntity);
     return entity;
   }
 

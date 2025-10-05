@@ -20,20 +20,32 @@ describe('MeetingRepository', () => {
       .build();
 
     orm = module.get<MikroORM>(MikroORM);
-    em = orm.em as any; // Use the same EntityManager as the repository
+    em = orm.em as any; // Use global EntityManager to share context with repository
     repository = module.get<MeetingRepository>(MeetingRepository);
 
     await initializeTestDatabase(orm);
   });
 
-  afterAll(async () => {
-    await cleanupTestDatabase(orm);
-    await orm.close();
+  beforeEach(async () => {
+    // Clear identity map before each test to prevent cache pollution
+    em.clear();
   });
 
   afterEach(async () => {
-    // Clean up test data after each test
-    await em.execute('TRUNCATE TABLE meetings, resources, workspaces, users, workspace_members, roles, workspace_member_roles RESTART IDENTITY CASCADE');
+    // Clean up test data - safe approach using DELETE instead of TRUNCATE
+    await em.execute('DELETE FROM meeting_participants');
+    await em.execute('DELETE FROM meetings');
+    await em.execute('DELETE FROM resources');
+    await em.execute('DELETE FROM workspace_member_roles');
+    await em.execute('DELETE FROM workspace_members');
+    await em.execute('DELETE FROM roles');
+    await em.execute('DELETE FROM workspaces');
+    await em.execute('DELETE FROM users');
+  });
+
+  afterAll(async () => {
+    await cleanupTestDatabase(orm);
+    await orm.close();
   });
 
   describe('create', () => {

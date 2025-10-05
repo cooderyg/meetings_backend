@@ -46,9 +46,25 @@ describe('MeetingService', () => {
     await initializeTestDatabase(orm);
   }, 60000);
 
+  beforeEach(async () => {
+    // Clear identity map before each test to prevent cache pollution
+    em.clear();
+  });
+
   afterEach(async () => {
-    // Clean up test data after each test for isolation
-    await em.execute('TRUNCATE TABLE meetings, resources, workspaces, users, workspace_members, roles, workspace_member_roles, permissions, role_permissions, member_resource_permissions, spaces RESTART IDENTITY CASCADE');
+    // Clean up test data - safe approach using DELETE instead of TRUNCATE
+    // Order matters due to foreign key constraints
+    await em.execute('DELETE FROM meeting_participants');
+    await em.execute('DELETE FROM meetings');
+    await em.execute('DELETE FROM member_resource_permissions');
+    await em.execute('DELETE FROM resources');
+    await em.execute('DELETE FROM workspace_member_roles');
+    await em.execute('DELETE FROM workspace_members');
+    await em.execute('DELETE FROM role_permissions');
+    await em.execute('DELETE FROM roles');
+    await em.execute('DELETE FROM workspaces');
+    await em.execute('DELETE FROM login_events');
+    await em.execute('DELETE FROM users');
   });
 
   afterAll(async () => {
@@ -57,7 +73,7 @@ describe('MeetingService', () => {
   }, 60000);
 
   describe('createMeeting', () => {
-    it('should create meeting with resource atomically', async () => {
+    it('should create meeting with resource and default values', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
@@ -67,44 +83,17 @@ describe('MeetingService', () => {
         parentPath: '/',
       });
 
+      // Meeting created with correct relationships
       expect(meeting).toBeDefined();
       expect(meeting.status).toBe(MeetingStatus.DRAFT);
       expect(meeting.resource).toBeDefined();
       expect(meeting.resource.title).toBe('Untitled');
       expect(meeting.resource.owner.id).toBe(member.id);
-    });
 
-    it('should create meeting with default values', async () => {
-      const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace });
-
-      const meeting = await service.createMeeting({
-        workspaceId: workspace.id,
-        workspaceMemberId: member.id,
-        parentPath: '/',
-      });
-
+      // Default values set correctly
       expect(meeting.memo).toBeNull();
       expect(meeting.summary).toBeNull();
       expect(meeting.tags).toEqual([]);
-      expect(meeting.status).toBe(MeetingStatus.DRAFT);
-    });
-
-    it('should create resource and meeting in same transaction', async () => {
-      // This tests @Transactional behavior
-      const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace });
-
-      const meeting = await service.createMeeting({
-        workspaceId: workspace.id,
-        workspaceMemberId: member.id,
-        parentPath: '/',
-      });
-
-      // Both meeting and resource should exist
-      expect(meeting).toBeDefined();
-      expect(meeting.resource).toBeDefined();
-      expect(meeting.resource.owner.id).toBe(member.id);
     });
   });
 
@@ -125,14 +114,9 @@ describe('MeetingService', () => {
     it('should throw AppError for non-existent meeting', async () => {
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
-      await expect(
-        service.updateMeeting(nonExistentId, {
-          memo: 'New memo',
-        })
-      ).rejects.toThrow(AppError);
-
       try {
         await service.updateMeeting(nonExistentId, { memo: 'New memo' });
+        fail('Should have thrown AppError');
       } catch (error) {
         expect(error).toBeInstanceOf(AppError);
         expect((error as AppError).code).toBe('meeting.update.notFound');
@@ -192,15 +176,6 @@ describe('MeetingService', () => {
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
-      await expect(
-        service.publishMeeting({
-          id: nonExistentId,
-          workspaceId: workspace.id,
-          workspaceMemberId: member.id,
-          data: { visibility: ResourceVisibility.PUBLIC },
-        })
-      ).rejects.toThrow(AppError);
-
       try {
         await service.publishMeeting({
           id: nonExistentId,
@@ -208,6 +183,7 @@ describe('MeetingService', () => {
           workspaceMemberId: member.id,
           data: { visibility: ResourceVisibility.PUBLIC },
         });
+        fail('Should have thrown AppError');
       } catch (error) {
         expect(error).toBeInstanceOf(AppError);
         expect((error as AppError).code).toBe('meeting.publish.notFound');
@@ -222,15 +198,6 @@ describe('MeetingService', () => {
         status: MeetingStatus.DRAFT,
       });
 
-      await expect(
-        service.publishMeeting({
-          id: meeting.id,
-          workspaceId: workspace.id,
-          workspaceMemberId: member.id,
-          data: { visibility: ResourceVisibility.PUBLIC },
-        })
-      ).rejects.toThrow(AppError);
-
       try {
         await service.publishMeeting({
           id: meeting.id,
@@ -238,6 +205,7 @@ describe('MeetingService', () => {
           workspaceMemberId: member.id,
           data: { visibility: ResourceVisibility.PUBLIC },
         });
+        fail('Should have thrown AppError');
       } catch (error) {
         expect(error).toBeInstanceOf(AppError);
         expect((error as AppError).code).toBe('meeting.publish.isDraft');
