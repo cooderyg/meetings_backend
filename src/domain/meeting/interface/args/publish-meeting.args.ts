@@ -1,4 +1,4 @@
-import { PublishMeetingDto } from '../../dto/request/publish-meeting.dto';
+import { PublishMeetingDto } from '../../dto/publish-meeting.dto';
 
 export interface PublishMeetingArgs {
   id: string;

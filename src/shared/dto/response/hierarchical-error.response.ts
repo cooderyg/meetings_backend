@@ -3,7 +3,7 @@ import { HierarchicalErrorCode } from '../../const/hierarchical-error-code.const
 
 /**
  * 계층적 에러 응답 DTO
- * 
+ *
  * AppError에서 발생하는 계층적 에러 코드 기반의 응답 스키마
  * 클라이언트에서 i18n 처리를 위한 구조화된 에러 정보 제공
  */
@@ -34,7 +34,7 @@ export class HierarchicalErrorResponse {
 
 /**
  * 표준 에러 응답 DTO (기존 시스템과의 호환성)
- * 
+ *
  * BadRequestException, NotFoundException 등 일반적인 HTTP 예외용
  */
 export class StandardErrorResponse {
@@ -55,7 +55,10 @@ export class StandardErrorResponse {
   @ApiProperty({
     description: '추가 상세 정보',
     example: {
-      validationErrors: ['이름은 필수 입력입니다', '이메일 형식이 올바르지 않습니다']
+      validationErrors: [
+        '이름은 필수 입력입니다',
+        '이메일 형식이 올바르지 않습니다',
+      ],
     },
     required: false,
     additionalProperties: true,
@@ -71,14 +74,16 @@ export class StandardErrorResponse {
 
 /**
  * 통합 에러 응답 래퍼
- * 
+ *
  * 모든 타입의 에러를 처리할 수 있는 유니온 타입
  */
-export type ErrorResponseDto = HierarchicalErrorResponse | StandardErrorResponse;
+export type ErrorResponseDto =
+  | HierarchicalErrorResponse
+  | StandardErrorResponse;
 
 /**
  * HTTP 상태코드별 에러 응답 그룹
- * 
+ *
  * Swagger 명세에서 상태코드별로 가능한 에러들을 그룹화
  */
 export interface ErrorResponseGroup {
@@ -89,8 +94,11 @@ export interface ErrorResponseGroup {
   /** 해당 상태코드에서 발생 가능한 에러 코드들 */
   errorCodes: HierarchicalErrorCode[];
   /** 예시 응답들 */
-  examples: Record<string, {
-    description: string;
-    value: HierarchicalErrorResponse;
-  }>;
+  examples: Record<
+    string,
+    {
+      description: string;
+      value: HierarchicalErrorResponse;
+    }
+  >;
 }

@@ -20,7 +20,7 @@ export class MeetingService {
     private readonly resourceService: ResourceService
   ) {}
 
-  async create(args: CreateMeetingArgs): Promise<Meeting> {
+  async createMeeting(args: CreateMeetingArgs): Promise<Meeting> {
     const resource = await this.resourceService.create(
       {
         ownerId: args.workspaceMemberId,
@@ -45,7 +45,7 @@ export class MeetingService {
     return meeting;
   }
 
-  async update(id: string, data: UpdateMeetingData) {
+  async updateMeeting(id: string, data: UpdateMeetingData) {
     const meeting = await this.repository.update(id, data);
 
     if (!meeting) {
@@ -55,11 +55,11 @@ export class MeetingService {
     return meeting;
   }
 
-  async delete(id: string) {
+  async deleteMeeting(id: string) {
     return this.repository.delete(id);
   }
 
-  async publish(args: PublishMeetingArgs) {
+  async publishMeeting(args: PublishMeetingArgs) {
     const { id, workspaceId, data } = args;
     const { visibility } = data;
 
@@ -89,21 +89,21 @@ export class MeetingService {
   /**
    * 기본 미팅 상세 정보 조회
    */
-  async findById(id: string, workspaceId: string) {
+  async getMeetingById(id: string, workspaceId: string) {
     return this.repository.findById(id, workspaceId);
   }
 
   /**
    * 참여자 정보를 포함한 미팅 조회
    */
-  async findByIdWithParticipants(id: string, workspaceId: string) {
+  async getMeetingByIdWithParticipants(id: string, workspaceId: string) {
     return this.repository.findByIdWithParticipants(id, workspaceId);
   }
 
   /**
    * 워크스페이스의 미팅 목록을 페이지네이션으로 조회
    */
-  async findByWorkspace(
+  async findMeetingsByWorkspace(
     workspaceId: string,
     pagination: PaginationQuery,
     filter?: FilterQuery,
@@ -128,7 +128,7 @@ export class MeetingService {
   /**
    * 나의 임시저장 미팅 목록을 페이지네이션으로 조회
    */
-  async findDraftMy(
+  async findMyDraftMeetings(
     workspaceId: string,
     workspaceMemberId: string,
     pagination: PaginationQuery,

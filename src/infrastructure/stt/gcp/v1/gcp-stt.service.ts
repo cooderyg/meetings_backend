@@ -123,7 +123,7 @@ export class GcpSttService {
           });
 
           // 미팅 요약 업데이트
-          await this.meetingService.update(meetingId, {
+          await this.meetingService.updateMeeting(meetingId, {
             summary,
             status: MeetingStatus.COMPLETED,
           });

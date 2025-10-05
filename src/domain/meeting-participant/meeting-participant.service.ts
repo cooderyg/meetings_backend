@@ -16,7 +16,10 @@ export class MeetingParticipantService {
   async create(args: CreateMeetingParticipantArgs) {
     const { meetingId, workspaceId, workspaceMemberId, guestName } = args;
 
-    const meeting = await this.meetingService.findById(meetingId, workspaceId);
+    const meeting = await this.meetingService.getMeetingById(
+      meetingId,
+      workspaceId
+    );
 
     if (!meeting) {
       throw new AppError('meetingParticipant.create.meetingNotFound');

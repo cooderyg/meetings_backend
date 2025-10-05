@@ -5,7 +5,6 @@ import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import {
   MeetingRecordCreate,
   MeetingRecordUpdate,
-  MeetingRecordUpsert,
 } from './meeting-record.type';
 
 @Injectable()

@@ -1,5 +1,5 @@
 import { IsEnum } from 'class-validator';
-import { ResourceVisibility } from '../../../resource/entity/resource.entity';
+import { ResourceVisibility } from '../../resource/entity/resource.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PublishMeetingDto {

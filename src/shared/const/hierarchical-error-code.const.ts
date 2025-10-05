@@ -78,10 +78,10 @@ export type HierarchicalErrorCode =
 
   // 조회 관련 (meeting.fetch.*)
   | 'meeting.fetch.notFound' // 기존 'meeting.notFound'
-  
+
   // 수정 관련 (meeting.update.*)
   | 'meeting.update.notFound' // 수정하려는 미팅을 찾을 수 없음
-  
+
   // 삭제 관련 (meeting.delete.*)
   | 'meeting.delete.notFound' // 삭제하려는 미팅을 찾을 수 없음
 
@@ -95,6 +95,16 @@ export type HierarchicalErrorCode =
 
   // 삭제 관련 (meetingParticipant.delete.*)
   | 'meetingParticipant.delete.notFound'
+  | 'meetingParticipant.delete.accessDenied'
+
+  // 생성 관련 추가 에러
+  | 'meetingParticipant.create.invalidGuestName'
+  | 'meetingParticipant.create.meetingPublished'
+  | 'meetingParticipant.create.meetingCompleted'
+
+  // 삭제 관련 추가 에러
+  | 'meetingParticipant.delete.meetingPublished'
+  | 'meetingParticipant.delete.meetingCompleted'
 
   // ===================
   // 워크스페이스 도메인
@@ -287,6 +297,12 @@ export const HIERARCHICAL_ERROR_DEFINITIONS: Record<
   },
   'meetingParticipant.create.duplicate': { httpStatus: 409, logLevel: 'warn' },
   'meetingParticipant.delete.notFound': { httpStatus: 404, logLevel: 'warn' },
+  'meetingParticipant.delete.accessDenied': { httpStatus: 403, logLevel: 'warn' },
+  'meetingParticipant.create.invalidGuestName': { httpStatus: 400, logLevel: 'warn' },
+  'meetingParticipant.create.meetingPublished': { httpStatus: 400, logLevel: 'warn' },
+  'meetingParticipant.create.meetingCompleted': { httpStatus: 400, logLevel: 'warn' },
+  'meetingParticipant.delete.meetingPublished': { httpStatus: 400, logLevel: 'warn' },
+  'meetingParticipant.delete.meetingCompleted': { httpStatus: 400, logLevel: 'warn' },
 
   // 워크스페이스 도메인
   'workspace.access.memberRequired': { httpStatus: 403, logLevel: 'warn' },

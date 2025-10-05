@@ -59,7 +59,13 @@ export interface HierarchicalErrorContextMap {
   'meetingParticipant.create.meetingNotFound': undefined;
   'meetingParticipant.create.memberNotFound': undefined;
   'meetingParticipant.create.duplicate': undefined;
+  'meetingParticipant.create.invalidGuestName': undefined;
+  'meetingParticipant.create.meetingPublished': undefined;
+  'meetingParticipant.create.meetingCompleted': undefined;
   'meetingParticipant.delete.notFound': undefined;
+  'meetingParticipant.delete.accessDenied': undefined;
+  'meetingParticipant.delete.meetingPublished': undefined;
+  'meetingParticipant.delete.meetingCompleted': undefined;
 
   // ===================
   // 워크스페이스 도메인 (workspace.*.*)

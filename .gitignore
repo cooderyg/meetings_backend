@@ -11,5 +11,5 @@ volumes
 temp
 .idea
 .env.*
-
+.claude
 secret
