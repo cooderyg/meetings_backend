@@ -28,7 +28,7 @@ export class MeetingRepository {
 
   async create(data: CreateMeetingData) {
     const entity = this.repository.assign(new Meeting(), data);
-    await this.em.persistAndFlush(entity);
+    await this.em.persist(entity);
     await this.em.populate(entity, MEETING_DETAIL_POPULATE);
     return entity;
   }
@@ -48,7 +48,7 @@ export class MeetingRepository {
 
   async updateEntity(entity: Meeting, data: UpdateMeetingData) {
     this.repository.assign(entity, data);
-    await this.em.persistAndFlush(entity);
+    await this.em.persist(entity);
     await this.em.populate(entity, MEETING_DETAIL_POPULATE);
 
     return entity;
@@ -59,7 +59,7 @@ export class MeetingRepository {
     const deleteEntity = this.repository.assign(entity, {
       deletedAt: new Date(),
     });
-    await this.em.persistAndFlush(deleteEntity);
+    await this.em.persist(deleteEntity);
     return entity;
   }
 

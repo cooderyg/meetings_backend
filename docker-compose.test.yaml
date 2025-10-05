@@ -1,0 +1,19 @@
+services:
+  postgres-test:
+    image: postgres:16
+    container_name: anote-postgres-test
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: anote_test
+    ports:
+      - '5433:5432'
+    tmpfs:
+      # 메모리에 데이터 저장 (빠른 테스트 실행)
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U test_user -d anote_test']
+      interval: 3s
+      timeout: 3s
+      retries: 5
+      start_period: 3s

@@ -34,7 +34,7 @@ export class WorkspaceMemberRepository {
       imagePath: data.imagePath,
       isActive: data.isActive,
     });
-    await this.em.persistAndFlush(entity);
+    await this.em.persist(entity);
     return entity;
   }
 

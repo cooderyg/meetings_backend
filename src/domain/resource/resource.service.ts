@@ -15,10 +15,6 @@ export interface CreateResourceDto {
   parentPath?: string;
 }
 
-export interface CreateResourceOptions {
-  flush?: boolean;
-}
-
 @Injectable()
 export class ResourceService {
   constructor(
@@ -27,10 +23,12 @@ export class ResourceService {
     private readonly workspaceMemberService: WorkspaceMemberService
   ) {}
 
-  async create(
-    data: CreateResourceDto,
-    options: CreateResourceOptions = { flush: true }
-  ): Promise<Resource> {
+  /**
+   * Resource 생성
+   * @param data Resource 생성 데이터
+   * @note flush는 호출자의 @Transactional에서 자동 처리됨
+   */
+  async create(data: CreateResourceDto): Promise<Resource> {
     // 워크스페이스 검증
     const workspace = await this.workspaceService.findById(data.workspaceId);
     if (!workspace) {
@@ -49,17 +47,14 @@ export class ResourceService {
     const path = this.generatePath(data.parentPath);
 
     // Repository에 위임
-    return this.resourceRepository.create(
-      {
-        workspace,
-        owner,
-        type: data.type,
-        title: data.title,
-        visibility: data.visibility,
-        path,
-      },
-      { flush: options.flush }
-    );
+    return this.resourceRepository.create({
+      workspace,
+      owner,
+      type: data.type,
+      title: data.title,
+      visibility: data.visibility,
+      path,
+    });
   }
 
   async update(id: string, data: UpdateResourceData) {
@@ -101,6 +96,13 @@ export class ResourceService {
 
   private generatePath(parentPath?: string): string {
     const timestamp = Date.now().toString();
-    return parentPath ? `${parentPath}.${timestamp}` : timestamp;
+    const label = `r${timestamp}`; // ltree requires labels to start with letter
+
+    // Handle root path: '/' should be treated as empty (root level)
+    if (!parentPath || parentPath === '/') {
+      return label;
+    }
+
+    return `${parentPath}.${label}`;
   }
 }

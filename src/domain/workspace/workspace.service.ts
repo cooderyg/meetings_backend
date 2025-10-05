@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, Transactional } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AppError } from '../../shared/exception/app.error';
@@ -21,12 +21,16 @@ export class WorkspaceService {
     private readonly em: EntityManager
   ) {}
 
+  /**
+   * Workspace 생성 (Workspace + WorkspaceMember 원자적 생성)
+   * @Transactional 데코레이터가 자동으로 flush/commit 처리
+   */
+  @Transactional()
   async createWorkspace(workspace: ICreateWorkspace, user: User) {
     const createdWorkspace = this.workspaceRepository.assign(
       new Workspace(),
       workspace
     );
-    await this.em.flush();
 
     const role = await this.roleService.findSystemRoles(SystemRole.OWNER);
     if (!role) {
@@ -44,6 +48,11 @@ export class WorkspaceService {
     return createdWorkspace;
   }
 
+  /**
+   * Workspace 이름 업데이트
+   * @Transactional 데코레이터가 자동으로 flush/commit 처리
+   */
+  @Transactional()
   async updateWorkspaceName(id: string, data: UpdateWorkspaceNameDto) {
     const { name } = data;
 

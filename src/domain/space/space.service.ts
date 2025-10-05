@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Transactional } from '@mikro-orm/core';
 import { AppError } from '../../shared/exception/app.error';
 import { ResourceService } from '../resource/resource.service';
 import { ResourceType } from '../resource/entity/resource.entity';
@@ -36,20 +37,20 @@ export class SpaceService {
     return this.spaceRepository.findByWorkspaceAndUserId(workspaceId, userId);
   }
 
+  /**
+   * Space 생성 (Resource와 함께 원자적으로 생성)
+   * @Transactional 데코레이터가 자동으로 flush/commit 처리
+   */
+  @Transactional()
   async create(args: CreateSpaceArgs): Promise<Space> {
-    // ResourceService를 통해 Resource 생성 (flush: false로 원자성 보장)
-    const resource = await this.resourceService.create(
-      {
-        ownerId: args.workspaceMemberId,
-        workspaceId: args.workspaceId,
-        title: args.title,
-        type: ResourceType.SPACE,
-        parentPath: args.parentPath,
-      },
-      { flush: false }
-    );
+    const resource = await this.resourceService.create({
+      ownerId: args.workspaceMemberId,
+      workspaceId: args.workspaceId,
+      title: args.title,
+      type: ResourceType.SPACE,
+      parentPath: args.parentPath,
+    });
 
-    // Space 생성 (Resource와 함께 flush)
     const space = await this.spaceRepository.create({
       resource,
       workspace: resource.workspace,
@@ -59,6 +60,11 @@ export class SpaceService {
     return space;
   }
 
+  /**
+   * Space 업데이트 (title, description 수정)
+   * @Transactional 데코레이터가 자동으로 flush/commit 처리
+   */
+  @Transactional()
   async update(id: string, dto: UpdateSpaceDto): Promise<Space> {
     const space = await this.spaceRepository.findById(id);
     if (!space) {

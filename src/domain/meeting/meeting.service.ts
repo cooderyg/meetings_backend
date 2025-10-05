@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Transactional, EntityManager } from '@mikro-orm/core';
 import { MeetingRepository } from './meeting.repository';
 import { ResourceService } from '../resource/resource.service';
 import {
@@ -16,22 +17,25 @@ import { UpdateMeetingData } from './interface/data/update-meeting.data';
 @Injectable()
 export class MeetingService {
   constructor(
+    private readonly em: EntityManager,
     private readonly repository: MeetingRepository,
     private readonly resourceService: ResourceService
   ) {}
 
+  /**
+   * Meeting 생성 (Resource와 함께 원자적으로 생성)
+   * @Transactional 데코레이터가 자동으로 flush/commit 처리
+   */
+  @Transactional()
   async createMeeting(args: CreateMeetingArgs): Promise<Meeting> {
-    const resource = await this.resourceService.create(
-      {
-        ownerId: args.workspaceMemberId,
-        workspaceId: args.workspaceId,
-        title: 'Untitled',
-        type: ResourceType.MEETING,
-        parentPath: args.parentPath,
-        visibility: ResourceVisibility.PUBLIC,
-      },
-      { flush: false }
-    );
+    const resource = await this.resourceService.create({
+      ownerId: args.workspaceMemberId,
+      workspaceId: args.workspaceId,
+      title: 'Untitled',
+      type: ResourceType.MEETING,
+      parentPath: args.parentPath,
+      visibility: ResourceVisibility.PUBLIC,
+    });
 
     const meeting = await this.repository.create({
       resource,
@@ -45,6 +49,11 @@ export class MeetingService {
     return meeting;
   }
 
+  /**
+   * Meeting 업데이트 (Lost Update 방지)
+   * @Transactional 데코레이터가 자동으로 flush/commit 처리
+   */
+  @Transactional()
   async updateMeeting(id: string, data: UpdateMeetingData) {
     const meeting = await this.repository.update(id, data);
 
@@ -59,6 +68,11 @@ export class MeetingService {
     return this.repository.delete(id);
   }
 
+  /**
+   * Meeting 발행 (상태 전환 및 Resource visibility 업데이트)
+   * @Transactional 데코레이터가 자동으로 flush/commit 처리
+   */
+  @Transactional()
   async publishMeeting(args: PublishMeetingArgs) {
     const { id, workspaceId, data } = args;
     const { visibility } = data;
@@ -68,15 +82,11 @@ export class MeetingService {
     if (!meeting) {
       throw new AppError('meeting.publish.notFound', { meetingId: id });
     }
-    // 발행가능한지 확인()
-    if (meeting.status !== MeetingStatus.COMPLETED) {
-      throw new AppError('meeting.publish.isDraft', {
-        currentStatus: meeting.status,
-        requiredStatus: MeetingStatus.COMPLETED,
-      });
-    }
 
-    await this.resourceService.update(id, { visibility });
+    // 발행 가능 여부 검증
+    this.validatePublishable(meeting);
+
+    await this.resourceService.update(meeting.resource.id, { visibility });
 
     // 이미 조회한 엔티티를 재사용하여 중복 조회 방지
     const updatedMeeting = await this.repository.updateEntity(meeting, {
@@ -147,5 +157,18 @@ export class MeetingService {
       data: result.data,
       totalCount: result.totalCount,
     };
+  }
+
+  /**
+   * Helper: Meeting이 발행 가능한 상태인지 검증
+   * @private
+   */
+  private validatePublishable(meeting: Meeting): void {
+    if (meeting.status !== MeetingStatus.COMPLETED) {
+      throw new AppError('meeting.publish.isDraft', {
+        currentStatus: meeting.status,
+        requiredStatus: MeetingStatus.COMPLETED,
+      });
+    }
   }
 }

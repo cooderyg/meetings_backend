@@ -25,7 +25,7 @@ export class MeetingParticipantRepository {
       data
     );
 
-    await this.em.persistAndFlush(meetingParticipant);
+    await this.em.persist(meetingParticipant);
 
     await this.em.populate(
       meetingParticipant,
@@ -36,7 +36,7 @@ export class MeetingParticipantRepository {
   }
 
   async delete(meetingParticipant: MeetingParticipant) {
-    await this.em.removeAndFlush(meetingParticipant);
+    await this.em.remove(meetingParticipant);
   }
 
   async findById(id: string) {

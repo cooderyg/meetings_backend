@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Transactional } from '@mikro-orm/core';
 import { MeetingParticipantRepository } from './meeting-participant.repository';
 import { CreateMeetingParticipantArgs } from './interface/args/create-meeting-participant.args';
 import { MeetingService } from '../meeting/meeting.service';
@@ -13,6 +14,11 @@ export class MeetingParticipantService {
     private readonly workspaceMemberService: WorkspaceMemberService
   ) {}
 
+  /**
+   * Meeting 참여자 생성 (중복 검증 + 생성, Race Condition 방지)
+   * @Transactional 데코레이터가 자동으로 flush/commit 처리
+   */
+  @Transactional()
   async create(args: CreateMeetingParticipantArgs) {
     const { meetingId, workspaceId, workspaceMemberId, guestName } = args;
 
@@ -49,6 +55,11 @@ export class MeetingParticipantService {
     return await this.repository.create({ meeting, guestName });
   }
 
+  /**
+   * Meeting 참여자 삭제 (조회 + 삭제 원자성 보장)
+   * @Transactional 데코레이터가 자동으로 flush/commit 처리
+   */
+  @Transactional()
   async delete(id: string) {
     const meetingParticipant = await this.repository.findById(id);
 

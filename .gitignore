@@ -7,9 +7,17 @@ architecture.md
 desc.md
 volumes
 .vscode
-.env
 temp
 .idea
-.env.*
 .claude
 secret
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.test
+
+# Test coverage
+coverage
+.nyc_output

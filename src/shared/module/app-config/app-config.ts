@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as Joi from 'joi';
 
-type NodeEnv = 'development' | 'staging' | 'production';
+type NodeEnv = 'development' | 'staging' | 'production' | 'test';
 
 @Injectable()
 export class AppConfig {
@@ -78,7 +78,7 @@ export class AppConfig {
 
   static validationSchema = Joi.object({
     NODE_ENV: Joi.string()
-      .valid('development', 'staging', 'production')
+      .valid('development', 'staging', 'production', 'test')
       .default('development'),
     PORT: Joi.number().default(3000),
     APP_NAME: Joi.string().required(),

@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, Transactional } from '@mikro-orm/core';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AppError } from '../../shared/exception/app.error';
 import { UpdateUserSettingsDto } from './dto/request/update-user-settings.dto';
@@ -40,6 +40,11 @@ export class UserService {
     return createdUser;
   }
 
+  /**
+   * User 설정 업데이트 (조회 + 병합 + 업데이트 원자성 보장)
+   * @Transactional 데코레이터가 자동으로 flush/commit 처리
+   */
+  @Transactional()
   async updateUserSettings(
     id: string,
     data: UpdateUserSettingsDto
