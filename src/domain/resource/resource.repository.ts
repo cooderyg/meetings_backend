@@ -56,10 +56,14 @@ export class ResourceRepository {
     );
   }
 
+  /**
+   * Resource 업데이트
+   * @note flush는 호출자의 @Transactional에서 자동 처리됨
+   */
   async update(id: string, data: UpdateResourceData): Promise<Resource> {
     const resource = await this.repository.findOneOrFail({ id });
     this.repository.assign(resource, data);
-    await this.em.flush();
+    await this.em.persist(resource);
     return resource;
   }
 

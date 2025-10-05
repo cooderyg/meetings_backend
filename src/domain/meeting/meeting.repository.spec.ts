@@ -6,7 +6,6 @@ import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { initializeTestDatabase, cleanupTestDatabase } from '../../../test/utils/db-helpers';
 import { createMeetingFixture } from '../../../test/fixtures/meeting.fixture';
 import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
-import { MEETING_DETAIL_POPULATE } from './constant/meeting-fields';
 
 describe('MeetingRepository', () => {
   let orm: MikroORM;

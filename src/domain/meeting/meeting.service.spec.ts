@@ -90,6 +90,11 @@ describe('MeetingService', () => {
       expect(meeting.resource.title).toBe('Untitled');
       expect(meeting.resource.owner.id).toBe(member.id);
 
+      // Resource fields set correctly
+      expect(meeting.resource.type).toBe(ResourceType.MEETING);
+      expect(meeting.resource.visibility).toBe(ResourceVisibility.PUBLIC);
+      expect(meeting.resource.workspace.id).toBe(workspace.id);
+
       // Default values set correctly
       expect(meeting.memo).toBeNull();
       expect(meeting.summary).toBeNull();
@@ -149,6 +154,16 @@ describe('MeetingService', () => {
       const found = await repository.findById(meeting.id, workspace.id);
       expect(found).toBeNull();
     });
+
+    it('should not find deleted meetings', async () => {
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
+
+      await service.deleteMeeting(meeting.id);
+
+      const found = await service.getMeetingById(meeting.id, workspace.id);
+      expect(found).toBeNull();
+    });
   });
 
   describe('publishMeeting', () => {
@@ -187,6 +202,7 @@ describe('MeetingService', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(AppError);
         expect((error as AppError).code).toBe('meeting.publish.notFound');
+        expect((error as AppError).context).toEqual({ meetingId: nonExistentId });
       }
     });
 
@@ -281,6 +297,23 @@ describe('MeetingService', () => {
 
       expect(result.data).toHaveLength(3);
       expect(result.totalCount).toBe(5);
+    });
+
+    it('should exclude DRAFT meetings from workspace list', async () => {
+      const workspace = await createWorkspaceFixture(em);
+
+      await createMeetingFixture(em, { workspace, status: MeetingStatus.DRAFT });
+      await createMeetingFixture(em, { workspace, status: MeetingStatus.PUBLISHED });
+      await createMeetingFixture(em, { workspace, status: MeetingStatus.PUBLISHED });
+
+      const pagination = new PaginationQuery();
+      pagination.page = 1;
+      pagination.limit = 10;
+
+      const result = await service.findMeetingsByWorkspace(workspace.id, pagination);
+
+      expect(result.totalCount).toBe(2);
+      expect(result.data.every(m => m.status !== MeetingStatus.DRAFT)).toBe(true);
     });
 
     it('should filter meetings by status', async () => {
