@@ -19,6 +19,6 @@ export class MeetingRecord extends BaseEntity {
   content: string;
 
   /** 미팅 */
-  @ManyToOne()
+  @ManyToOne(() => Meeting)
   meeting: Meeting;
 }
