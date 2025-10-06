@@ -33,7 +33,7 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
       .build();
 
     orm = module.get<MikroORM>(MikroORM);
-    em = orm.em as any; // Use root EM instead of fork
+    em = orm.em as EntityManager;
     service = module.get<SpaceService>(SpaceService);
     repository = module.get<SpaceRepository>(SpaceRepository);
     resourceService = module.get<ResourceService>(ResourceService);

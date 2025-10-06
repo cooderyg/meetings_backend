@@ -19,7 +19,7 @@ describe('MeetingRepository', () => {
       .build();
 
     orm = module.get<MikroORM>(MikroORM);
-    em = orm.em as any; // Use global EntityManager to share context with repository
+    em = orm.em as EntityManager;
     repository = module.get<MeetingRepository>(MeetingRepository);
 
     await initializeTestDatabase(orm);

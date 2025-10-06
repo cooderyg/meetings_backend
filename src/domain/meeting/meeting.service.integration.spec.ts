@@ -38,7 +38,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
       .build();
 
     orm = module.get<MikroORM>(MikroORM);
-    em = orm.em as any; // Use root EM instead of fork
+    em = orm.em as EntityManager;
     service = module.get<MeetingService>(MeetingService);
     repository = module.get<MeetingRepository>(MeetingRepository);
     resourceService = module.get<ResourceService>(ResourceService);

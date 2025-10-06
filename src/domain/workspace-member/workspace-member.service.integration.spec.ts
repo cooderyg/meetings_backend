@@ -67,8 +67,7 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
       WorkspaceMemberRepository
     );
 
-    // root EntityManager 사용 (타입 캐스팅)
-    em = orm.em as any;
+    em = orm.em as EntityManager;
 
     // ltree 확장 설치 (Resource 엔티티에서 사용)
     await em.execute('CREATE EXTENSION IF NOT EXISTS ltree');

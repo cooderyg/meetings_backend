@@ -78,7 +78,7 @@ describe('AuthService Integration Tests with Testcontainer', () => {
       .build();
 
     orm = module.get<MikroORM>(MikroORM);
-    em = orm.em as any;
+    em = orm.em as EntityManager;
     service = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
     workspaceService = module.get<WorkspaceService>(WorkspaceService);

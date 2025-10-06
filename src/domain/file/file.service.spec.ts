@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Readable } from 'stream';
 import { FileService } from './file.service';
 import { STORAGE_SERVICE, IStorageService } from '../../infrastructure/storage';
 import { LoggerService } from '../../shared/module/logger/logger.service';
@@ -7,6 +8,22 @@ import {
   FileUploadResult,
   FileValidationOptions,
 } from './interface/file.interface';
+
+const createMockFile = (
+  overrides: Partial<Express.Multer.File> = {}
+): Express.Multer.File => ({
+  fieldname: 'file',
+  originalname: 'test.jpg',
+  encoding: '7bit',
+  mimetype: 'image/jpeg',
+  size: 1024,
+  buffer: Buffer.from('test'),
+  stream: null as unknown as Readable,
+  destination: '',
+  filename: '',
+  path: '',
+  ...overrides,
+});
 
 describe('FileService', () => {
   let service: FileService;
@@ -47,18 +64,12 @@ describe('FileService', () => {
   describe('uploadFile', () => {
     it('파일을 성공적으로 업로드해야 함', async () => {
       // Given
-      const mockFile: Express.Multer.File = {
-        fieldname: 'file',
+      const mockFile = createMockFile({
         originalname: 'test-image.jpg',
-        encoding: '7bit',
         mimetype: 'image/jpeg',
         size: 1024000,
         buffer: Buffer.from('test file content'),
-        stream: {} as any,
-        destination: '',
-        filename: '',
-        path: '',
-      };
+      });
 
       const mockUploadResult = {
         key: 'uploads/1704067200000-a1b2c3d4-test-image.jpg',
@@ -74,9 +85,9 @@ describe('FileService', () => {
         uploadedAt: expect.any(Date),
       };
 
-      (storageService.uploadFile as jest.Mock).mockResolvedValue(
-        mockUploadResult
-      );
+      jest
+        .spyOn(storageService, 'uploadFile')
+        .mockResolvedValue(mockUploadResult);
 
       // When
       const result = await service.uploadFile(mockFile);
@@ -105,18 +116,12 @@ describe('FileService', () => {
 
     it('파일 크기가 초과하면 에러를 발생시켜야 함', async () => {
       // Given
-      const mockFile: Express.Multer.File = {
-        fieldname: 'file',
+      const mockFile = createMockFile({
         originalname: 'large-file.jpg',
-        encoding: '7bit',
         mimetype: 'image/jpeg',
         size: 15 * 1024 * 1024, // 15MB (기본 제한 10MB 초과)
         buffer: Buffer.from('large file content'),
-        stream: {} as any,
-        destination: '',
-        filename: '',
-        path: '',
-      };
+      });
 
       const options: FileValidationOptions = {
         maxSize: 10 * 1024 * 1024, // 10MB
@@ -136,18 +141,12 @@ describe('FileService', () => {
 
     it('지원하지 않는 MIME 타입이면 에러를 발생시켜야 함', async () => {
       // Given
-      const mockFile: Express.Multer.File = {
-        fieldname: 'file',
+      const mockFile = createMockFile({
         originalname: 'test.exe',
-        encoding: '7bit',
         mimetype: 'application/x-executable',
         size: 1024000,
         buffer: Buffer.from('executable content'),
-        stream: {} as any,
-        destination: '',
-        filename: '',
-        path: '',
-      };
+      });
 
       const options: FileValidationOptions = {
         allowedMimeTypes: ['image/jpeg', 'image/png'],
@@ -167,18 +166,12 @@ describe('FileService', () => {
 
     it('지원하지 않는 파일 확장자면 에러를 발생시켜야 함', async () => {
       // Given
-      const mockFile: Express.Multer.File = {
-        fieldname: 'file',
+      const mockFile = createMockFile({
         originalname: 'test.exe',
-        encoding: '7bit',
         mimetype: 'application/octet-stream',
         size: 1024000,
         buffer: Buffer.from('executable content'),
-        stream: {} as any,
-        destination: '',
-        filename: '',
-        path: '',
-      };
+      });
 
       const options: FileValidationOptions = {
         allowedExtensions: ['.jpg', '.png', '.pdf'],
@@ -198,18 +191,12 @@ describe('FileService', () => {
 
     it('빈 파일이면 에러를 발생시켜야 함', async () => {
       // Given
-      const mockFile: Express.Multer.File = {
-        fieldname: 'file',
+      const mockFile = createMockFile({
         originalname: 'empty-file.jpg',
-        encoding: '7bit',
         mimetype: 'image/jpeg',
         size: 0,
         buffer: Buffer.alloc(0),
-        stream: {} as any,
-        destination: '',
-        filename: '',
-        path: '',
-      };
+      });
 
       // When & Then
       await expect(service.uploadFile(mockFile)).rejects.toThrow(AppError);
@@ -221,21 +208,15 @@ describe('FileService', () => {
 
     it('스토리지 업로드 실패 시 에러를 발생시켜야 함', async () => {
       // Given
-      const mockFile: Express.Multer.File = {
-        fieldname: 'file',
+      const mockFile = createMockFile({
         originalname: 'test-image.jpg',
-        encoding: '7bit',
         mimetype: 'image/jpeg',
         size: 1024000,
         buffer: Buffer.from('test file content'),
-        stream: {} as any,
-        destination: '',
-        filename: '',
-        path: '',
-      };
+      });
 
       const uploadError = new Error('Storage upload failed');
-      (storageService.uploadFile as jest.Mock).mockRejectedValue(uploadError);
+      jest.spyOn(storageService, 'uploadFile').mockRejectedValue(uploadError);
 
       // When & Then
       await expect(service.uploadFile(mockFile)).rejects.toThrow(AppError);
@@ -262,30 +243,20 @@ describe('FileService', () => {
     it('여러 파일을 성공적으로 업로드해야 함', async () => {
       // Given
       const mockFiles: Express.Multer.File[] = [
-        {
+        createMockFile({
           fieldname: 'files',
           originalname: 'test1.jpg',
-          encoding: '7bit',
           mimetype: 'image/jpeg',
           size: 1024000,
           buffer: Buffer.from('test file 1'),
-          stream: {} as any,
-          destination: '',
-          filename: '',
-          path: '',
-        },
-        {
+        }),
+        createMockFile({
           fieldname: 'files',
           originalname: 'test2.png',
-          encoding: '7bit',
           mimetype: 'image/png',
           size: 2048000,
           buffer: Buffer.from('test file 2'),
-          stream: {} as any,
-          destination: '',
-          filename: '',
-          path: '',
-        },
+        }),
       ];
 
       const mockUploadResults = [
@@ -318,7 +289,8 @@ describe('FileService', () => {
         },
       ];
 
-      (storageService.uploadFile as jest.Mock)
+      jest
+        .spyOn(storageService, 'uploadFile')
         .mockResolvedValueOnce(mockUploadResults[0])
         .mockResolvedValueOnce(mockUploadResults[1]);
 
@@ -356,7 +328,7 @@ describe('FileService', () => {
 
     it('null 파일 배열이면 에러를 발생시켜야 함', async () => {
       // Given
-      const mockFiles = null as any;
+      const mockFiles = undefined as unknown as Express.Multer.File[];
 
       // When & Then
       await expect(service.uploadMultipleFiles(mockFiles)).rejects.toThrow(
@@ -379,9 +351,9 @@ describe('FileService', () => {
       const expectedUrl =
         'https://bucket.s3.ap-northeast-2.amazonaws.com/uploads/test-file.jpg?X-Amz-Signature=...';
 
-      (storageService.getPresignedUrl as jest.Mock).mockResolvedValue(
-        expectedUrl
-      );
+      jest
+        .spyOn(storageService, 'getPresignedUrl')
+        .mockResolvedValue(expectedUrl);
 
       // When
       const result = await service.getPresignedUrl(key, expires);
@@ -397,7 +369,7 @@ describe('FileService', () => {
       const expires = 3600;
       const error = new Error('File not found');
 
-      (storageService.getPresignedUrl as jest.Mock).mockRejectedValue(error);
+      jest.spyOn(storageService, 'getPresignedUrl').mockRejectedValue(error);
 
       // When & Then
       await expect(service.getPresignedUrl(key, expires)).rejects.toThrow(
@@ -422,7 +394,7 @@ describe('FileService', () => {
       // Given
       const key = 'uploads/test-file.jpg';
 
-      (storageService.deleteFile as jest.Mock).mockResolvedValue(undefined);
+      jest.spyOn(storageService, 'deleteFile').mockResolvedValue(undefined);
 
       // When
       await service.deleteFile(key);
@@ -440,7 +412,7 @@ describe('FileService', () => {
       const key = 'uploads/non-existent-file.jpg';
       const error = new Error('File not found');
 
-      (storageService.deleteFile as jest.Mock).mockRejectedValue(error);
+      jest.spyOn(storageService, 'deleteFile').mockRejectedValue(error);
 
       // When & Then
       await expect(service.deleteFile(key)).rejects.toThrow(AppError);
@@ -459,27 +431,21 @@ describe('FileService', () => {
   describe('generateFileKey', () => {
     it('안전한 파일 키를 생성해야 함', async () => {
       // Given
-      const mockFile: Express.Multer.File = {
-        fieldname: 'file',
+      const mockFile = createMockFile({
         originalname: 'test file with spaces & special chars!.jpg',
-        encoding: '7bit',
         mimetype: 'image/jpeg',
         size: 1024000,
         buffer: Buffer.from('test file content'),
-        stream: {} as any,
-        destination: '',
-        filename: '',
-        path: '',
-      };
+      });
 
       const mockUploadResult = {
         key: 'uploads/1704067200000-a1b2c3d4-test_file_with_spaces___special_chars_.jpg',
         url: 'https://bucket.s3.ap-northeast-2.amazonaws.com/uploads/1704067200000-a1b2c3d4-test_file_with_spaces___special_chars_.jpg',
       };
 
-      (storageService.uploadFile as jest.Mock).mockResolvedValue(
-        mockUploadResult
-      );
+      jest
+        .spyOn(storageService, 'uploadFile')
+        .mockResolvedValue(mockUploadResult);
 
       // When
       await service.uploadFile(mockFile);
