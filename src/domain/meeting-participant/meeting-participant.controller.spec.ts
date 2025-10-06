@@ -55,9 +55,9 @@ describe('MeetingParticipantController', () => {
         guestName: null,
         createdAt: new Date(),
         updatedAt: new Date(),
-      } as any;
+      } as unknown as MeetingParticipant;
 
-      (service.create as jest.Mock).mockResolvedValue(expectedParticipant);
+      jest.spyOn(service, 'create').mockResolvedValue(expectedParticipant);
 
       // When
       const result = await controller.create(dto, workspaceId);
@@ -85,9 +85,9 @@ describe('MeetingParticipantController', () => {
         guestName: '홍길동',
         createdAt: new Date(),
         updatedAt: new Date(),
-      } as any;
+      } as unknown as MeetingParticipant;
 
-      (service.create as jest.Mock).mockResolvedValue(expectedParticipant);
+      jest.spyOn(service, 'create').mockResolvedValue(expectedParticipant);
 
       // When
       const result = await controller.create(dto, workspaceId);
@@ -109,7 +109,7 @@ describe('MeetingParticipantController', () => {
       };
 
       const error = new Error('Meeting not found');
-      (service.create as jest.Mock).mockRejectedValue(error);
+      jest.spyOn(service, 'create').mockRejectedValue(error);
 
       // When & Then
       await expect(controller.create(dto, workspaceId)).rejects.toThrow(error);
@@ -125,7 +125,7 @@ describe('MeetingParticipantController', () => {
       // Given
       const participantId = 'participant-123';
 
-      (service.delete as jest.Mock).mockResolvedValue(undefined);
+      jest.spyOn(service, 'delete').mockResolvedValue(undefined);
 
       // When
       await controller.delete(participantId);
@@ -139,7 +139,7 @@ describe('MeetingParticipantController', () => {
       const participantId = 'participant-123';
 
       const error = new Error('Participant not found');
-      (service.delete as jest.Mock).mockRejectedValue(error);
+      jest.spyOn(service, 'delete').mockRejectedValue(error);
 
       // When & Then
       await expect(controller.delete(participantId)).rejects.toThrow(error);

@@ -10,12 +10,13 @@ import { Meeting, MeetingStatus } from './entity/meeting.entity';
 import { PaginationQuery } from '../../shared/dto/request/pagination.query';
 import { FilterQuery } from '../../shared/dto/request/filter.query';
 import { SortQuery } from '../../shared/dto/request/sort.query';
+import { ResourceVisibility } from '../resource/entity/resource.entity';
 
 describe('MeetingController', () => {
   let controller: MeetingController;
   let service: MeetingService;
 
-  const mockMeeting: Partial<Meeting> = {
+  const mockMeeting = {
     id: 'meeting-123',
     status: MeetingStatus.DRAFT,
     memo: null,
@@ -23,7 +24,7 @@ describe('MeetingController', () => {
     tags: [],
     createdAt: new Date(),
     updatedAt: new Date(),
-  };
+  } as unknown as Meeting;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -66,7 +67,7 @@ describe('MeetingController', () => {
         parentPath: 'root',
       };
 
-      (service.createMeeting as jest.Mock).mockResolvedValue(mockMeeting);
+      jest.spyOn(service, 'createMeeting').mockResolvedValue(mockMeeting);
 
       // When
       const result = await controller.create(
@@ -95,16 +96,12 @@ describe('MeetingController', () => {
 
       const expectedResult = {
         data: [mockMeeting],
-        meta: {
-          total: 1,
-          page: 1,
-          limit: 20,
-        },
+        totalCount: 1,
       };
 
-      (service.findMeetingsByWorkspace as jest.Mock).mockResolvedValue(
-        expectedResult
-      );
+      jest
+        .spyOn(service, 'findMeetingsByWorkspace')
+        .mockResolvedValue(expectedResult);
 
       // When
       const result = await controller.findAll(
@@ -135,16 +132,12 @@ describe('MeetingController', () => {
 
       const expectedResult = {
         data: [mockMeeting],
-        meta: {
-          total: 1,
-          page: 1,
-          limit: 20,
-        },
+        totalCount: 1,
       };
 
-      (service.findMyDraftMeetings as jest.Mock).mockResolvedValue(
-        expectedResult
-      );
+      jest
+        .spyOn(service, 'findMyDraftMeetings')
+        .mockResolvedValue(expectedResult);
 
       // When
       const result = await controller.findDraftMy(
@@ -172,7 +165,7 @@ describe('MeetingController', () => {
       const workspaceId = 'workspace-123';
       const workspaceMemberId = 'member-123';
       const publishDto: PublishMeetingDto = {
-        visibility: 'public' as any,
+        visibility: ResourceVisibility.PUBLIC,
       };
 
       const publishedMeeting = {
@@ -180,7 +173,7 @@ describe('MeetingController', () => {
         status: MeetingStatus.PUBLISHED,
       };
 
-      (service.publishMeeting as jest.Mock).mockResolvedValue(publishedMeeting);
+      jest.spyOn(service, 'publishMeeting').mockResolvedValue(publishedMeeting);
 
       // When
       const result = await controller.publish(
@@ -207,7 +200,7 @@ describe('MeetingController', () => {
       const id = 'meeting-123';
       const workspaceId = 'workspace-123';
 
-      (service.deleteMeeting as jest.Mock).mockResolvedValue(undefined);
+      jest.spyOn(service, 'deleteMeeting').mockResolvedValue(mockMeeting);
 
       // When
       await controller.remove(id, workspaceId);
@@ -223,7 +216,7 @@ describe('MeetingController', () => {
       const id = 'meeting-123';
       const workspaceId = 'workspace-123';
 
-      (service.getMeetingById as jest.Mock).mockResolvedValue(mockMeeting);
+      jest.spyOn(service, 'getMeetingById').mockResolvedValue(mockMeeting);
 
       // When
       const result = await controller.findOne(id, workspaceId);
@@ -248,7 +241,7 @@ describe('MeetingController', () => {
         memo: 'Updated memo',
       };
 
-      (service.updateMeeting as jest.Mock).mockResolvedValue(updatedMeeting);
+      jest.spyOn(service, 'updateMeeting').mockResolvedValue(updatedMeeting);
 
       // When
       const result = await controller.update(id, workspaceId, updateDto);

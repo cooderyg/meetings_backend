@@ -3,10 +3,28 @@ import { BadRequestException } from '@nestjs/common';
 import { FileController } from './file.controller';
 import { FileService } from './file.service';
 import { FileUploadResponseDto } from './dto/response/file-response.dto';
+import { Readable } from 'stream';
 
 describe('FileController', () => {
   let controller: FileController;
   let fileService: FileService;
+
+  // Helper function to create mock Multer file
+  const createMockFile = (
+    overrides: Partial<Express.Multer.File> = {}
+  ): Express.Multer.File => ({
+    fieldname: 'file',
+    originalname: 'test.jpg',
+    encoding: '7bit',
+    mimetype: 'image/jpeg',
+    size: 1024,
+    buffer: Buffer.from('test'),
+    stream: null as unknown as Readable,
+    destination: '',
+    filename: '',
+    path: '',
+    ...overrides,
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,18 +53,12 @@ describe('FileController', () => {
   describe('uploadFile', () => {
     it('단일 파일 업로드를 성공적으로 처리해야 함', async () => {
       // Given
-      const mockFile: Express.Multer.File = {
-        fieldname: 'file',
+      const mockFile = createMockFile({
         originalname: 'test-image.jpg',
-        encoding: '7bit',
         mimetype: 'image/jpeg',
         size: 1024000,
         buffer: Buffer.from('test file content'),
-        stream: {} as any,
-        destination: '',
-        filename: '',
-        path: '',
-      };
+      });
 
       const expectedResult: FileUploadResponseDto = {
         key: 'uploads/1704067200000-a1b2c3d4-test-image.jpg',
@@ -57,7 +69,7 @@ describe('FileController', () => {
         uploadedAt: new Date(),
       };
 
-      (fileService.uploadFile as jest.Mock).mockResolvedValue(expectedResult);
+      jest.spyOn(fileService, 'uploadFile').mockResolvedValue(expectedResult);
 
       // When
       const result = await controller.uploadFile(mockFile);
@@ -69,7 +81,7 @@ describe('FileController', () => {
 
     it('파일이 없으면 BadRequestException을 발생시켜야 함', async () => {
       // Given
-      const mockFile = null as any;
+      const mockFile = undefined as unknown as Express.Multer.File;
 
       // When & Then
       await expect(controller.uploadFile(mockFile)).rejects.toThrow(
@@ -85,31 +97,21 @@ describe('FileController', () => {
   describe('uploadMultipleFiles', () => {
     it('다중 파일 업로드를 성공적으로 처리해야 함', async () => {
       // Given
-      const mockFiles: Express.Multer.File[] = [
-        {
+      const mockFiles = [
+        createMockFile({
           fieldname: 'files',
           originalname: 'test1.jpg',
-          encoding: '7bit',
           mimetype: 'image/jpeg',
           size: 1024000,
           buffer: Buffer.from('test file 1'),
-          stream: {} as any,
-          destination: '',
-          filename: '',
-          path: '',
-        },
-        {
+        }),
+        createMockFile({
           fieldname: 'files',
           originalname: 'test2.png',
-          encoding: '7bit',
           mimetype: 'image/png',
           size: 2048000,
           buffer: Buffer.from('test file 2'),
-          stream: {} as any,
-          destination: '',
-          filename: '',
-          path: '',
-        },
+        }),
       ];
 
       const expectedResults: FileUploadResponseDto[] = [
@@ -131,7 +133,7 @@ describe('FileController', () => {
         },
       ];
 
-      (fileService.uploadMultipleFiles as jest.Mock).mockResolvedValue(
+      jest.spyOn(fileService, 'uploadMultipleFiles').mockResolvedValue(
         expectedResults
       );
 
@@ -151,7 +153,7 @@ describe('FileController', () => {
 
     it('파일이 없으면 BadRequestException을 발생시켜야 함', async () => {
       // Given
-      const mockFiles = null as any;
+      const mockFiles = undefined as unknown as Express.Multer.File[];
 
       // When & Then
       await expect(controller.uploadMultipleFiles(mockFiles)).rejects.toThrow(
@@ -186,7 +188,7 @@ describe('FileController', () => {
       const expectedUrl =
         'https://bucket.s3.ap-northeast-2.amazonaws.com/uploads/test-file.jpg?X-Amz-Signature=...';
 
-      (fileService.getPresignedUrl as jest.Mock).mockResolvedValue(expectedUrl);
+      jest.spyOn(fileService, 'getPresignedUrl').mockResolvedValue(expectedUrl);
 
       // When
       const result = await controller.getPresignedUrl(key, expires);
@@ -205,7 +207,7 @@ describe('FileController', () => {
       const expectedUrl =
         'https://bucket.s3.ap-northeast-2.amazonaws.com/uploads/test-file.jpg?X-Amz-Signature=...';
 
-      (fileService.getPresignedUrl as jest.Mock).mockResolvedValue(expectedUrl);
+      jest.spyOn(fileService, 'getPresignedUrl').mockResolvedValue(expectedUrl);
 
       // When
       const result = await controller.getPresignedUrl(key);
@@ -225,7 +227,7 @@ describe('FileController', () => {
       const expectedUrl =
         'https://bucket.s3.ap-northeast-2.amazonaws.com/uploads/test%20file.jpg?X-Amz-Signature=...';
 
-      (fileService.getPresignedUrl as jest.Mock).mockResolvedValue(expectedUrl);
+      jest.spyOn(fileService, 'getPresignedUrl').mockResolvedValue(expectedUrl);
 
       // When
       const result = await controller.getPresignedUrl(encodedKey);
@@ -248,7 +250,7 @@ describe('FileController', () => {
       const key = 'uploads/test-file.jpg';
       const decodedKey = 'uploads/test-file.jpg';
 
-      (fileService.deleteFile as jest.Mock).mockResolvedValue(undefined);
+      jest.spyOn(fileService, 'deleteFile').mockResolvedValue(undefined);
 
       // When
       const result = await controller.deleteFile(key);
@@ -266,7 +268,7 @@ describe('FileController', () => {
       const encodedKey = 'uploads%2Ftest%20file.jpg';
       const decodedKey = 'uploads/test file.jpg';
 
-      (fileService.deleteFile as jest.Mock).mockResolvedValue(undefined);
+      jest.spyOn(fileService, 'deleteFile').mockResolvedValue(undefined);
 
       // When
       const result = await controller.deleteFile(encodedKey);

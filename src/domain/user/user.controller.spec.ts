@@ -42,7 +42,7 @@ describe('UserController', () => {
         settings: expectedSettings,
       };
 
-      (userService.updateUserSettings as jest.Mock).mockResolvedValue(
+      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
         expectedSettings
       );
 
@@ -65,7 +65,7 @@ describe('UserController', () => {
         settings: expectedSettings,
       };
 
-      (userService.updateUserSettings as jest.Mock).mockResolvedValue(
+      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
         expectedSettings
       );
 
@@ -90,7 +90,7 @@ describe('UserController', () => {
         settings: expectedSettings,
       };
 
-      (userService.updateUserSettings as jest.Mock).mockResolvedValue(
+      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
         expectedSettings
       );
 
@@ -115,7 +115,7 @@ describe('UserController', () => {
         settings: expectedSettings,
       };
 
-      (userService.updateUserSettings as jest.Mock).mockResolvedValue(
+      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
         expectedSettings
       );
 
@@ -137,7 +137,7 @@ describe('UserController', () => {
       };
       const error = new Error('User not found');
 
-      (userService.updateUserSettings as jest.Mock).mockRejectedValue(error);
+      jest.spyOn(userService, 'updateUserSettings').mockRejectedValue(error);
 
       // When/Then
       await expect(controller.updateUserSettings(updateDto)).rejects.toThrow(
@@ -158,7 +158,7 @@ describe('UserController', () => {
       };
       const expectedSettings = { theme: { mode: 'dark' as const } };
 
-      (userService.updateUserSettings as jest.Mock).mockResolvedValue(
+      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
         expectedSettings
       );
 
@@ -178,7 +178,7 @@ describe('UserController', () => {
       };
       const expectedSettings = { theme: { mode: 'dark' as const } };
 
-      (userService.updateUserSettings as jest.Mock).mockResolvedValue(
+      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
         expectedSettings
       );
 

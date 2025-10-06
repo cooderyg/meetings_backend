@@ -44,7 +44,7 @@ describe('WorkspaceMemberController', () => {
       const workspaceId = 'workspace-123';
       const expectedMembers = WorkspaceMemberFactory.createMany(3);
 
-      (service.findByWorkspace as jest.Mock).mockResolvedValue(expectedMembers);
+      jest.spyOn(service, 'findByWorkspace').mockResolvedValue(expectedMembers);
 
       // When
       const result = await controller.getWorkspaceMembers(workspaceId);
@@ -58,7 +58,7 @@ describe('WorkspaceMemberController', () => {
       // Given
       const workspaceId = 'empty-workspace';
 
-      (service.findByWorkspace as jest.Mock).mockResolvedValue([]);
+      jest.spyOn(service, 'findByWorkspace').mockResolvedValue([]);
 
       // When
       const result = await controller.getWorkspaceMembers(workspaceId);
@@ -73,7 +73,7 @@ describe('WorkspaceMemberController', () => {
       const workspaceId = 'workspace-123';
       const error = new Error('Database connection failed');
 
-      (service.findByWorkspace as jest.Mock).mockRejectedValue(error);
+      jest.spyOn(service, 'findByWorkspace').mockRejectedValue(error);
 
       // When & Then
       await expect(controller.getWorkspaceMembers(workspaceId)).rejects.toThrow(

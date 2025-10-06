@@ -78,7 +78,7 @@ describe('WorkspaceController', () => {
         } as Workspace,
       ];
 
-      (workspaceService.findByUserId as jest.Mock).mockResolvedValue(
+      jest.spyOn(workspaceService, 'findByUserId').mockResolvedValue(
         expectedWorkspaces
       );
 
@@ -108,7 +108,7 @@ describe('WorkspaceController', () => {
         updatedAt: new Date(),
       } as User;
 
-      (workspaceService.findByUserId as jest.Mock).mockResolvedValue([]);
+      jest.spyOn(workspaceService, 'findByUserId').mockResolvedValue([]);
 
       // When
       const result = await controller.getWorkspaces(user);
@@ -152,7 +152,7 @@ describe('WorkspaceController', () => {
         updatedAt: new Date(),
       } as Workspace;
 
-      (workspaceService.createWorkspace as jest.Mock).mockResolvedValue(
+      jest.spyOn(workspaceService, 'createWorkspace').mockResolvedValue(
         expectedWorkspace
       );
 
@@ -183,7 +183,7 @@ describe('WorkspaceController', () => {
         name: 'Updated Workspace Name',
       };
 
-      (workspaceService.updateWorkspaceName as jest.Mock).mockResolvedValue(
+      jest.spyOn(workspaceService, 'updateWorkspaceName').mockResolvedValue(
         'Updated Workspace Name'
       );
 
@@ -212,7 +212,7 @@ describe('WorkspaceController', () => {
         name: '',
       };
 
-      (workspaceService.updateWorkspaceName as jest.Mock).mockResolvedValue('');
+      jest.spyOn(workspaceService, 'updateWorkspaceName').mockResolvedValue('');
 
       // When
       const result = await controller.updateWorkspaceName(

@@ -41,7 +41,7 @@ describe('AuthController', () => {
         refreshToken: 'refresh-token',
       };
 
-      (authService.signIn as jest.Mock).mockResolvedValue(expectedResponse);
+      jest.spyOn(authService, 'signIn').mockResolvedValue(expectedResponse);
 
       // When
       const result = await controller.signIn(param, dto);
@@ -63,7 +63,7 @@ describe('AuthController', () => {
         refreshToken: 'new-refresh-token',
       };
 
-      (authService.signIn as jest.Mock).mockResolvedValue(expectedResponse);
+      jest.spyOn(authService, 'signIn').mockResolvedValue(expectedResponse);
 
       // When
       const result = await controller.signIn(param, dto);
@@ -82,7 +82,7 @@ describe('AuthController', () => {
       const dto: SignInGoogleDto = { code: 'invalid-code' };
       const error = new Error('Invalid OAuth code');
 
-      (authService.signIn as jest.Mock).mockRejectedValue(error);
+      jest.spyOn(authService, 'signIn').mockRejectedValue(error);
 
       // When & Then
       await expect(controller.signIn(param, dto)).rejects.toThrow(error);

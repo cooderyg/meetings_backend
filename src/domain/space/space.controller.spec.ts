@@ -68,7 +68,7 @@ describe('SpaceController', () => {
         SpaceFactory.createWithResource(resource, { description: 'Space 2' }),
       ];
 
-      (spaceService.findByWorkspaceAndUserId as jest.Mock).mockResolvedValue(
+      jest.spyOn(spaceService, 'findByWorkspaceAndUserId').mockResolvedValue(
         expectedSpaces
       );
 
@@ -102,7 +102,7 @@ describe('SpaceController', () => {
         updatedAt: new Date(),
       } as User;
 
-      (spaceService.findByWorkspaceAndUserId as jest.Mock).mockResolvedValue(
+      jest.spyOn(spaceService, 'findByWorkspaceAndUserId').mockResolvedValue(
         []
       );
 
@@ -135,7 +135,7 @@ describe('SpaceController', () => {
         description: createDto.description,
       });
 
-      (spaceService.create as jest.Mock).mockResolvedValue(expectedSpace);
+      jest.spyOn(spaceService, 'create').mockResolvedValue(expectedSpace);
 
       // When
       const result = await controller.create(
@@ -168,7 +168,7 @@ describe('SpaceController', () => {
         description: null,
       });
 
-      (spaceService.create as jest.Mock).mockResolvedValue(expectedSpace);
+      jest.spyOn(spaceService, 'create').mockResolvedValue(expectedSpace);
 
       // When
       const result = await controller.create(
@@ -201,7 +201,7 @@ describe('SpaceController', () => {
         description: createDto.description,
       });
 
-      (spaceService.create as jest.Mock).mockResolvedValue(expectedSpace);
+      jest.spyOn(spaceService, 'create').mockResolvedValue(expectedSpace);
 
       // When
       const result = await controller.create(
