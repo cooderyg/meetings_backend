@@ -3,6 +3,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AppConfig } from '../../src/shared/module/app-config/app-config';
 import { AppConfigModule } from '../../src/shared/module/app-config/app-config.module';
 import { createTestDatabaseConfig } from '../config/test-db.config';
+import { TestContainerManager } from './testcontainer-singleton';
 
 /**
  * 테스트용 NestJS 모듈 빌더
@@ -17,6 +18,8 @@ export class TestModuleBuilder {
   private providers: any[] = [];
   private controllers: any[] = [];
   private guardOverrides: Array<{ guard: any; mock: any }> = [];
+  private useTestcontainer: boolean = false;
+  private containerKey: string = 'default';
 
   static create(): TestModuleBuilder {
     return new TestModuleBuilder();
@@ -63,18 +66,56 @@ export class TestModuleBuilder {
   }
 
   /**
+   * Testcontainer 사용 설정
+   */
+  withTestcontainer(key: string = 'default'): this {
+    this.useTestcontainer = true;
+    this.containerKey = key;
+    return this;
+  }
+
+  /**
    * TestingModule 빌드
    */
   async build(): Promise<TestingModule> {
+    // Testcontainer를 사용하는 경우 동적 연결 설정
+    let mikroOrmConfig;
+    if (this.useTestcontainer) {
+      const manager = TestContainerManager.getInstance();
+      const container = await manager.getPostgresContainer(this.containerKey);
+
+      mikroOrmConfig = MikroOrmModule.forRootAsync({
+        imports: [AppConfigModule],
+        useFactory: (appConfig: AppConfig) => {
+          const config = createTestDatabaseConfig(appConfig);
+          // Testcontainer 연결 정보로 오버라이드
+          config.clientUrl = container.getConnectionUri();
+          // 개별 연결 정보 제거 (clientUrl 우선 사용)
+          delete config.host;
+          delete config.port;
+          delete config.user;
+          delete config.password;
+          delete config.dbName;
+          // 스키마 설정 제거 (Testcontainer는 기본 public 스키마 사용)
+          delete config.schema;
+          return config;
+        },
+        inject: [AppConfig],
+      });
+    } else {
+      // 기존 Docker Compose 방식
+      mikroOrmConfig = MikroOrmModule.forRootAsync({
+        imports: [AppConfigModule],
+        useFactory: (appConfig: AppConfig) =>
+          createTestDatabaseConfig(appConfig),
+        inject: [AppConfig],
+      });
+    }
+
     let testingModuleBuilder = Test.createTestingModule({
       imports: [
         ...this.imports,
-        MikroOrmModule.forRootAsync({
-          imports: [AppConfigModule],
-          useFactory: (appConfig: AppConfig) =>
-            createTestDatabaseConfig(appConfig),
-          inject: [AppConfig],
-        }),
+        mikroOrmConfig,
       ],
       providers: this.providers,
       controllers: this.controllers,

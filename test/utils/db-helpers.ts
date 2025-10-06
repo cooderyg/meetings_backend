@@ -1,5 +1,4 @@
-import { MikroORM } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/postgresql';
+import { MikroORM, EntityManager } from '@mikro-orm/core';
 import { createWorkerSchema, dropWorkerSchema } from './test-db-manager';
 
 /**
@@ -83,4 +82,35 @@ export async function withTransaction<T>(
     await em.rollback();
     throw error;
   }
+}
+
+/**
+ * 테스트 DB 헬퍼 인터페이스
+ */
+export interface DbHelpers {
+  setUp: () => Promise<void>;
+  tearDown: () => Promise<void>;
+}
+
+/**
+ * 테스트 DB 헬퍼 생성
+ *
+ * @example
+ * const dbHelpers = createDbHelpers(em);
+ * beforeEach(async () => {
+ *   await dbHelpers.setUp();
+ * });
+ * afterEach(async () => {
+ *   await dbHelpers.tearDown();
+ * });
+ */
+export function createDbHelpers(em: EntityManager): DbHelpers {
+  return {
+    setUp: async () => {
+      await startTransaction(em);
+    },
+    tearDown: async () => {
+      await rollbackTransaction(em);
+    },
+  };
 }

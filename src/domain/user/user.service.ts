@@ -1,4 +1,4 @@
-import { EntityManager, Transactional } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/core';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AppError } from '../../shared/exception/app.error';
 import { UpdateUserSettingsDto } from './dto/request/update-user-settings.dto';
@@ -42,25 +42,38 @@ export class UserService {
 
   /**
    * User 설정 업데이트 (조회 + 병합 + 업데이트 원자성 보장)
-   * @Transactional 데코레이터가 자동으로 flush/commit 처리
    */
-  @Transactional()
   async updateUserSettings(
     id: string,
     data: UpdateUserSettingsDto
   ): Promise<UserSettings> {
-    // 1. 사용자 찾기 없으면 예외 처리
-    const user = await this.userRepository.findById(id);
+    // 트랜잭션 시작
+    await this.em.begin();
 
-    if (!user) throw new AppError('user.fetch.notFound');
+    try {
+      // 1. 사용자 찾기 없으면 예외 처리
+      const user = await this.userRepository.findById(id);
 
-    // 2. DTO를 UserSettings 형태로 변환
-    const updatedSettings = this.mapDtoToSettings(data, user.settings);
-    user.settings = updatedSettings;
+      if (!user) {
+        await this.em.rollback();
+        throw new AppError('user.fetch.notFound');
+      }
 
-    await this.userRepository.updateUser(user);
+      // 2. DTO를 UserSettings 형태로 변환
+      const updatedSettings = this.mapDtoToSettings(data, user.settings);
+      user.settings = updatedSettings;
 
-    return user.settings;
+      await this.userRepository.updateUser(user);
+
+      // 트랜잭션 커밋
+      await this.em.commit();
+
+      return user.settings;
+    } catch (error) {
+      // 에러 발생시 롤백
+      await this.em.rollback();
+      throw error;
+    }
   }
 
   // DTO의 부분 업데이트 데이터를 기존 설정과 병합

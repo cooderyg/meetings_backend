@@ -6,10 +6,7 @@ import { ResourceService } from '../resource/resource.service';
 import { Meeting, MeetingStatus } from './entity/meeting.entity';
 import { ResourceVisibility } from '../resource/entity/resource.entity';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
-import {
-  initializeTestDatabase,
-  cleanupTestDatabase,
-} from '../../../test/utils/db-helpers';
+import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
 import {
   createMeetingFixture,
   createWorkspaceMemberFixture,
@@ -23,16 +20,19 @@ import { MeetingModule } from './meeting.module';
 import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
 
-describe('MeetingService', () => {
+describe('MeetingService Integration Tests with Testcontainer', () => {
   let orm: MikroORM;
   let em: EntityManager;
   let service: MeetingService;
   let repository: MeetingRepository;
   let resourceService: ResourceService;
+  const containerKey = 'meeting-service-integration-test';
 
   beforeAll(async () => {
+    // Testcontainer를 사용한 모듈 빌드
     const module = await TestModuleBuilder.create()
       .withModule(MeetingModule)
+      .withTestcontainer(containerKey)
       .mockGuard(AuthGuard)
       .mockGuard(WorkspaceMemberGuard)
       .build();
@@ -43,19 +43,38 @@ describe('MeetingService', () => {
     repository = module.get<MeetingRepository>(MeetingRepository);
     resourceService = module.get<ResourceService>(ResourceService);
 
-    await initializeTestDatabase(orm);
-  }, 60000);
+    // ltree 확장 설치 (Resource 엔티티에서 사용)
+    await em.execute('CREATE EXTENSION IF NOT EXISTS ltree');
+
+    // 스키마 생성 (기존 스키마 삭제 후 재생성)
+    const generator = orm.getSchemaGenerator();
+    await generator.dropSchema({ wrap: false });
+    await generator.createSchema({ wrap: false });
+  }, 30000); // Testcontainer 시작 시간 고려
 
   beforeEach(async () => {
-    // Clear identity map before each test to prevent cache pollution
-    em.clear();
+    // 각 테스트 전에 데이터 초기화
+    await em.execute('TRUNCATE TABLE "meetings" CASCADE');
+    await em.execute('TRUNCATE TABLE "resources" CASCADE');
+    await em.execute('TRUNCATE TABLE "workspaces" CASCADE');
+    await em.execute('TRUNCATE TABLE "workspace_members" CASCADE');
+    await em.clear();
   });
 
   afterAll(async () => {
-    // 워커 전용 스키마 삭제 (모든 테이블 포함)
-    await cleanupTestDatabase(orm);
-    await orm.close();
-  }, 60000);
+    // 정리 작업
+    if (em) {
+      await em.getConnection().close(true);
+    }
+
+    if (orm) {
+      await orm.close();
+    }
+
+    // Testcontainer 정리
+    const manager = TestContainerManager.getInstance();
+    await manager.cleanup(containerKey);
+  }, 30000);
 
   describe('createMeeting', () => {
     it('should create meeting with resource and default values', async () => {
@@ -187,7 +206,9 @@ describe('MeetingService', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(AppError);
         expect((error as AppError).code).toBe('meeting.publish.notFound');
-        expect((error as AppError).context).toEqual({ meetingId: nonExistentId });
+        expect((error as AppError).context).toEqual({
+          meetingId: nonExistentId,
+        });
       }
     });
 
@@ -267,7 +288,7 @@ describe('MeetingService', () => {
       for (let i = 0; i < 5; i++) {
         await createMeetingFixture(em, {
           workspace,
-          status: MeetingStatus.PUBLISHED
+          status: MeetingStatus.PUBLISHED,
         });
       }
 
@@ -287,26 +308,49 @@ describe('MeetingService', () => {
     it('should exclude DRAFT meetings from workspace list', async () => {
       const workspace = await createWorkspaceFixture(em);
 
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.DRAFT });
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.PUBLISHED });
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.PUBLISHED });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.DRAFT,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.PUBLISHED,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.PUBLISHED,
+      });
 
       const pagination = new PaginationQuery();
       pagination.page = 1;
       pagination.limit = 10;
 
-      const result = await service.findMeetingsByWorkspace(workspace.id, pagination);
+      const result = await service.findMeetingsByWorkspace(
+        workspace.id,
+        pagination
+      );
 
       expect(result.totalCount).toBe(2);
-      expect(result.data.every(m => m.status !== MeetingStatus.DRAFT)).toBe(true);
+      expect(result.data.every((m) => m.status !== MeetingStatus.DRAFT)).toBe(
+        true
+      );
     });
 
     it('should filter meetings by status', async () => {
       const workspace = await createWorkspaceFixture(em);
 
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.DRAFT });
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.PUBLISHED });
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.PUBLISHED });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.DRAFT,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.PUBLISHED,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.PUBLISHED,
+      });
 
       const pagination = new PaginationQuery();
       pagination.page = 1;
@@ -322,7 +366,9 @@ describe('MeetingService', () => {
       );
 
       expect(result.totalCount).toBe(2);
-      expect(result.data.every((m) => m.status === MeetingStatus.PUBLISHED)).toBe(true);
+      expect(
+        result.data.every((m) => m.status === MeetingStatus.PUBLISHED)
+      ).toBe(true);
     });
 
     it('should isolate meetings by workspace', async () => {
@@ -332,15 +378,15 @@ describe('MeetingService', () => {
       // Create non-draft meetings (findByWorkspace excludes DRAFT status)
       await createMeetingFixture(em, {
         workspace: workspace1,
-        status: MeetingStatus.PUBLISHED
+        status: MeetingStatus.PUBLISHED,
       });
       await createMeetingFixture(em, {
         workspace: workspace1,
-        status: MeetingStatus.PUBLISHED
+        status: MeetingStatus.PUBLISHED,
       });
       await createMeetingFixture(em, {
         workspace: workspace2,
-        status: MeetingStatus.PUBLISHED
+        status: MeetingStatus.PUBLISHED,
       });
 
       const pagination1 = new PaginationQuery();
@@ -351,8 +397,14 @@ describe('MeetingService', () => {
       pagination2.page = 1;
       pagination2.limit = 10;
 
-      const result1 = await service.findMeetingsByWorkspace(workspace1.id, pagination1);
-      const result2 = await service.findMeetingsByWorkspace(workspace2.id, pagination2);
+      const result1 = await service.findMeetingsByWorkspace(
+        workspace1.id,
+        pagination1
+      );
+      const result2 = await service.findMeetingsByWorkspace(
+        workspace2.id,
+        pagination2
+      );
 
       expect(result1.totalCount).toBe(2);
       expect(result2.totalCount).toBe(1);
