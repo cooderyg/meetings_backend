@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, Transactional } from '@mikro-orm/core';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AppError } from '../../shared/exception/app.error';
 import { UpdateUserSettingsDto } from './dto/request/update-user-settings.dto';
@@ -25,10 +25,11 @@ export class UserService {
     return this.userRepository.findByEmail(email);
   }
 
+  @Transactional()
   async createUser(user: ICreateUser) {
-    if (!user.uid && !user.passwordHash) {
+    if (!user.uid) {
       throw new AppError('validation.form.failed', {
-        fields: { uid: ['uid or passwordHash is required'] },
+        fields: { uid: ['uid is required'] },
       });
     }
     const createdUser = this.em.assign(new User(), {
@@ -36,44 +37,33 @@ export class UserService {
       passwordHash: user.passwordHash ?? '',
     });
 
-    await this.em.flush();
+    await this.em.persistAndFlush(createdUser);
     return createdUser;
   }
 
   /**
    * User 설정 업데이트 (조회 + 병합 + 업데이트 원자성 보장)
+   * @Transactional 데코레이터가 자동으로 트랜잭션 관리 (begin/commit/rollback)
    */
+  @Transactional()
   async updateUserSettings(
     id: string,
     data: UpdateUserSettingsDto
   ): Promise<UserSettings> {
-    // 트랜잭션 시작
-    await this.em.begin();
+    // 1. 사용자 찾기 없으면 예외 처리
+    const user = await this.userRepository.findById(id);
 
-    try {
-      // 1. 사용자 찾기 없으면 예외 처리
-      const user = await this.userRepository.findById(id);
-
-      if (!user) {
-        await this.em.rollback();
-        throw new AppError('user.fetch.notFound');
-      }
-
-      // 2. DTO를 UserSettings 형태로 변환
-      const updatedSettings = this.mapDtoToSettings(data, user.settings);
-      user.settings = updatedSettings;
-
-      await this.userRepository.updateUser(user);
-
-      // 트랜잭션 커밋
-      await this.em.commit();
-
-      return user.settings;
-    } catch (error) {
-      // 에러 발생시 롤백
-      await this.em.rollback();
-      throw error;
+    if (!user) {
+      throw new AppError('user.fetch.notFound');
     }
+
+    // 2. DTO를 UserSettings 형태로 변환
+    const updatedSettings = this.mapDtoToSettings(data, user.settings);
+    user.settings = updatedSettings;
+
+    await this.userRepository.updateUser(user);
+
+    return user.settings;
   }
 
   // DTO의 부분 업데이트 데이터를 기존 설정과 병합

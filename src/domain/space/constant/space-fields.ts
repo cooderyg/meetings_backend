@@ -45,7 +45,12 @@ export const SPACE_DETAIL_FIELDS = [
  */
 
 /** SPACE_LIST_FIELDS에 대응하는 populate 배열 */
-export const SPACE_LIST_POPULATE = ['resource', 'resource.owner'] as const;
+export const SPACE_LIST_POPULATE = [
+  'resource',
+  'resource.owner',
+  'resource.owner.user',
+  'workspace',
+] as const;
 
 /** SPACE_DETAIL_FIELDS에 대응하는 populate 배열 */
 export const SPACE_DETAIL_POPULATE = [

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Transactional } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/postgresql';
 import { MeetingParticipantRepository } from './meeting-participant.repository';
 import { CreateMeetingParticipantArgs } from './interface/args/create-meeting-participant.args';
 import { MeetingService } from '../meeting/meeting.service';
@@ -9,6 +10,7 @@ import { WorkspaceMemberService } from '../workspace-member/workspace-member.ser
 @Injectable()
 export class MeetingParticipantService {
   constructor(
+    private readonly em: EntityManager,
     private readonly repository: MeetingParticipantRepository,
     private readonly meetingService: MeetingService,
     private readonly workspaceMemberService: WorkspaceMemberService

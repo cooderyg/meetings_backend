@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { Transactional } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/postgresql';
 import { ResourceRepository, UpdateResourceData } from './resource.repository';
 import { WorkspaceMemberService } from '../workspace-member/workspace-member.service';
 import { WorkspaceService } from '../workspace/workspace.service';
@@ -18,6 +20,7 @@ export interface CreateResourceDto {
 @Injectable()
 export class ResourceService {
   constructor(
+    private readonly em: EntityManager,
     private readonly resourceRepository: ResourceRepository,
     private readonly workspaceService: WorkspaceService,
     private readonly workspaceMemberService: WorkspaceMemberService
@@ -26,8 +29,9 @@ export class ResourceService {
   /**
    * Resource 생성
    * @param data Resource 생성 데이터
-   * @note flush는 호출자의 @Transactional에서 자동 처리됨
+   * @Transactional 데코레이터가 자동으로 flush/commit 처리
    */
+  @Transactional()
   async create(data: CreateResourceDto): Promise<Resource> {
     // 워크스페이스 검증
     const workspace = await this.workspaceService.findById(data.workspaceId);
@@ -57,6 +61,7 @@ export class ResourceService {
     });
   }
 
+  @Transactional()
   async update(id: string, data: UpdateResourceData) {
     const resource = await this.resourceRepository.findById(id);
     if (!resource) {

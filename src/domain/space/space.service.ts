@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Transactional } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/postgresql';
 import { AppError } from '../../shared/exception/app.error';
 import { ResourceService } from '../resource/resource.service';
 import { ResourceType } from '../resource/entity/resource.entity';
@@ -14,6 +15,7 @@ export interface UpdateSpaceDto {
 @Injectable()
 export class SpaceService {
   constructor(
+    private readonly em: EntityManager,
     private readonly spaceRepository: SpaceRepository,
     private readonly resourceService: ResourceService
   ) {}
