@@ -77,6 +77,10 @@ export function createTestDatabaseConfig(appConfig: AppConfig): Options {
     // 테스트에서 global EntityManager 사용 허용
     allowGlobalContext: true,
 
+    // 트랜잭션 격리 패턴을 위한 설정
+    // flush() 시 자동 트랜잭션 생성 비활성화
+    implicitTransactions: false,
+
     // 메타데이터 캐시 활성화
     metadataCache: {
       enabled: true,

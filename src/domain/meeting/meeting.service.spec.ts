@@ -77,7 +77,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
   }, 30000);
 
   describe('createMeeting', () => {
-    it('should create meeting with resource and default values', async () => {
+    it('리소스와 기본값을 가진 미팅을 생성해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
@@ -107,7 +107,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
   });
 
   describe('updateMeeting', () => {
-    it('should update meeting fields', async () => {
+    it('미팅 필드를 업데이트해야 함', async () => {
       const meeting = await createMeetingFixture(em);
 
       const updated = await service.updateMeeting(meeting.id, {
@@ -120,7 +120,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
       expect(updated.summary).toBe('Updated summary');
     });
 
-    it('should throw AppError for non-existent meeting', async () => {
+    it('존재하지 않는 미팅에 대해 AppError를 던져야 함', async () => {
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
       try {
@@ -135,7 +135,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
       }
     });
 
-    it('should update meeting status', async () => {
+    it('미팅 상태를 업데이트해야 함', async () => {
       const meeting = await createMeetingFixture(em, {
         status: MeetingStatus.DRAFT,
       });
@@ -190,7 +190,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
       expect(published.resource.visibility).toBe(ResourceVisibility.PUBLIC);
     });
 
-    it('should throw AppError for non-existent meeting', async () => {
+    it('존재하지 않는 미팅에 대해 AppError를 던져야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const nonExistentId = '00000000-0000-0000-0000-000000000000';

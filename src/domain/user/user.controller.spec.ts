@@ -8,6 +8,7 @@ import { UserFactory } from '../../../test/factories/user.factory';
 describe('UserController', () => {
   let controller: UserController;
   let userService: UserService;
+  const TEST_USER_ID = 'fkjfghsdfkjghdfjkguuid'; // 실제 컨트롤러의 하드코딩 값과 일치
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,7 +52,7 @@ describe('UserController', () => {
       // Then
       expect(result).toEqual(expectedResponse);
       expect(userService.updateUserSettings).toHaveBeenCalledWith(
-        'fkjfghsdfkjghdfjkguuid', // 하드코딩된 ID
+        TEST_USER_ID,
         updateDto
       );
     });
@@ -74,7 +75,7 @@ describe('UserController', () => {
       // Then
       expect(result).toEqual(expectedResponse);
       expect(userService.updateUserSettings).toHaveBeenCalledWith(
-        'fkjfghsdfkjghdfjkguuid',
+        TEST_USER_ID,
         updateDto
       );
     });
@@ -99,7 +100,7 @@ describe('UserController', () => {
       // Then
       expect(result).toEqual(expectedResponse);
       expect(userService.updateUserSettings).toHaveBeenCalledWith(
-        'fkjfghsdfkjghdfjkguuid',
+        TEST_USER_ID,
         updateDto
       );
     });
@@ -124,7 +125,7 @@ describe('UserController', () => {
       // Then
       expect(result).toEqual(expectedResponse);
       expect(userService.updateUserSettings).toHaveBeenCalledWith(
-        'fkjfghsdfkjghdfjkguuid',
+        TEST_USER_ID,
         updateDto
       );
     });
@@ -143,7 +144,7 @@ describe('UserController', () => {
         error
       );
       expect(userService.updateUserSettings).toHaveBeenCalledWith(
-        'fkjfghsdfkjghdfjkguuid',
+        TEST_USER_ID,
         updateDto
       );
     });

@@ -72,6 +72,7 @@ export class WorkspaceMemberRepository {
       {
         user: userId,
         workspace: workspaceId,
+        isActive: true,
       },
       {
         fields: WORKSPACE_MEMBER_AUTH_FIELDS as any,

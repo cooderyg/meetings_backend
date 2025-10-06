@@ -3,7 +3,8 @@ import {
   MeetingStatus,
 } from '../../src/domain/meeting/entity/meeting.entity';
 import { Workspace } from '../../src/domain/workspace/entity/workspace.entity';
-import { Resource } from '../../src/domain/resource/entity/resource.entity';
+import { WorkspaceMember } from '../../src/domain/workspace-member/entity/workspace-member.entity';
+import { Resource, ResourceType, ResourceVisibility } from '../../src/domain/resource/entity/resource.entity';
 import { v4 as uuid } from 'uuid';
 
 /**
@@ -31,6 +32,7 @@ export class MeetingFactory {
       deletedAt: overrides.deletedAt || null,
       createdAt: overrides.createdAt || new Date(),
       updatedAt: overrides.updatedAt || new Date(),
+      ...overrides, // overrides를 마지막에 적용하여 resource 등 다른 필드도 포함
     });
 
     return meeting;
@@ -151,15 +153,41 @@ export class MeetingFactory {
   }
 
   /**
-   * 특정 워크스페이스에 속한 미팅 생성
+   * 특정 워크스페이스에 속한 미팅 생성 (resource 포함)
+   * 주의: resource는 별도로 persistAndFlush 해야 함
    */
   static createForWorkspace(
     workspace: Workspace,
+    owner?: WorkspaceMember,
     overrides: Partial<Meeting> = {}
   ): Meeting {
+    // Resource가 제공되지 않은 경우 기본 Resource 생성
+    if (!overrides.resource) {
+      const resource = new Resource();
+      resource.id = uuid();
+      resource.type = ResourceType.MEETING;
+      resource.title = 'Untitled';
+      resource.visibility = ResourceVisibility.PUBLIC;
+      resource.workspace = workspace;
+      resource.path = `root.meeting_${Date.now()}`;
+      resource.createdAt = new Date();
+      resource.updatedAt = new Date();
+
+      // owner가 제공된 경우에만 설정 (선택적)
+      if (owner) {
+        resource.owner = owner;
+      }
+
+      return this.create({
+        workspace, // workspace 필드 추가
+        ...overrides,
+        resource,
+      });
+    }
+
     return this.create({
-      ...overrides,
       workspace,
+      ...overrides,
     });
   }
 

@@ -11,6 +11,7 @@ import { WorkspaceMember } from '../../workspace-member/entity/workspace-member.
 import { Role } from '../../role/entity/role.entity';
 import { Meeting } from '../../meeting/entity/meeting.entity';
 import { MemberResourcePermission } from '../../permission/entity/member-resource-permission.entity';
+import { WorkspaceRepository } from '../workspace.repository';
 
 export enum SubscriptionTier {
   FREE = 'free',
@@ -21,7 +22,7 @@ export enum SubscriptionTier {
 
 export interface WorkSpaceSettings {}
 
-@Entity({ tableName: 'workspaces' })
+@Entity({ tableName: 'workspaces', repository: () => WorkspaceRepository })
 export class Workspace extends BaseEntity {
   @Property({ length: 255 })
   name!: string;

@@ -36,9 +36,14 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
 
   const createMeeting = async (
     workspace: Workspace,
+    owner?: WorkspaceMember,
     overrides: Partial<Meeting> = {}
   ) => {
-    const meeting = MeetingFactory.createForWorkspace(workspace, overrides);
+    const meeting = MeetingFactory.createForWorkspace(workspace, owner, overrides);
+    // resource를 먼저 persist
+    if (meeting.resource) {
+      await em.persistAndFlush(meeting.resource);
+    }
     await em.persistAndFlush(meeting);
     return meeting;
   };
@@ -105,8 +110,8 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
       // Given
       const user = await createUser();
       const workspace = await createWorkspace();
-      const meeting = await createMeeting(workspace);
       const workspaceMember = await createWorkspaceMember(user, workspace);
+      const meeting = await createMeeting(workspace, workspaceMember);
 
       const createData = {
         meeting,
@@ -128,8 +133,10 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
 
     it('게스트 이름으로 미팅 참여자를 생성해야 함', async () => {
       // Given
+      const user = await createUser();
       const workspace = await createWorkspace();
-      const meeting = await createMeeting(workspace);
+      const workspaceMember = await createWorkspaceMember(user, workspace);
+      const meeting = await createMeeting(workspace, workspaceMember);
 
       const createData = {
         meeting,
@@ -155,8 +162,8 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
       // Given
       const user = await createUser();
       const workspace = await createWorkspace();
-      const meeting = await createMeeting(workspace);
       const workspaceMember = await createWorkspaceMember(user, workspace);
+      const meeting = await createMeeting(workspace, workspaceMember);
 
       const createData = {
         meeting,
@@ -192,8 +199,8 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
       // Given
       const user = await createUser();
       const workspace = await createWorkspace();
-      const meeting = await createMeeting(workspace);
       const workspaceMember = await createWorkspaceMember(user, workspace);
+      const meeting = await createMeeting(workspace, workspaceMember);
 
       const createData = {
         meeting,
@@ -235,8 +242,8 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
       // Given
       const user = await createUser();
       const workspace = await createWorkspace();
-      const meeting = await createMeeting(workspace);
       const workspaceMember = await createWorkspaceMember(user, workspace);
+      const meeting = await createMeeting(workspace, workspaceMember);
 
       const createData = {
         meeting,

@@ -64,7 +64,7 @@ describe('UserService', () => {
   });
 
   describe('getUserByUid', () => {
-    it('should return user by uid', async () => {
+    it('uid로 사용자를 반환해야 함', async () => {
       // Given
       (repository.findByUid as jest.Mock).mockResolvedValue(mockUser);
 
@@ -76,7 +76,7 @@ describe('UserService', () => {
       expect(repository.findByUid).toHaveBeenCalledWith('uid123');
     });
 
-    it('should return null when user not found', async () => {
+    it('사용자를 찾을 수 없을 때 null을 반환해야 함', async () => {
       // Given
       (repository.findByUid as jest.Mock).mockResolvedValue(null);
 
@@ -89,7 +89,7 @@ describe('UserService', () => {
   });
 
   describe('getUserById', () => {
-    it('should return user by id', async () => {
+    it('id로 사용자를 반환해야 함', async () => {
       // Given
       (repository.findById as jest.Mock).mockResolvedValue(mockUser);
 
@@ -101,7 +101,7 @@ describe('UserService', () => {
       expect(repository.findById).toHaveBeenCalledWith('user-123');
     });
 
-    it('should return null when user not found', async () => {
+    it('사용자를 찾을 수 없을 때 null을 반환해야 함', async () => {
       // Given
       (repository.findById as jest.Mock).mockResolvedValue(null);
 
@@ -114,7 +114,7 @@ describe('UserService', () => {
   });
 
   describe('getUserByEmail', () => {
-    it('should return user by email', async () => {
+    it('이메일로 사용자를 반환해야 함', async () => {
       // Given
       (repository.findByEmail as jest.Mock).mockResolvedValue(mockUser);
 
@@ -126,7 +126,7 @@ describe('UserService', () => {
       expect(repository.findByEmail).toHaveBeenCalledWith('test@example.com');
     });
 
-    it('should return null when user not found', async () => {
+    it('사용자를 찾을 수 없을 때 null을 반환해야 함', async () => {
       // Given
       (repository.findByEmail as jest.Mock).mockResolvedValue(null);
 
@@ -139,7 +139,7 @@ describe('UserService', () => {
   });
 
   describe('createUser', () => {
-    it('should create user with uid', async () => {
+    it('uid를 가진 사용자를 생성해야 함', async () => {
       // Given
       const createUserData: ICreateUser = {
         uid: 'uid456',
@@ -167,7 +167,7 @@ describe('UserService', () => {
       expect(em.flush).toHaveBeenCalled();
     });
 
-    it('should create user with passwordHash', async () => {
+    it('passwordHash를 가진 사용자를 생성해야 함', async () => {
       // Given
       const createUserData: ICreateUser = {
         uid: 'uid789',
@@ -195,7 +195,7 @@ describe('UserService', () => {
       );
     });
 
-    it('should throw AppError when neither uid nor passwordHash provided', async () => {
+    it('uid나 passwordHash가 모두 제공되지 않았을 때 AppError를 던져야 함', async () => {
       // Given
       const createUserData: ICreateUser = {
         uid: '',
@@ -215,7 +215,7 @@ describe('UserService', () => {
   });
 
   describe('updateUserSettings', () => {
-    it('should update user theme settings', async () => {
+    it('사용자 테마 설정을 업데이트해야 함', async () => {
       // Given
       const userId = 'user-123';
       const updateDto: UpdateUserSettingsDto = {
@@ -239,7 +239,7 @@ describe('UserService', () => {
       );
     });
 
-    it('should keep existing settings when partial update', async () => {
+    it('부분 업데이트 시 기존 설정을 유지해야 함', async () => {
       // Given
       const userId = 'user-123';
       const updateDto: UpdateUserSettingsDto = {};
@@ -263,7 +263,7 @@ describe('UserService', () => {
       );
     });
 
-    it('should throw AppError when user not found', async () => {
+    it('사용자를 찾을 수 없을 때 AppError를 던져야 함', async () => {
       // Given
       const userId = 'non-existent';
       const updateDto: UpdateUserSettingsDto = {
@@ -279,7 +279,7 @@ describe('UserService', () => {
       expect(repository.updateUser).not.toHaveBeenCalled();
     });
 
-    it('should handle all theme modes correctly', async () => {
+    it('모든 테마 모드를 올바르게 처리해야 함', async () => {
       const themeModes: Array<'system' | 'light' | 'dark'> = ['system', 'light', 'dark'];
 
       for (const mode of themeModes) {
@@ -303,9 +303,9 @@ describe('UserService', () => {
   });
 
   describe('mapDtoToSettings (private method)', () => {
-    it('should properly merge settings', () => {
-      // This is tested indirectly through updateUserSettings tests
-      // Private method behavior is verified through public API
+    it('설정을 올바르게 병합해야 함', () => {
+      // 이는 updateUserSettings 테스트를 통해 간접적으로 테스트됨
+      // Private 메서드 동작은 public API를 통해 검증됨
       expect(true).toBe(true);
     });
   });

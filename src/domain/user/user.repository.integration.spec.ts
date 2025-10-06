@@ -7,6 +7,7 @@ import { UserModule } from './user.module';
 import { UserRepository } from './user.repository';
 import { User } from './entity/user.entity';
 import { UserFactory } from '../../../test/factories/user.factory';
+import { DbCleanup } from '../../../test/utils/db-cleanup';
 import { v4 as uuid } from 'uuid';
 
 describe('UserRepository Integration Tests with Testcontainer', () => {
@@ -59,9 +60,8 @@ describe('UserRepository Integration Tests with Testcontainer', () => {
   });
 
   beforeEach(async () => {
-    // 각 테스트 전에 데이터 초기화
-    await em.execute('TRUNCATE TABLE "users" CASCADE');
-    await em.clear();
+    // 각 테스트 전에 데이터 초기화 - 개선된 정리 로직 사용
+    await DbCleanup.cleanDomainTables(em, 'user');
   });
 
   describe('findByEmail', () => {

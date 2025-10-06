@@ -10,12 +10,14 @@ import { Workspace } from '../../src/domain/workspace/entity/workspace.entity';
  * const systemRole = RoleFactory.createSystemRole(SystemRole.OWNER);
  */
 export class RoleFactory {
+  private static idCounter = 0;
+
   static create(overrides: Partial<Role> = {}): Role {
     const role = new Role();
 
-    // 기본값 설정
+    // 기본값 설정 (ID는 자동 증가)
     Object.assign(role, {
-      id: 1,
+      id: overrides.id !== undefined ? overrides.id : ++this.idCounter,
       name: 'Test Role',
       description: 'Test role description',
       workspace: null,
