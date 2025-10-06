@@ -94,13 +94,14 @@ describe('SpaceRepository Integration Tests with Testcontainer', () => {
   }, 30000);
 
   beforeEach(async () => {
-    // 각 테스트 전에 데이터 초기화
-    await em.execute('TRUNCATE TABLE "spaces" CASCADE');
-    await em.execute('TRUNCATE TABLE "resources" CASCADE');
-    await em.execute('TRUNCATE TABLE "workspace_members" CASCADE');
-    await em.execute('TRUNCATE TABLE "workspaces" CASCADE');
-    await em.execute('TRUNCATE TABLE "users" CASCADE');
-    await em.clear();
+    // 각 테스트를 트랜잭션으로 격리
+    await orm.em.begin();
+  });
+
+  afterEach(async () => {
+    // 트랜잭션 롤백으로 데이터 초기화
+    await orm.em.rollback();
+    orm.em.clear();
   });
 
   afterAll(async () => {

@@ -38,7 +38,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
       .build();
 
     orm = module.get<MikroORM>(MikroORM);
-    em = orm.em.fork() as any;
+    em = orm.em as any; // Use root EM instead of fork
     service = module.get<MeetingService>(MeetingService);
     repository = module.get<MeetingRepository>(MeetingRepository);
     resourceService = module.get<ResourceService>(ResourceService);
@@ -53,12 +53,14 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
   }, 30000); // Testcontainer 시작 시간 고려
 
   beforeEach(async () => {
-    // 각 테스트 전에 데이터 초기화
-    await em.execute('TRUNCATE TABLE "meetings" CASCADE');
-    await em.execute('TRUNCATE TABLE "resources" CASCADE');
-    await em.execute('TRUNCATE TABLE "workspaces" CASCADE');
-    await em.execute('TRUNCATE TABLE "workspace_members" CASCADE');
-    await em.clear();
+    // 각 테스트를 트랜잭션으로 격리
+    await orm.em.begin();
+  });
+
+  afterEach(async () => {
+    // 트랜잭션 롤백으로 데이터 초기화
+    await orm.em.rollback();
+    orm.em.clear();
   });
 
   afterAll(async () => {

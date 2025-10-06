@@ -60,8 +60,14 @@ describe('UserRepository Integration Tests with Testcontainer', () => {
   });
 
   beforeEach(async () => {
-    // 각 테스트 전에 데이터 초기화 - 개선된 정리 로직 사용
-    await DbCleanup.cleanDomainTables(em, 'user');
+    // 각 테스트를 트랜잭션으로 격리
+    await orm.em.begin();
+  });
+
+  afterEach(async () => {
+    // 트랜잭션 롤백으로 데이터 초기화
+    await orm.em.rollback();
+    orm.em.clear();
   });
 
   describe('findByEmail', () => {
