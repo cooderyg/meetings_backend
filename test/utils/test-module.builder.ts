@@ -9,12 +9,48 @@ import { createTestDatabaseConfig } from '../config/test-db.config';
 import { TestContainerManager } from './testcontainer-singleton';
 
 /**
- * 테스트용 NestJS 모듈 빌더
+ * NestJS 테스트 모듈 빌드를 위한 Fluent Builder
+ *
+ * @description
+ * NestJS TestingModule 생성을 간소화하고 일관성 있는 테스트 환경을 제공합니다.
+ * - Guard 모킹 (AuthGuard, WorkspaceMemberGuard 등)
+ * - Testcontainer 기반 격리된 DB 환경
+ * - CLS(Context Local Storage) 자동 설정
+ * - MikroORM forRoot/forFeature 순서 자동 처리
  *
  * @example
+ * ```typescript
+ * // 기본 사용 (Docker Compose DB 사용)
  * const module = await TestModuleBuilder.create()
  *   .withModule(MeetingModule)
+ *   .mockGuard(AuthGuard)
  *   .build();
+ *
+ * // Testcontainer 사용 (격리된 PostgreSQL 컨테이너)
+ * const module = await TestModuleBuilder.create()
+ *   .withModule(MeetingModule)
+ *   .withTestcontainer('meeting-integration-test')
+ *   .mockGuard(AuthGuard)
+ *   .build();
+ *
+ * // E2E 테스트: 동적 workspaceMemberId 주입 패턴
+ * let globalWorkspaceMemberId: string; // beforeEach에서 설정
+ *
+ * const mockWorkspaceMemberGuard = {
+ *   canActivate: (context) => {
+ *     const request = context.switchToHttp().getRequest();
+ *     request.workspaceId = request.params?.workspaceId;
+ *     request.workspaceMemberId = globalWorkspaceMemberId; // ✅ 동적 주입
+ *     return true;
+ *   }
+ * };
+ *
+ * const module = await TestModuleBuilder.create()
+ *   .withModule(MeetingModule)
+ *   .mockGuard(AuthGuard, { id: 'user-123', uid: 'test-uid' })
+ *   .mockGuard(WorkspaceMemberGuard, mockWorkspaceMemberGuard)
+ *   .build();
+ * ```
  */
 export class TestModuleBuilder {
   private imports: any[] = [
@@ -126,7 +162,34 @@ export class TestModuleBuilder {
   }
 
   /**
-   * Testcontainer 사용 설정
+   * Testcontainer 사용 설정 (격리된 PostgreSQL 컨테이너)
+   *
+   * @description
+   * 각 테스트 스위트가 독립적인 PostgreSQL 컨테이너를 사용하도록 설정합니다.
+   * 동일한 key를 사용하면 컨테이너를 재사용하여 시작 시간을 단축합니다.
+   *
+   * @param key - 컨테이너 식별자 (기본값: 'default')
+   *              동일한 key를 사용하면 컨테이너 재사용, 다른 key는 별도 컨테이너 생성
+   *
+   * @example
+   * ```typescript
+   * // 도메인별 격리된 컨테이너
+   * const module = await TestModuleBuilder.create()
+   *   .withModule(MeetingModule)
+   *   .withTestcontainer('meeting-service-integration') // ✅ Meeting 전용 컨테이너
+   *   .build();
+   *
+   * // 같은 key로 컨테이너 재사용
+   * const module2 = await TestModuleBuilder.create()
+   *   .withModule(WorkspaceModule)
+   *   .withTestcontainer('meeting-service-integration') // ✅ 동일 컨테이너 재사용
+   *   .build();
+   * ```
+   *
+   * @remarks
+   * - Testcontainer를 사용하지 않으면 Docker Compose의 공유 DB를 사용합니다
+   * - Integration 테스트에서 완전한 격리가 필요한 경우 사용 권장
+   * - E2E 테스트에서는 일반적으로 불필요 (공유 DB로 충분)
    */
   withTestcontainer(key: string = 'default'): this {
     this.useTestcontainer = true;

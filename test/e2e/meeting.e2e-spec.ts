@@ -24,20 +24,66 @@ import { User } from '../../src/domain/user/entity/user.entity';
 /**
  * Meeting E2E 테스트
  *
- * 주의사항:
- * 1. 인증 가드 모킹: 실제 JWT 인증을 건너뛰기 위해 가드를 모킹합니다
- * 2. 트랜잭션 격리: 각 테스트는 독립적인 데이터셋을 사용합니다
- * 3. HTTP 상태 코드: RESTful 규약에 따른 응답 검증
+ * @description
+ * MeetingController의 모든 HTTP 엔드포인트를 실제 HTTP 요청/응답으로 검증합니다.
+ * - RESTful API 규약 준수 확인 (상태 코드, 응답 형식)
+ * - DTO 검증 및 에러 핸들링
+ * - 워크스페이스 권한 체크
+ * - DRAFT 상태 미팅의 목록 조회 제외 규칙
+ *
+ * @remarks
+ * **핵심 패턴: globalWorkspaceMemberId**
+ * - E2E 테스트에서는 각 테스트마다 다른 워크스페이스를 생성합니다
+ * - WorkspaceMemberGuard는 request.workspaceMemberId를 설정해야 합니다
+ * - beforeEach가 아닌 각 테스트 내에서 동적으로 설정하기 위해 globalWorkspaceMemberId 사용
+ *
+ * @example
+ * ```typescript
+ * it('should create a new meeting', async () => {
+ *   const workspace = await createWorkspaceFixture(em);
+ *   const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+ *   globalWorkspaceMemberId = member.id; // ✅ Guard mock이 이 값을 참조
+ *
+ *   await request(app.getHttpServer())
+ *     .post(`/workspace/${workspace.id}/meetings`)
+ *     .send({ parentPath: '/' })
+ *     .expect(201);
+ * });
+ * ```
+ *
+ * @see {@link setupE2EEnhancers} - ValidationPipe, ExceptionFilter 설정
+ * @see {@link TestModuleBuilder.mockGuard} - Guard 모킹 패턴
  */
 describe('Meeting E2E', () => {
   let app: INestApplication;
   let orm: MikroORM;
   let em: EntityManager;
   let testUser: User;
+
+  /**
+   * 동적 WorkspaceMember ID 저장소
+   *
+   * @description
+   * WorkspaceMemberGuard mock에서 참조할 수 있도록 전역 변수로 선언.
+   * 각 테스트에서 workspace와 member를 생성한 후 이 변수에 member.id를 저장하면,
+   * Guard mock의 canActivate()가 이 값을 request.workspaceMemberId에 주입합니다.
+   *
+   * @example
+   * ```typescript
+   * const member = await createWorkspaceMemberFixture(em, { workspace });
+   * globalWorkspaceMemberId = member.id; // ✅ Guard가 이 값을 사용
+   * ```
+   */
   let globalWorkspaceMemberId: string;
 
   beforeAll(async () => {
-    // Mock user payload with all required fields
+    /**
+     * AuthGuard Mock: request.user 주입
+     *
+     * @description
+     * JWT 토큰 검증을 건너뛰고 request.user를 직접 주입합니다.
+     * Entity와 일치하는 완전한 User 객체를 제공해야 합니다.
+     */
     const mockUserPayload = {
       id: '123e4567-e89b-12d3-a456-426614174001',
       uid: 'test-uid-e2e-meeting-123',
@@ -49,15 +95,25 @@ describe('Meeting E2E', () => {
       settings: { theme: { mode: 'light' } },
     };
 
-    // WorkspaceMemberGuard mock that sets workspaceId and workspaceMemberId
+    /**
+     * WorkspaceMemberGuard Mock: 동적 workspaceMemberId 주입
+     *
+     * @description
+     * 실제 Guard는 DB에서 WorkspaceMember를 조회하지만, 테스트에서는:
+     * 1. URL params에서 workspaceId 추출
+     * 2. globalWorkspaceMemberId 변수에서 memberId 주입
+     * 3. request.workspaceId, request.workspaceMemberId 설정
+     *
+     * @remarks
+     * globalWorkspaceMemberId는 각 테스트에서 생성한 member.id로 설정해야 합니다.
+     */
     const mockWorkspaceMemberGuard = {
       canActivate: (context: any) => {
         const request = context.switchToHttp().getRequest();
         const workspaceId = request.params?.workspaceId;
 
-        // Set workspaceId and workspaceMemberId
         request.workspaceId = workspaceId;
-        request.workspaceMemberId = globalWorkspaceMemberId;
+        request.workspaceMemberId = globalWorkspaceMemberId; // ✅ 동적 주입
         return true;
       },
     };
@@ -132,6 +188,14 @@ describe('Meeting E2E', () => {
     });
   });
 
+  /**
+   * GET /workspace/:workspaceId/meetings - 미팅 목록 조회
+   *
+   * @remarks
+   * **중요: DRAFT 상태 미팅은 목록에서 제외됩니다**
+   * - MeetingRepository.findList()는 status != DRAFT 조건을 적용
+   * - 테스트 데이터 생성 시 PUBLISHED 또는 IN_PROGRESS 상태 사용 필수
+   */
   describe('GET /workspace/:workspaceId/meetings', () => {
     it('should return paginated meeting list', async () => {
       const workspace = await createWorkspaceFixture(em);
@@ -141,7 +205,7 @@ describe('Meeting E2E', () => {
       });
       globalWorkspaceMemberId = member.id;
 
-      // Create test meetings (non-DRAFT status to be included in list)
+      // ✅ PUBLISHED 상태로 생성 (DRAFT는 목록에서 제외됨)
       for (let i = 0; i < 5; i++) {
         await createMeetingFixture(em, {
           workspace,

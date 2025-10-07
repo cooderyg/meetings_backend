@@ -20,6 +20,29 @@ import { MeetingModule } from './meeting.module';
 import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
 
+/**
+ * MeetingService 통합 테스트 (Testcontainer 기반)
+ *
+ * @description
+ * 실제 PostgreSQL 컨테이너를 사용하여 Service 계층의 비즈니스 로직을 검증합니다.
+ * - 실제 DB 연산 (MikroORM flush, 관계 로딩 등)
+ * - Repository와 Service 간 통합
+ * - 트랜잭션 격리 및 데이터 무결성 검증
+ *
+ * @remarks
+ * **Testcontainer 패턴**
+ * - beforeAll: 격리된 PostgreSQL 컨테이너 시작 및 스키마 생성
+ * - beforeEach: 트랜잭션 시작 (테스트 간 데이터 격리)
+ * - afterEach: 트랜잭션 롤백 (자동 데이터 초기화)
+ * - afterAll: 컨테이너 정리
+ *
+ * **E2E 테스트와의 차이**
+ * - E2E: HTTP 요청/응답 검증, Controller 포함
+ * - Integration: Service 비즈니스 로직 검증, Controller 제외
+ *
+ * @see {@link TestModuleBuilder.withTestcontainer} - 컨테이너 설정
+ * @see {@link TestContainerManager} - 컨테이너 재사용 및 관리
+ */
 describe('MeetingService Integration Tests with Testcontainer', () => {
   let orm: MikroORM;
   let em: EntityManager;
@@ -28,11 +51,19 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
   let resourceService: ResourceService;
   const containerKey = 'meeting-service-integration-test';
 
+  /**
+   * beforeAll: 테스트 환경 초기화
+   *
+   * @description
+   * 1. Testcontainer 시작 (containerKey로 컨테이너 재사용 가능)
+   * 2. TestingModule 빌드 (MeetingModule + Guards mock)
+   * 3. PostgreSQL ltree 확장 설치 (Resource 엔티티 필요)
+   * 4. 스키마 생성 (dropSchema + createSchema)
+   */
   beforeAll(async () => {
-    // Testcontainer를 사용한 모듈 빌드
     const module = await TestModuleBuilder.create()
       .withModule(MeetingModule)
-      .withTestcontainer(containerKey)
+      .withTestcontainer(containerKey) // ✅ 격리된 PostgreSQL 컨테이너
       .mockGuard(AuthGuard)
       .mockGuard(WorkspaceMemberGuard)
       .build();
@@ -43,28 +74,46 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     repository = module.get<MeetingRepository>(MeetingRepository);
     resourceService = module.get<ResourceService>(ResourceService);
 
-    // ltree 확장 설치 (Resource 엔티티에서 사용)
+    // ltree 확장 설치 (Resource 엔티티의 path 필드 사용)
     await em.execute('CREATE EXTENSION IF NOT EXISTS ltree');
 
-    // 스키마 생성 (기존 스키마 삭제 후 재생성)
+    // 스키마 생성 (깨끗한 DB 상태)
     const generator = orm.getSchemaGenerator();
     await generator.dropSchema({ wrap: false });
     await generator.createSchema({ wrap: false });
   }, 30000); // Testcontainer 시작 시간 고려
 
+  /**
+   * beforeEach: 트랜잭션 시작
+   *
+   * @description
+   * 각 테스트를 트랜잭션으로 격리하여 데이터 간섭 방지
+   */
   beforeEach(async () => {
-    // 각 테스트를 트랜잭션으로 격리
     await orm.em.begin();
   });
 
+  /**
+   * afterEach: 트랜잭션 롤백 및 EntityManager 초기화
+   *
+   * @description
+   * 1. 트랜잭션 롤백으로 테스트 데이터 자동 삭제
+   * 2. Identity Map 초기화 (em.clear())
+   */
   afterEach(async () => {
-    // 트랜잭션 롤백으로 데이터 초기화
     await orm.em.rollback();
     orm.em.clear();
   });
 
+  /**
+   * afterAll: 테스트 환경 정리
+   *
+   * @description
+   * 1. DB 연결 종료
+   * 2. ORM 종료
+   * 3. Testcontainer 정리 (containerKey로 해당 컨테이너만 종료)
+   */
   afterAll(async () => {
-    // 정리 작업
     if (em) {
       await em.getConnection().close(true);
     }
