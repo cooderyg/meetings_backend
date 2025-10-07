@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { ClsModule } from 'nestjs-cls';
+import { v4 as uuidv4 } from 'uuid';
 import { AppConfig } from '../../src/shared/module/app-config/app-config';
 import { AppConfigModule } from '../../src/shared/module/app-config/app-config.module';
+import { LoggerModule } from '../../src/shared/module/logger/logger.module';
 import { createTestDatabaseConfig } from '../config/test-db.config';
 import { TestContainerManager } from './testcontainer-singleton';
 
@@ -14,7 +17,18 @@ import { TestContainerManager } from './testcontainer-singleton';
  *   .build();
  */
 export class TestModuleBuilder {
-  private imports: any[] = [AppConfigModule];
+  private imports: any[] = [
+    ClsModule.forRoot({
+      global: true,
+      middleware: {
+        mount: true,
+        generateId: true,
+        idGenerator: () => uuidv4(),
+      },
+    }),
+    AppConfigModule,
+    LoggerModule,
+  ];
   private providers: any[] = [];
   private controllers: any[] = [];
   private guardOverrides: Array<{ guard: any; mock: any }> = [];
@@ -59,9 +73,31 @@ export class TestModuleBuilder {
 
   /**
    * 가드 모킹 (E2E 테스트용)
+   *
+   * @param guard - 재정의할 가드 클래스
+   * @param userPayload - (선택) request.user에 주입할 사용자 정보
+   *
+   * @example
+   * ```typescript
+   * // 단순 bypass
+   * .mockGuard(AuthGuard)
+   *
+   * // request.user 주입
+   * .mockGuard(AuthGuard, { id: 'user-123', uid: 'test-uid' })
+   * ```
    */
-  mockGuard(guard: any, mock: any = { canActivate: () => true }): this {
-    this.guardOverrides.push({ guard, mock });
+  mockGuard(guard: any, userPayload?: any): this {
+    const mockImplementation = userPayload
+      ? {
+          canActivate: (context: any) => {
+            const request = context.switchToHttp().getRequest();
+            request.user = userPayload; // ✅ request.user 주입
+            return true;
+          },
+        }
+      : { canActivate: () => true };
+
+    this.guardOverrides.push({ guard, mock: mockImplementation });
     return this;
   }
 
@@ -114,8 +150,8 @@ export class TestModuleBuilder {
 
     let testingModuleBuilder = Test.createTestingModule({
       imports: [
-        ...this.imports,
-        mikroOrmConfig,
+        mikroOrmConfig,       // ✅ MikroORM forRoot를 먼저 로드
+        ...this.imports,      // ✅ Feature modules는 나중에 (forFeature 포함)
       ],
       providers: this.providers,
       controllers: this.controllers,

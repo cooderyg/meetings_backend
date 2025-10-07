@@ -1,11 +1,14 @@
 import { MikroORM, EntityManager } from '@mikro-orm/core';
 import { createWorkerSchema, dropWorkerSchema } from './test-db-manager';
+import { Role } from '../../src/domain/role/entity/role.entity';
+import { SystemRole } from '../../src/domain/role/enum/system-role.enum';
 
 /**
  * 테스트 DB 초기화 (워커별 스키마 격리)
  * - 워커 전용 스키마 생성
  * - 해당 스키마 내에 테이블 생성
  * - ltree 확장은 global-setup.ts에서 이미 활성화됨
+ * - 시스템 Role 생성
  */
 export async function initializeTestDatabase(orm: MikroORM): Promise<void> {
   const generator = orm.getSchemaGenerator();
@@ -18,6 +21,28 @@ export async function initializeTestDatabase(orm: MikroORM): Promise<void> {
 
   // 워커 스키마 내에 테이블 생성 (다른 워커와 충돌 없음)
   await generator.createSchema();
+
+  // 시스템 Role 생성 (E2E 테스트 필수 데이터)
+  await createSystemRoles(orm.em);
+}
+
+/**
+ * 시스템 Role 생성 헬퍼
+ */
+async function createSystemRoles(em: EntityManager): Promise<void> {
+  const systemRoles = [
+    Role.createSystemRole(SystemRole.OWNER, 'Workspace owner with full control'),
+    Role.createSystemRole(SystemRole.ADMIN, 'Administrator with management permissions'),
+    Role.createSystemRole(SystemRole.FULL_EDIT, 'Full editing permissions'),
+    Role.createSystemRole(SystemRole.CAN_EDIT, 'Can edit content'),
+    Role.createSystemRole(SystemRole.CAN_VIEW, 'View-only access'),
+  ];
+
+  for (const role of systemRoles) {
+    em.persist(role);
+  }
+
+  await em.flush();
 }
 
 /**

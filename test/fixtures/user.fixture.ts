@@ -10,6 +10,12 @@ export async function createUserFixture(
 ): Promise<User> {
   const timestamp = Date.now();
   const user = new User();
+
+  // id가 제공되면 명시적으로 설정
+  if (overrides.id) {
+    (user as any).id = overrides.id;
+  }
+
   user.uid = overrides.uid ?? `test-uid-${timestamp}`;
   user.email = overrides.email ?? `test${timestamp}@example.com`;
   user.firstName = overrides.firstName ?? 'Test';
