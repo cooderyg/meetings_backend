@@ -82,7 +82,7 @@ describe('Workspace E2E', () => {
   });
 
   describe('POST /workspace', () => {
-    it('should create a new workspace', async () => {
+    it('새 workspace를 생성해야 함', async () => {
       const response = await request(app.getHttpServer())
         .post('/workspace')
         .send({ name: 'Test Workspace' })

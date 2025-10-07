@@ -152,7 +152,7 @@ describe('Meeting E2E', () => {
   }, 30000);
 
   describe('POST /workspace/:workspaceId/meetings', () => {
-    it('should create a new meeting', async () => {
+    it('새 meeting을 생성해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, {
         workspace,
@@ -171,7 +171,7 @@ describe('Meeting E2E', () => {
       expect(response.body.resource.title).toBe('Untitled');
     });
 
-    it('should validate required fields', async () => {
+    it('필수 필드를 검증해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
 
       await request(app.getHttpServer())
@@ -180,7 +180,7 @@ describe('Meeting E2E', () => {
         .expect(400);
     });
 
-    it('should validate UUID format', async () => {
+    it('UUID 형식을 검증해야 함', async () => {
       await request(app.getHttpServer())
         .post('/workspace/invalid-uuid/meetings')
         .send({ parentPath: '/' })
@@ -197,7 +197,7 @@ describe('Meeting E2E', () => {
    * - 테스트 데이터 생성 시 PUBLISHED 또는 IN_PROGRESS 상태 사용 필수
    */
   describe('GET /workspace/:workspaceId/meetings', () => {
-    it('should return paginated meeting list', async () => {
+    it('페이지네이션된 meeting 목록을 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, {
         workspace,
@@ -223,7 +223,7 @@ describe('Meeting E2E', () => {
       expect(response.body.totalCount).toBe(5);
     });
 
-    it('should return non-draft meetings', async () => {
+    it('DRAFT가 아닌 meeting들을 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, {
         workspace,
@@ -264,7 +264,7 @@ describe('Meeting E2E', () => {
       ).toBe(true);
     });
 
-    it('should return empty list for workspace with no meetings', async () => {
+    it('meeting이 없는 workspace에 대해 빈 목록을 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
 
       const response = await request(app.getHttpServer())
@@ -278,7 +278,7 @@ describe('Meeting E2E', () => {
   });
 
   describe('GET /workspace/:workspaceId/meetings/drafts/my', () => {
-    it('should return my draft meetings only', async () => {
+    it('내 draft meeting만 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, {
         workspace,
@@ -304,7 +304,7 @@ describe('Meeting E2E', () => {
   });
 
   describe('GET /workspace/:workspaceId/meetings/:id', () => {
-    it('should return meeting detail', async () => {
+    it('meeting 상세 정보를 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, {
         workspace,
@@ -325,7 +325,7 @@ describe('Meeting E2E', () => {
       expect(response.body.resource).toBeDefined();
     });
 
-    it('should return empty object for non-existent meeting', async () => {
+    it('존재하지 않는 meeting에 대해 빈 객체를 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
@@ -337,7 +337,7 @@ describe('Meeting E2E', () => {
       expect(response.body).toEqual({});
     });
 
-    it('should validate UUID format', async () => {
+    it('UUID 형식을 검증해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
 
       await request(app.getHttpServer())
@@ -347,7 +347,7 @@ describe('Meeting E2E', () => {
   });
 
   describe('PATCH /workspace/:workspaceId/meetings/:id', () => {
-    it('should update meeting fields', async () => {
+    it('meeting 필드를 업데이트해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, {
         workspace,
@@ -372,7 +372,7 @@ describe('Meeting E2E', () => {
       expect(response.body.summary).toBe('Updated summary');
     });
 
-    it('should return 404 for non-existent meeting', async () => {
+    it('존재하지 않는 meeting에 대해 404를 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
@@ -382,7 +382,7 @@ describe('Meeting E2E', () => {
         .expect(404); // AppError: meeting.update.notFound
     });
 
-    it('should update meeting status', async () => {
+    it('meeting 상태를 업데이트해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, {
         workspace,
@@ -405,7 +405,7 @@ describe('Meeting E2E', () => {
   });
 
   describe('PATCH /workspace/:workspaceId/meetings/publish/:id', () => {
-    it('should publish completed meeting', async () => {
+    it('완료된 meeting을 발행해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, {
         workspace,
@@ -427,7 +427,7 @@ describe('Meeting E2E', () => {
       expect(response.body.resource.visibility).toBe(ResourceVisibility.PUBLIC);
     });
 
-    it('should fail to publish draft meeting', async () => {
+    it('draft meeting 발행 시 실패해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, {
         workspace,
@@ -446,7 +446,7 @@ describe('Meeting E2E', () => {
         .expect(400); // AppError: meeting.publish.isDraft
     });
 
-    it('should fail for non-existent meeting', async () => {
+    it('존재하지 않는 meeting에 대해 실패해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
@@ -458,7 +458,7 @@ describe('Meeting E2E', () => {
   });
 
   describe('DELETE /workspace/:workspaceId/meetings/:id', () => {
-    it('should soft delete meeting', async () => {
+    it('meeting을 소프트 삭제해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, {
         workspace,
@@ -482,7 +482,7 @@ describe('Meeting E2E', () => {
       expect(response.body).toEqual({});
     });
 
-    it('should validate UUID format', async () => {
+    it('UUID 형식을 검증해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
 
       await request(app.getHttpServer())
@@ -492,7 +492,7 @@ describe('Meeting E2E', () => {
   });
 
   describe('Integration flows', () => {
-    it('should complete full meeting lifecycle', async () => {
+    it('전체 meeting 라이프사이클을 완료해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, {
         workspace,
@@ -545,7 +545,7 @@ describe('Meeting E2E', () => {
       expect(deletedResponse.body).toEqual({});
     });
 
-    it('should isolate meetings by workspace', async () => {
+    it('workspace별로 meeting을 격리해야 함', async () => {
       const workspace1 = await createWorkspaceFixture(em);
       const workspace2 = await createWorkspaceFixture(em);
       const member1 = await createWorkspaceMemberFixture(em, {
