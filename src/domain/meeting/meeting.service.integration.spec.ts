@@ -164,7 +164,7 @@ describe('MeetingService Integration Tests', () => {
   });
 
   describe('deleteMeeting', () => {
-    it('should soft delete meeting', async () => {
+    it('meeting을 소프트 삭제해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const meeting = await createMeetingFixture(em, { workspace });
 
@@ -174,7 +174,7 @@ describe('MeetingService Integration Tests', () => {
       expect(found).toBeNull();
     });
 
-    it('should not find deleted meetings', async () => {
+    it('삭제된 meeting을 찾지 못해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const meeting = await createMeetingFixture(em, { workspace });
 
@@ -186,7 +186,7 @@ describe('MeetingService Integration Tests', () => {
   });
 
   describe('publishMeeting', () => {
-    it('should publish completed meeting', async () => {
+    it('완료된 meeting을 발행해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
@@ -232,7 +232,7 @@ describe('MeetingService Integration Tests', () => {
       });
     });
 
-    it('should throw AppError for non-completed meeting', async () => {
+    it('완료되지 않은 meeting에 대해 AppError를 던져야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
@@ -265,7 +265,7 @@ describe('MeetingService Integration Tests', () => {
       });
     });
 
-    it('should update resource visibility atomically', async () => {
+    it('resource 가시성을 원자적으로 업데이트해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
@@ -287,7 +287,7 @@ describe('MeetingService Integration Tests', () => {
   });
 
   describe('getMeetingById', () => {
-    it('should retrieve meeting by id', async () => {
+    it('ID로 meeting을 조회해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const meeting = await createMeetingFixture(em, { workspace });
 
@@ -297,7 +297,7 @@ describe('MeetingService Integration Tests', () => {
       expect(found!.id).toBe(meeting.id);
     });
 
-    it('should return null for non-existent meeting', async () => {
+    it('존재하지 않는 meeting에 대해 null을 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
@@ -308,7 +308,7 @@ describe('MeetingService Integration Tests', () => {
   });
 
   describe('findMeetingsByWorkspace', () => {
-    it('should return paginated meetings', async () => {
+    it('페이지네이션된 meeting 목록을 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
 
       // Create non-draft meetings (findByWorkspace excludes DRAFT status)
@@ -332,7 +332,7 @@ describe('MeetingService Integration Tests', () => {
       expect(result.totalCount).toBe(5);
     });
 
-    it('should exclude DRAFT meetings from workspace list', async () => {
+    it('workspace 목록에서 DRAFT meeting을 제외해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
 
       await createMeetingFixture(em, {
@@ -363,7 +363,7 @@ describe('MeetingService Integration Tests', () => {
       );
     });
 
-    it('should filter meetings by status', async () => {
+    it('상태로 meeting을 필터링해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
 
       await createMeetingFixture(em, {
@@ -398,7 +398,7 @@ describe('MeetingService Integration Tests', () => {
       ).toBe(true);
     });
 
-    it('should isolate meetings by workspace', async () => {
+    it('workspace별로 meeting을 격리해야 함', async () => {
       const workspace1 = await createWorkspaceFixture(em);
       const workspace2 = await createWorkspaceFixture(em);
 
@@ -439,7 +439,7 @@ describe('MeetingService Integration Tests', () => {
   });
 
   describe('findMyDraftMeetings', () => {
-    it('should return draft meetings for specific member', async () => {
+    it('특정 멤버의 draft meeting 목록을 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member1 = await createWorkspaceMemberFixture(em, { workspace });
       const member2 = await createWorkspaceMemberFixture(em, { workspace });
@@ -488,7 +488,7 @@ describe('MeetingService Integration Tests', () => {
       expect(result.data[0].resource.owner.id).toBe(member1.id);
     });
 
-    it('should only return draft meetings', async () => {
+    it('draft meeting만 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
 

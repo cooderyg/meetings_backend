@@ -38,7 +38,7 @@ describe('MeetingRepository', () => {
   });
 
   describe('create', () => {
-    it('should create a meeting with all required fields', async () => {
+    it('필수 필드를 모두 포함하여 meeting을 생성해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const meeting = await createMeetingFixture(em, { workspace });
 
@@ -49,7 +49,7 @@ describe('MeetingRepository', () => {
       expect(meeting.resource).toBeDefined();
     });
 
-    it('should create meeting with custom status', async () => {
+    it('커스텀 상태로 meeting을 생성해야 함', async () => {
       const meeting = await createMeetingFixture(em, {
         status: MeetingStatus.IN_PROGRESS,
       });
@@ -57,7 +57,7 @@ describe('MeetingRepository', () => {
       expect(meeting.status).toBe(MeetingStatus.IN_PROGRESS);
     });
 
-    it('should populate resource relationship', async () => {
+    it('resource 관계를 populate해야 함', async () => {
       const meeting = await createMeetingFixture(em);
 
       expect(meeting.resource.title).toBe('Test Meeting');
@@ -66,7 +66,7 @@ describe('MeetingRepository', () => {
   });
 
   describe('findById', () => {
-    it('should find meeting by id and workspace', async () => {
+    it('ID와 workspace로 meeting을 찾아야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const created = await createMeetingFixture(em, { workspace });
 
@@ -77,7 +77,7 @@ describe('MeetingRepository', () => {
       expect(found!.resource.workspace.id).toBe(workspace.id);
     });
 
-    it('should return null for non-existent meeting', async () => {
+    it('존재하지 않는 meeting에 대해 null을 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
 
       const found = await repository.findById(
@@ -88,7 +88,7 @@ describe('MeetingRepository', () => {
       expect(found).toBeNull();
     });
 
-    it('should return null for different workspace', async () => {
+    it('다른 workspace의 meeting에 대해 null을 반환해야 함', async () => {
       const workspace1 = await createWorkspaceFixture(em);
       const workspace2 = await createWorkspaceFixture(em);
       const meeting = await createMeetingFixture(em, { workspace: workspace1 });
@@ -98,7 +98,7 @@ describe('MeetingRepository', () => {
       expect(found).toBeNull();
     });
 
-    it('should populate relationships correctly', async () => {
+    it('관계를 올바르게 populate해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const meeting = await createMeetingFixture(em, { workspace });
 
@@ -111,7 +111,7 @@ describe('MeetingRepository', () => {
   });
 
   describe('updateEntity', () => {
-    it('should update meeting status', async () => {
+    it('meeting 상태를 업데이트해야 함', async () => {
       const meeting = await createMeetingFixture(em, {
         status: MeetingStatus.DRAFT,
       });
@@ -124,7 +124,7 @@ describe('MeetingRepository', () => {
       expect(updated.id).toBe(meeting.id);
     });
 
-    it('should update meeting memo', async () => {
+    it('meeting 메모를 업데이트해야 함', async () => {
       const meeting = await createMeetingFixture(em);
 
       const updated = await repository.updateEntity(meeting, {
@@ -134,7 +134,7 @@ describe('MeetingRepository', () => {
       expect(updated.memo).toBe('Updated memo content');
     });
 
-    it('should update multiple fields', async () => {
+    it('여러 필드를 업데이트해야 함', async () => {
       const meeting = await createMeetingFixture(em);
 
       const updated = await repository.updateEntity(meeting, {
@@ -150,7 +150,7 @@ describe('MeetingRepository', () => {
   });
 
   describe('delete', () => {
-    it('should soft delete a meeting', async () => {
+    it('meeting을 소프트 삭제해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
       const meeting = await createMeetingFixture(em, { workspace });
 
@@ -160,7 +160,7 @@ describe('MeetingRepository', () => {
       expect(found).toBeNull();
     });
 
-    it('should set deletedAt timestamp', async () => {
+    it('deletedAt 타임스탬프를 설정해야 함', async () => {
       const meeting = await createMeetingFixture(em);
 
       await repository.delete(meeting.id);
@@ -179,7 +179,7 @@ describe('MeetingRepository', () => {
   });
 
   describe('pagination', () => {
-    it('should return paginated meetings', async () => {
+    it('페이지네이션된 meeting 목록을 반환해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
 
       for (let i = 0; i < 5; i++) {
@@ -201,7 +201,7 @@ describe('MeetingRepository', () => {
       expect(result.totalCount).toBe(5);
     });
 
-    it('should filter by status', async () => {
+    it('상태로 필터링해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
 
       await createMeetingFixture(em, {
@@ -231,7 +231,7 @@ describe('MeetingRepository', () => {
       );
     });
 
-    it('should isolate meetings by workspace', async () => {
+    it('workspace별로 meeting을 격리해야 함', async () => {
       const workspace1 = await createWorkspaceFixture(em);
       const workspace2 = await createWorkspaceFixture(em);
 
