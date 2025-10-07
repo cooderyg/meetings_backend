@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import * as request from 'supertest';
@@ -12,6 +12,7 @@ import { MeetingStatus } from '../../src/domain/meeting/entity/meeting.entity';
 import { ResourceVisibility } from '../../src/domain/resource/entity/resource.entity';
 import { AuthGuard } from '../../src/shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../src/shared/guard/workspace-member.guard';
+import { MeetingScenarios } from '../scenarios/meeting.scenarios';
 
 /**
  * Meeting E2E 테스트
@@ -39,6 +40,15 @@ describe('Meeting E2E', () => {
 
     // Create application and initialize
     app = module.createNestApplication();
+
+    // E2E 테스트에 필요한 글로벌 파이프 설정 (DTO 변환 및 유효성 검증)
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+      })
+    );
+
     await app.init();
 
     await initializeTestDatabase(orm);
