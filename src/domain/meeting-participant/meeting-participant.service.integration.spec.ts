@@ -79,7 +79,6 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
         workspace,
-        
       });
 
       // When
@@ -103,7 +102,6 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
         workspace,
-        
       });
 
       // When
@@ -125,7 +123,6 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
         workspace,
-        
       });
 
       // When
@@ -175,7 +172,6 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
         workspace,
-        
       });
       const nonExistentMemberId = '00000000-0000-0000-0000-000000000000';
 
@@ -204,7 +200,6 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
         workspace,
-        
       });
 
       // 첫 번째 참여자 생성
@@ -241,7 +236,6 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
         workspace,
-        
       });
 
       const participant = await service.create({
@@ -268,7 +262,6 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
         workspace,
-        
       });
 
       const participant = await service.create({
@@ -308,7 +301,6 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
         workspace,
-        
       });
 
       const created = await service.create({
@@ -320,10 +312,7 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       em.clear();
 
       // When
-      const found = await service.findByMeetingAndMember(
-        meeting.id,
-        member.id
-      );
+      const found = await service.findByMeetingAndMember(meeting.id, member.id);
 
       // Then
       expect(found).toBeDefined();
@@ -336,14 +325,10 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
         workspace,
-        
       });
 
       // When
-      const found = await service.findByMeetingAndMember(
-        meeting.id,
-        member.id
-      );
+      const found = await service.findByMeetingAndMember(meeting.id, member.id);
 
       // Then
       expect(found).toBeNull();

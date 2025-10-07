@@ -7,7 +7,10 @@ import { WorkspaceMemberRoleModule } from './workspace-member-role.module';
 import { WorkspaceMemberRoleRepository } from './workspace-member-role.repository';
 import { WorkspaceMemberRole } from './entity/workspace-member-role.entity';
 import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
-import { createWorkspaceMemberFixture, createRoleFixture } from '../../../test/fixtures/meeting.fixture';
+import {
+  createWorkspaceMemberFixture,
+  createRoleFixture,
+} from '../../../test/fixtures/meeting.fixture';
 
 describe('WorkspaceMemberRoleRepository Integration Tests', () => {
   let module: TestingModule;
@@ -22,7 +25,9 @@ describe('WorkspaceMemberRoleRepository Integration Tests', () => {
       .withTestcontainer(containerKey)
       .build();
 
-    repository = module.get<WorkspaceMemberRoleRepository>(WorkspaceMemberRoleRepository);
+    repository = module.get<WorkspaceMemberRoleRepository>(
+      WorkspaceMemberRoleRepository
+    );
     em = module.get<EntityManager>(EntityManager);
     orm = module.get<MikroORM>(MikroORM);
 

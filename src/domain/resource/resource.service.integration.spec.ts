@@ -2,7 +2,11 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { ResourceService } from './resource.service';
 import { ResourceRepository } from './resource.repository';
-import { Resource, ResourceType, ResourceVisibility } from './entity/resource.entity';
+import {
+  Resource,
+  ResourceType,
+  ResourceVisibility,
+} from './entity/resource.entity';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
 import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
@@ -167,7 +171,9 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
       // Given
       const workspace1 = await createWorkspaceFixture(em);
       const workspace2 = await createWorkspaceFixture(em);
-      const member2 = await createWorkspaceMemberFixture(em, { workspace: workspace2 });
+      const member2 = await createWorkspaceMemberFixture(em, {
+        workspace: workspace2,
+      });
 
       // When/Then
       await expect(
@@ -221,8 +227,12 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
       // Given
       const workspace1 = await createWorkspaceFixture(em);
       const workspace2 = await createWorkspaceFixture(em);
-      const member1 = await createWorkspaceMemberFixture(em, { workspace: workspace1 });
-      const member2 = await createWorkspaceMemberFixture(em, { workspace: workspace2 });
+      const member1 = await createWorkspaceMemberFixture(em, {
+        workspace: workspace1,
+      });
+      const member2 = await createWorkspaceMemberFixture(em, {
+        workspace: workspace2,
+      });
 
       await service.create({
         workspaceId: workspace1.id,
@@ -250,7 +260,9 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
 
       // Then
       expect(resources).toHaveLength(2);
-      expect(resources.every((r) => r.workspace.id === workspace1.id)).toBe(true);
+      expect(resources.every((r) => r.workspace.id === workspace1.id)).toBe(
+        true
+      );
     });
   });
 
@@ -390,10 +402,14 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
       // When/Then
-      await expect(service.deleteResource(nonExistentId)).rejects.toThrow(AppError);
-      await expect(service.deleteResource(nonExistentId)).rejects.toMatchObject({
-        code: 'resource.fetch.notFound',
-      });
+      await expect(service.deleteResource(nonExistentId)).rejects.toThrow(
+        AppError
+      );
+      await expect(service.deleteResource(nonExistentId)).rejects.toMatchObject(
+        {
+          code: 'resource.fetch.notFound',
+        }
+      );
     });
   });
 });

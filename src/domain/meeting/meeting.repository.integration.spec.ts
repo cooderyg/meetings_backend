@@ -3,7 +3,10 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { MeetingRepository } from './meeting.repository';
 import { Meeting, MeetingStatus } from './entity/meeting.entity';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
-import { initializeTestDatabase, cleanupTestDatabase } from '../../../test/utils/db-helpers';
+import {
+  initializeTestDatabase,
+  cleanupTestDatabase,
+} from '../../../test/utils/db-helpers';
 import { createMeetingFixture } from '../../../test/fixtures/meeting.fixture';
 import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
 
@@ -79,7 +82,10 @@ describe('MeetingRepository', () => {
     it('should return null for non-existent meeting', async () => {
       const workspace = await createWorkspaceFixture(em);
 
-      const found = await repository.findById('00000000-0000-0000-0000-000000000000', workspace.id);
+      const found = await repository.findById(
+        '00000000-0000-0000-0000-000000000000',
+        workspace.id
+      );
 
       expect(found).toBeNull();
     });
@@ -180,16 +186,20 @@ describe('MeetingRepository', () => {
 
       // Create 5 meetings (non-draft status as findByWorkspace excludes drafts)
       for (let i = 0; i < 5; i++) {
-        await createMeetingFixture(em, { workspace, status: MeetingStatus.PUBLISHED });
+        await createMeetingFixture(em, {
+          workspace,
+          status: MeetingStatus.PUBLISHED,
+        });
       }
 
       // Clear identity map to force fresh database queries
       em.clear();
 
-      const result = await repository.findByWorkspace(
-        workspace.id,
-        { page: 1, limit: 3, offset: 0 }
-      );
+      const result = await repository.findByWorkspace(workspace.id, {
+        page: 1,
+        limit: 3,
+        offset: 0,
+      });
 
       expect(result.data).toHaveLength(3);
       expect(result.totalCount).toBe(5);
@@ -198,9 +208,18 @@ describe('MeetingRepository', () => {
     it('should filter by status', async () => {
       const workspace = await createWorkspaceFixture(em);
 
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.DRAFT });
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.DRAFT });
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.PUBLISHED });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.DRAFT,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.DRAFT,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.PUBLISHED,
+      });
 
       // Clear identity map to force fresh database queries
       em.clear();
@@ -212,22 +231,41 @@ describe('MeetingRepository', () => {
       );
 
       expect(result.totalCount).toBe(2);
-      expect(result.data.every((m) => m.status === MeetingStatus.DRAFT)).toBe(true);
+      expect(result.data.every((m) => m.status === MeetingStatus.DRAFT)).toBe(
+        true
+      );
     });
 
     it('should isolate meetings by workspace', async () => {
       const workspace1 = await createWorkspaceFixture(em);
       const workspace2 = await createWorkspaceFixture(em);
 
-      await createMeetingFixture(em, { workspace: workspace1, status: MeetingStatus.PUBLISHED });
-      await createMeetingFixture(em, { workspace: workspace1, status: MeetingStatus.PUBLISHED });
-      await createMeetingFixture(em, { workspace: workspace2, status: MeetingStatus.PUBLISHED });
+      await createMeetingFixture(em, {
+        workspace: workspace1,
+        status: MeetingStatus.PUBLISHED,
+      });
+      await createMeetingFixture(em, {
+        workspace: workspace1,
+        status: MeetingStatus.PUBLISHED,
+      });
+      await createMeetingFixture(em, {
+        workspace: workspace2,
+        status: MeetingStatus.PUBLISHED,
+      });
 
       // Clear identity map to force fresh database queries
       em.clear();
 
-      const result1 = await repository.findByWorkspace(workspace1.id, { page: 1, limit: 10, offset: 0 });
-      const result2 = await repository.findByWorkspace(workspace2.id, { page: 1, limit: 10, offset: 0 });
+      const result1 = await repository.findByWorkspace(workspace1.id, {
+        page: 1,
+        limit: 10,
+        offset: 0,
+      });
+      const result2 = await repository.findByWorkspace(workspace2.id, {
+        page: 1,
+        limit: 10,
+        offset: 0,
+      });
 
       expect(result1.totalCount).toBe(2);
       expect(result2.totalCount).toBe(1);

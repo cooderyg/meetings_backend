@@ -4,7 +4,10 @@ import { SpaceService } from './space.service';
 import { SpaceRepository } from './space.repository';
 import { ResourceService } from '../resource/resource.service';
 import { Space } from './entity/space.entity';
-import { ResourceType, ResourceVisibility } from '../resource/entity/resource.entity';
+import {
+  ResourceType,
+  ResourceVisibility,
+} from '../resource/entity/resource.entity';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
 import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
@@ -179,8 +182,12 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
       // Given
       const workspace1 = await createWorkspaceFixture(em);
       const workspace2 = await createWorkspaceFixture(em);
-      const member1 = await createWorkspaceMemberFixture(em, { workspace: workspace1 });
-      const member2 = await createWorkspaceMemberFixture(em, { workspace: workspace2 });
+      const member1 = await createWorkspaceMemberFixture(em, {
+        workspace: workspace1,
+      });
+      const member2 = await createWorkspaceMemberFixture(em, {
+        workspace: workspace2,
+      });
 
       await service.create({
         workspaceId: workspace1.id,

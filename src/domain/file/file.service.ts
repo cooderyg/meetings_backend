@@ -1,4 +1,4 @@
-import { Injectable, Inject, BadRequestException } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { STORAGE_SERVICE, IStorageService } from '../../infrastructure/storage';
 import { AppError } from '../../shared/exception/app.error';
 import {

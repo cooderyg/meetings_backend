@@ -8,7 +8,10 @@ import { MeetingRecordRepository } from './meeting-record.repository';
 import { MeetingRecord } from './entity/meeting-record.entity';
 import { createMeetingFixture } from '../../../test/fixtures/meeting.fixture';
 import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
-import { MeetingRecordCreate, MeetingRecordUpdate } from './meeting-record.type';
+import {
+  MeetingRecordCreate,
+  MeetingRecordUpdate,
+} from './meeting-record.type';
 
 describe('MeetingRecordRepository Integration Tests', () => {
   let module: TestingModule;
@@ -155,9 +158,21 @@ describe('MeetingRecordRepository Integration Tests', () => {
       const workspace = await createWorkspaceFixture(em);
       const meeting = await createMeetingFixture(em, { workspace });
 
-      await repository.create({ meeting: meeting.id, time: 120, content: 'Second' });
-      await repository.create({ meeting: meeting.id, time: 60, content: 'First' });
-      await repository.create({ meeting: meeting.id, time: 180, content: 'Third' });
+      await repository.create({
+        meeting: meeting.id,
+        time: 120,
+        content: 'Second',
+      });
+      await repository.create({
+        meeting: meeting.id,
+        time: 60,
+        content: 'First',
+      });
+      await repository.create({
+        meeting: meeting.id,
+        time: 180,
+        content: 'Third',
+      });
 
       // When
       const records = await repository.findByMeeting(meeting.id);
@@ -175,8 +190,16 @@ describe('MeetingRecordRepository Integration Tests', () => {
       const meeting1 = await createMeetingFixture(em, { workspace });
       const meeting2 = await createMeetingFixture(em, { workspace });
 
-      await repository.create({ meeting: meeting1.id, time: 60, content: 'Meeting 1' });
-      await repository.create({ meeting: meeting2.id, time: 60, content: 'Meeting 2' });
+      await repository.create({
+        meeting: meeting1.id,
+        time: 60,
+        content: 'Meeting 1',
+      });
+      await repository.create({
+        meeting: meeting2.id,
+        time: 60,
+        content: 'Meeting 2',
+      });
 
       // When
       const records = await repository.findByMeeting(meeting1.id);

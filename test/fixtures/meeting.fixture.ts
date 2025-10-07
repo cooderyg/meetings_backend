@@ -1,7 +1,13 @@
 import { EntityManager } from '@mikro-orm/postgresql';
-import { Meeting, MeetingStatus } from '../../src/domain/meeting/entity/meeting.entity';
+import {
+  Meeting,
+  MeetingStatus,
+} from '../../src/domain/meeting/entity/meeting.entity';
 import { Resource } from '../../src/domain/resource/entity/resource.entity';
-import { ResourceType, ResourceVisibility } from '../../src/domain/resource/entity/resource.entity';
+import {
+  ResourceType,
+  ResourceVisibility,
+} from '../../src/domain/resource/entity/resource.entity';
 import { WorkspaceMember } from '../../src/domain/workspace-member/entity/workspace-member.entity';
 import { WorkspaceMemberRole } from '../../src/domain/workspace-member-role/entity/workspace-member-role.entity';
 import { Workspace } from '../../src/domain/workspace/entity/workspace.entity';
@@ -71,7 +77,8 @@ export async function createResourceFixture(
   } = {}
 ): Promise<Resource> {
   const workspace = options.workspace ?? (await createWorkspaceFixture(em));
-  const owner = options.owner ?? (await createWorkspaceMemberFixture(em, { workspace }));
+  const owner =
+    options.owner ?? (await createWorkspaceMemberFixture(em, { workspace }));
 
   const resource = new Resource();
   resource.workspace = workspace;

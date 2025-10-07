@@ -1,4 +1,7 @@
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
+import {
+  PostgreSqlContainer,
+  StartedPostgreSqlContainer,
+} from '@testcontainers/postgresql';
 import { MikroORM } from '@mikro-orm/core';
 import { AppConfig } from '../../src/shared/module/app-config/app-config';
 import { createTestDatabaseConfig } from '../config/test-db.config';
@@ -25,7 +28,9 @@ export class TestContainerManager {
   /**
    * PostgreSQL 컨테이너 가져오기 (없으면 생성)
    */
-  async getPostgresContainer(key: string = 'default'): Promise<StartedPostgreSqlContainer> {
+  async getPostgresContainer(
+    key: string = 'default'
+  ): Promise<StartedPostgreSqlContainer> {
     if (!this.containers.has(key)) {
       console.log(`🐳 Starting PostgreSQL container for: ${key}`);
 
@@ -39,7 +44,9 @@ export class TestContainerManager {
 
       this.containers.set(key, container);
 
-      console.log(`✅ PostgreSQL container started on port: ${container.getMappedPort(5432)}`);
+      console.log(
+        `✅ PostgreSQL container started on port: ${container.getMappedPort(5432)}`
+      );
     }
 
     return this.containers.get(key)!;

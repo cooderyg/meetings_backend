@@ -5,8 +5,6 @@ import { join } from 'path';
 import { AppConfig } from '../shared/module/app-config/app-config';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 
-import { ACTIVE_ONLY, NOT_DELETED } from '../shared/const/index';
-
 export function createDatabaseConfig(appConfig: AppConfig): Options {
   const commonConfig = {
     entities: ['./dist/**/*.entity.js'], // 컴파일된 엔티티 위치

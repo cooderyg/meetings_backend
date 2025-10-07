@@ -1,5 +1,8 @@
 import { EntityManager } from '@mikro-orm/postgresql';
-import { Workspace, SubscriptionTier } from '../../src/domain/workspace/entity/workspace.entity';
+import {
+  Workspace,
+  SubscriptionTier,
+} from '../../src/domain/workspace/entity/workspace.entity';
 
 /**
  * 테스트용 Workspace 생성
@@ -10,7 +13,8 @@ export async function createWorkspaceFixture(
 ): Promise<Workspace> {
   const workspace = new Workspace();
   workspace.name = overrides.name ?? `Test Workspace ${Date.now()}`;
-  workspace.subscriptionTier = overrides.subscriptionTier ?? SubscriptionTier.FREE;
+  workspace.subscriptionTier =
+    overrides.subscriptionTier ?? SubscriptionTier.FREE;
 
   await em.persistAndFlush(workspace);
   return workspace;

@@ -1,4 +1,8 @@
-import { Permission, Action, ResourceSubject } from '../../src/domain/permission/entity/permission.entity';
+import {
+  Permission,
+  Action,
+  ResourceSubject,
+} from '../../src/domain/permission/entity/permission.entity';
 import { v4 as uuid } from 'uuid';
 
 /**
@@ -96,7 +100,10 @@ export class PermissionFactory {
   /**
    * 여러 Permission 엔티티 생성
    */
-  static createMany(count: number, overrides: Partial<Permission> = {}): Permission[] {
+  static createMany(
+    count: number,
+    overrides: Partial<Permission> = {}
+  ): Permission[] {
     const actions = Object.values(Action);
     const subjects = Object.values(ResourceSubject);
 

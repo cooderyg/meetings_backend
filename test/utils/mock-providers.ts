@@ -93,7 +93,7 @@ export const createMockRepositoryWithEntityManager = <T>() => {
   const mockEntityManager = createMockEntityManager();
   const mockRepository = createMockRepository<T>();
 
-  (mockRepository.getEntityManager as jest.Mock).mockReturnValue(mockEntityManager);
+  mockRepository.getEntityManager.mockReturnValue(mockEntityManager);
 
   return {
     repository: mockRepository,

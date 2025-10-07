@@ -297,12 +297,30 @@ export const HIERARCHICAL_ERROR_DEFINITIONS: Record<
   },
   'meetingParticipant.create.duplicate': { httpStatus: 409, logLevel: 'warn' },
   'meetingParticipant.delete.notFound': { httpStatus: 404, logLevel: 'warn' },
-  'meetingParticipant.delete.accessDenied': { httpStatus: 403, logLevel: 'warn' },
-  'meetingParticipant.create.invalidGuestName': { httpStatus: 400, logLevel: 'warn' },
-  'meetingParticipant.create.meetingPublished': { httpStatus: 400, logLevel: 'warn' },
-  'meetingParticipant.create.meetingCompleted': { httpStatus: 400, logLevel: 'warn' },
-  'meetingParticipant.delete.meetingPublished': { httpStatus: 400, logLevel: 'warn' },
-  'meetingParticipant.delete.meetingCompleted': { httpStatus: 400, logLevel: 'warn' },
+  'meetingParticipant.delete.accessDenied': {
+    httpStatus: 403,
+    logLevel: 'warn',
+  },
+  'meetingParticipant.create.invalidGuestName': {
+    httpStatus: 400,
+    logLevel: 'warn',
+  },
+  'meetingParticipant.create.meetingPublished': {
+    httpStatus: 400,
+    logLevel: 'warn',
+  },
+  'meetingParticipant.create.meetingCompleted': {
+    httpStatus: 400,
+    logLevel: 'warn',
+  },
+  'meetingParticipant.delete.meetingPublished': {
+    httpStatus: 400,
+    logLevel: 'warn',
+  },
+  'meetingParticipant.delete.meetingCompleted': {
+    httpStatus: 400,
+    logLevel: 'warn',
+  },
 
   // 워크스페이스 도메인
   'workspace.access.memberRequired': { httpStatus: 403, logLevel: 'warn' },

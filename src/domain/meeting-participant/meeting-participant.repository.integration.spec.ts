@@ -39,7 +39,11 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
     owner?: WorkspaceMember,
     overrides: Partial<Meeting> = {}
   ) => {
-    const meeting = MeetingFactory.createForWorkspace(workspace, owner, overrides);
+    const meeting = MeetingFactory.createForWorkspace(
+      workspace,
+      owner,
+      overrides
+    );
     // resource를 먼저 persist
     if (meeting.resource) {
       await em.persistAndFlush(meeting.resource);

@@ -80,7 +80,10 @@ export class DbCleanup {
   /**
    * 테스트 격리를 위한 임시 스키마 생성
    */
-  static async createTestSchema(em: EntityManager, schemaName: string): Promise<void> {
+  static async createTestSchema(
+    em: EntityManager,
+    schemaName: string
+  ): Promise<void> {
     await em.execute(`CREATE SCHEMA IF NOT EXISTS ${schemaName}`);
     await em.execute(`SET search_path TO ${schemaName}`);
   }
@@ -88,7 +91,10 @@ export class DbCleanup {
   /**
    * 임시 스키마 삭제
    */
-  static async dropTestSchema(em: EntityManager, schemaName: string): Promise<void> {
+  static async dropTestSchema(
+    em: EntityManager,
+    schemaName: string
+  ): Promise<void> {
     await em.execute(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE`);
   }
 }
@@ -96,7 +102,10 @@ export class DbCleanup {
 /**
  * 테스트 헬퍼: beforeEach에서 사용
  */
-export async function cleanupBeforeEach(em: EntityManager, tables?: string[]): Promise<void> {
+export async function cleanupBeforeEach(
+  em: EntityManager,
+  tables?: string[]
+): Promise<void> {
   if (tables) {
     await DbCleanup.cleanTables(em, tables);
   } else {

@@ -42,9 +42,9 @@ describe('UserController', () => {
         settings: expectedSettings,
       };
 
-      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
-        expectedSettings
-      );
+      jest
+        .spyOn(userService, 'updateUserSettings')
+        .mockResolvedValue(expectedSettings);
 
       // When
       const result = await controller.updateUserSettings(updateDto);
@@ -65,9 +65,9 @@ describe('UserController', () => {
         settings: expectedSettings,
       };
 
-      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
-        expectedSettings
-      );
+      jest
+        .spyOn(userService, 'updateUserSettings')
+        .mockResolvedValue(expectedSettings);
 
       // When
       const result = await controller.updateUserSettings(updateDto);
@@ -90,9 +90,9 @@ describe('UserController', () => {
         settings: expectedSettings,
       };
 
-      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
-        expectedSettings
-      );
+      jest
+        .spyOn(userService, 'updateUserSettings')
+        .mockResolvedValue(expectedSettings);
 
       // When
       const result = await controller.updateUserSettings(updateDto);
@@ -115,9 +115,9 @@ describe('UserController', () => {
         settings: expectedSettings,
       };
 
-      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
-        expectedSettings
-      );
+      jest
+        .spyOn(userService, 'updateUserSettings')
+        .mockResolvedValue(expectedSettings);
 
       // When
       const result = await controller.updateUserSettings(updateDto);
@@ -158,9 +158,9 @@ describe('UserController', () => {
       };
       const expectedSettings = { theme: { mode: 'dark' as const } };
 
-      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
-        expectedSettings
-      );
+      jest
+        .spyOn(userService, 'updateUserSettings')
+        .mockResolvedValue(expectedSettings);
 
       // When
       const result = controller.updateUserSettings(updateDto);
@@ -178,9 +178,9 @@ describe('UserController', () => {
       };
       const expectedSettings = { theme: { mode: 'dark' as const } };
 
-      jest.spyOn(userService, 'updateUserSettings').mockResolvedValue(
-        expectedSettings
-      );
+      jest
+        .spyOn(userService, 'updateUserSettings')
+        .mockResolvedValue(expectedSettings);
 
       // When
       const result = await controller.updateUserSettings(updateDto);

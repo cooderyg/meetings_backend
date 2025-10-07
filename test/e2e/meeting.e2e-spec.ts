@@ -4,7 +4,10 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import * as request from 'supertest';
 import { TestModuleBuilder } from '../utils/test-module.builder';
 import { setupE2EEnhancers } from '../utils/e2e-helpers';
-import { initializeTestDatabase, cleanupTestDatabase } from '../utils/db-helpers';
+import {
+  initializeTestDatabase,
+  cleanupTestDatabase,
+} from '../utils/db-helpers';
 import { createWorkspaceFixture } from '../fixtures/workspace.fixture';
 import { createUserFixture } from '../fixtures/user.fixture';
 import {
@@ -95,7 +98,10 @@ describe('Meeting E2E', () => {
   describe('POST /workspace/:workspaceId/meetings', () => {
     it('should create a new meeting', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const member = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = member.id;
 
       const response = await request(app.getHttpServer())
@@ -129,12 +135,19 @@ describe('Meeting E2E', () => {
   describe('GET /workspace/:workspaceId/meetings', () => {
     it('should return paginated meeting list', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const member = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = member.id;
 
       // Create test meetings (non-DRAFT status to be included in list)
       for (let i = 0; i < 5; i++) {
-        await createMeetingFixture(em, { workspace, owner: member, status: MeetingStatus.PUBLISHED });
+        await createMeetingFixture(em, {
+          workspace,
+          owner: member,
+          status: MeetingStatus.PUBLISHED,
+        });
       }
 
       const response = await request(app.getHttpServer())
@@ -148,13 +161,32 @@ describe('Meeting E2E', () => {
 
     it('should return non-draft meetings', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const member = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = member.id;
 
-      await createMeetingFixture(em, { workspace, owner: member, status: MeetingStatus.COMPLETED });
-      await createMeetingFixture(em, { workspace, owner: member, status: MeetingStatus.COMPLETED });
-      await createMeetingFixture(em, { workspace, owner: member, status: MeetingStatus.PUBLISHED });
-      await createMeetingFixture(em, { workspace, owner: member, status: MeetingStatus.DRAFT }); // Should be excluded
+      await createMeetingFixture(em, {
+        workspace,
+        owner: member,
+        status: MeetingStatus.COMPLETED,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        owner: member,
+        status: MeetingStatus.COMPLETED,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        owner: member,
+        status: MeetingStatus.PUBLISHED,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        owner: member,
+        status: MeetingStatus.DRAFT,
+      }); // Should be excluded
 
       const response = await request(app.getHttpServer())
         .get(`/workspace/${workspace.id}/meetings`)
@@ -163,9 +195,9 @@ describe('Meeting E2E', () => {
 
       // Returns all non-DRAFT meetings (COMPLETED + PUBLISHED)
       expect(response.body.totalCount).toBe(3);
-      expect(response.body.data.every((m: any) => m.status !== MeetingStatus.DRAFT)).toBe(
-        true
-      );
+      expect(
+        response.body.data.every((m: any) => m.status !== MeetingStatus.DRAFT)
+      ).toBe(true);
     });
 
     it('should return empty list for workspace with no meetings', async () => {
@@ -184,7 +216,10 @@ describe('Meeting E2E', () => {
   describe('GET /workspace/:workspaceId/meetings/drafts/my', () => {
     it('should return my draft meetings only', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const member = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = member.id;
 
       // Create draft meeting
@@ -207,9 +242,15 @@ describe('Meeting E2E', () => {
   describe('GET /workspace/:workspaceId/meetings/:id', () => {
     it('should return meeting detail', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const member = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = member.id;
-      const meeting = await createMeetingFixture(em, { workspace, owner: member });
+      const meeting = await createMeetingFixture(em, {
+        workspace,
+        owner: member,
+      });
 
       const response = await request(app.getHttpServer())
         .get(`/workspace/${workspace.id}/meetings/${meeting.id}`)
@@ -244,9 +285,15 @@ describe('Meeting E2E', () => {
   describe('PATCH /workspace/:workspaceId/meetings/:id', () => {
     it('should update meeting fields', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const member = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = member.id;
-      const meeting = await createMeetingFixture(em, { workspace, owner: member });
+      const meeting = await createMeetingFixture(em, {
+        workspace,
+        owner: member,
+      });
 
       const response = await request(app.getHttpServer())
         .patch(`/workspace/${workspace.id}/meetings/${meeting.id}`)
@@ -273,7 +320,10 @@ describe('Meeting E2E', () => {
 
     it('should update meeting status', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const member = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = member.id;
       const meeting = await createMeetingFixture(em, {
         workspace,
@@ -293,7 +343,10 @@ describe('Meeting E2E', () => {
   describe('PATCH /workspace/:workspaceId/meetings/publish/:id', () => {
     it('should publish completed meeting', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const member = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = member.id;
       const meeting = await createMeetingFixture(em, {
         workspace,
@@ -312,7 +365,10 @@ describe('Meeting E2E', () => {
 
     it('should fail to publish draft meeting', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const member = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = member.id;
       const meeting = await createMeetingFixture(em, {
         workspace,
@@ -340,9 +396,15 @@ describe('Meeting E2E', () => {
   describe('DELETE /workspace/:workspaceId/meetings/:id', () => {
     it('should soft delete meeting', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const member = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = member.id;
-      const meeting = await createMeetingFixture(em, { workspace, owner: member });
+      const meeting = await createMeetingFixture(em, {
+        workspace,
+        owner: member,
+      });
 
       await request(app.getHttpServer())
         .delete(`/workspace/${workspace.id}/meetings/${meeting.id}`)
@@ -368,7 +430,10 @@ describe('Meeting E2E', () => {
   describe('Integration flows', () => {
     it('should complete full meeting lifecycle', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const member = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = member.id;
 
       // 1. Create meeting
@@ -419,11 +484,23 @@ describe('Meeting E2E', () => {
     it('should isolate meetings by workspace', async () => {
       const workspace1 = await createWorkspaceFixture(em);
       const workspace2 = await createWorkspaceFixture(em);
-      const member1 = await createWorkspaceMemberFixture(em, { workspace: workspace1, user: testUser });
-      const member2 = await createWorkspaceMemberFixture(em, { workspace: workspace2, user: testUser });
+      const member1 = await createWorkspaceMemberFixture(em, {
+        workspace: workspace1,
+        user: testUser,
+      });
+      const member2 = await createWorkspaceMemberFixture(em, {
+        workspace: workspace2,
+        user: testUser,
+      });
 
-      const meeting1 = await createMeetingFixture(em, { workspace: workspace1, owner: member1 });
-      const meeting2 = await createMeetingFixture(em, { workspace: workspace2, owner: member2 });
+      const meeting1 = await createMeetingFixture(em, {
+        workspace: workspace1,
+        owner: member1,
+      });
+      const meeting2 = await createMeetingFixture(em, {
+        workspace: workspace2,
+        owner: member2,
+      });
 
       // Meeting1 should not be accessible from workspace2
       globalWorkspaceMemberId = member2.id; // Use workspace2's member

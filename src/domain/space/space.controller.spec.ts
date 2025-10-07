@@ -68,9 +68,9 @@ describe('SpaceController', () => {
         SpaceFactory.createWithResource(resource, { description: 'Space 2' }),
       ];
 
-      jest.spyOn(spaceService, 'findByWorkspaceAndUserId').mockResolvedValue(
-        expectedSpaces
-      );
+      jest
+        .spyOn(spaceService, 'findByWorkspaceAndUserId')
+        .mockResolvedValue(expectedSpaces);
 
       // When
       const result = await controller.getSpaces(workspaceId, user);
@@ -102,9 +102,9 @@ describe('SpaceController', () => {
         updatedAt: new Date(),
       } as User;
 
-      jest.spyOn(spaceService, 'findByWorkspaceAndUserId').mockResolvedValue(
-        []
-      );
+      jest
+        .spyOn(spaceService, 'findByWorkspaceAndUserId')
+        .mockResolvedValue([]);
 
       // When
       const result = await controller.getSpaces(workspaceId, user);

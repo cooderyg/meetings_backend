@@ -4,7 +4,11 @@ import {
 } from '../../src/domain/meeting/entity/meeting.entity';
 import { Workspace } from '../../src/domain/workspace/entity/workspace.entity';
 import { WorkspaceMember } from '../../src/domain/workspace-member/entity/workspace-member.entity';
-import { Resource, ResourceType, ResourceVisibility } from '../../src/domain/resource/entity/resource.entity';
+import {
+  Resource,
+  ResourceType,
+  ResourceVisibility,
+} from '../../src/domain/resource/entity/resource.entity';
 import { v4 as uuid } from 'uuid';
 
 /**

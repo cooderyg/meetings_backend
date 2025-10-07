@@ -133,9 +133,9 @@ describe('FileController', () => {
         },
       ];
 
-      jest.spyOn(fileService, 'uploadMultipleFiles').mockResolvedValue(
-        expectedResults
-      );
+      jest
+        .spyOn(fileService, 'uploadMultipleFiles')
+        .mockResolvedValue(expectedResults);
 
       // When
       const result = await controller.uploadMultipleFiles(mockFiles);

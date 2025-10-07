@@ -31,8 +31,14 @@ export async function initializeTestDatabase(orm: MikroORM): Promise<void> {
  */
 async function createSystemRoles(em: EntityManager): Promise<void> {
   const systemRoles = [
-    Role.createSystemRole(SystemRole.OWNER, 'Workspace owner with full control'),
-    Role.createSystemRole(SystemRole.ADMIN, 'Administrator with management permissions'),
+    Role.createSystemRole(
+      SystemRole.OWNER,
+      'Workspace owner with full control'
+    ),
+    Role.createSystemRole(
+      SystemRole.ADMIN,
+      'Administrator with management permissions'
+    ),
     Role.createSystemRole(SystemRole.FULL_EDIT, 'Full editing permissions'),
     Role.createSystemRole(SystemRole.CAN_EDIT, 'Can edit content'),
     Role.createSystemRole(SystemRole.CAN_VIEW, 'View-only access'),

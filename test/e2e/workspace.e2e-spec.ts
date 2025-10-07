@@ -2,7 +2,10 @@ import { INestApplication } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import * as request from 'supertest';
-import { initializeTestDatabase, cleanupTestDatabase } from '../utils/db-helpers';
+import {
+  initializeTestDatabase,
+  cleanupTestDatabase,
+} from '../utils/db-helpers';
 import { TestModuleBuilder } from '../utils/test-module.builder';
 import { setupE2EEnhancers } from '../utils/e2e-helpers';
 import { WorkspaceModule } from '../../src/domain/workspace/workspace.module';

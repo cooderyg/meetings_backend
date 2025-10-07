@@ -95,26 +95,32 @@ export class TestModuleBuilder {
    * })
    * ```
    */
+
   mockGuard(guard: any, mockOrUserPayload?: any): this {
     let mockImplementation;
 
     if (!mockOrUserPayload) {
       // 단순 bypass
       mockImplementation = { canActivate: () => true };
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     } else if (typeof mockOrUserPayload.canActivate === 'function') {
       // 커스텀 mock 구현체
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       mockImplementation = mockOrUserPayload;
     } else {
       // request.user 주입 패턴
       mockImplementation = {
         canActivate: (context: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
           const request = context.switchToHttp().getRequest();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
           request.user = mockOrUserPayload; // ✅ request.user 주입
           return true;
         },
       };
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.guardOverrides.push({ guard, mock: mockImplementation });
     return this;
   }
@@ -168,8 +174,9 @@ export class TestModuleBuilder {
 
     let testingModuleBuilder = Test.createTestingModule({
       imports: [
-        mikroOrmConfig,       // ✅ MikroORM forRoot를 먼저 로드
-        ...this.imports,      // ✅ Feature modules는 나중에 (forFeature 포함)
+        mikroOrmConfig, // ✅ MikroORM forRoot를 먼저 로드
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        ...this.imports, // ✅ Feature modules는 나중에 (forFeature 포함)
       ],
       providers: this.providers,
       controllers: this.controllers,

@@ -36,9 +36,7 @@ export function listAllRoutes(app: INestApplication): void {
     .filter((layer: any) => layer.route) // 라우트만 필터링
     .map((layer: any) => {
       const path = layer.route.path;
-      const methods = Object.keys(layer.route.methods)
-        .join(',')
-        .toUpperCase();
+      const methods = Object.keys(layer.route.methods).join(',').toUpperCase();
       return { methods, path };
     });
 

@@ -10,7 +10,9 @@ export class WorkspaceMemberRoleFactory {
   /**
    * 단일 WorkspaceMemberRole 엔티티 생성
    */
-  static create(overrides: Partial<WorkspaceMemberRole> = {}): WorkspaceMemberRole {
+  static create(
+    overrides: Partial<WorkspaceMemberRole> = {}
+  ): WorkspaceMemberRole {
     const workspaceMemberRole = new WorkspaceMemberRole();
 
     Object.assign(workspaceMemberRole, {
