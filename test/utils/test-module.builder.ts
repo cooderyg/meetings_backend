@@ -1,12 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { ExecutionContext } from '@nestjs/common';
 import { AppConfig } from '../../src/shared/module/app-config/app-config';
 import { AppConfigModule } from '../../src/shared/module/app-config/app-config.module';
 import { createTestDatabaseConfig } from '../config/test-db.config';
 import { TestContainerManager } from './testcontainer-singleton';
-import { AccessTokenPayload } from '../../src/shared/type/token.type';
-import { QueryCounter } from './query-counter';
 
 /**
  * 테스트용 NestJS 모듈 빌더
@@ -23,7 +20,6 @@ export class TestModuleBuilder {
   private guardOverrides: Array<{ guard: any; mock: any }> = [];
   private useTestcontainer: boolean = false;
   private containerKey: string = 'default';
-  private queryCounter?: QueryCounter;
 
   static create(): TestModuleBuilder {
     return new TestModuleBuilder();
@@ -63,27 +59,8 @@ export class TestModuleBuilder {
 
   /**
    * 가드 모킹 (E2E 테스트용)
-   * @param guard - 모킹할 Guard 클래스
-   * @param mockUser - (선택) Mock user 객체. 제공 시 request.user에 주입
-   *
-   * @example
-   * // 단순 bypass
-   * .mockGuard(AuthGuard)
-   *
-   * // User context 주입
-   * .mockGuard(AuthGuard, { uid: 'test-uid', id: 'test-id' })
    */
-  mockGuard(guard: any, mockUser?: AccessTokenPayload): this {
-    const mock = mockUser
-      ? {
-          canActivate: (context: ExecutionContext) => {
-            const request = context.switchToHttp().getRequest();
-            request.user = mockUser;
-            return true;
-          },
-        }
-      : { canActivate: () => true };
-
+  mockGuard(guard: any, mock: any = { canActivate: () => true }): this {
     this.guardOverrides.push({ guard, mock });
     return this;
   }
@@ -94,27 +71,6 @@ export class TestModuleBuilder {
   withTestcontainer(key: string = 'default'): this {
     this.useTestcontainer = true;
     this.containerKey = key;
-    return this;
-  }
-
-  /**
-   * Query Counter 설정 (N+1 쿼리 감지용)
-   * @param counter - QueryCounter 인스턴스
-   *
-   * @example
-   * const queryCounter = new QueryCounter();
-   * const module = await TestModuleBuilder.create()
-   *   .withModule(MeetingModule)
-   *   .withQueryCounter(queryCounter)
-   *   .build();
-   *
-   * // In test
-   * queryCounter.reset();
-   * await repository.findAll({ populate: ['author'] });
-   * expect(queryCounter.getCount()).toBe(1);
-   */
-  withQueryCounter(counter: QueryCounter): this {
-    this.queryCounter = counter;
     return this;
   }
 
@@ -142,13 +98,6 @@ export class TestModuleBuilder {
           delete config.dbName;
           // 스키마 설정 제거 (Testcontainer는 기본 public 스키마 사용)
           delete config.schema;
-
-          // Query Counter 설정
-          if (this.queryCounter) {
-            config.logger = this.queryCounter.logQuery;
-            config.debug = true;
-          }
-
           return config;
         },
         inject: [AppConfig],
@@ -157,17 +106,8 @@ export class TestModuleBuilder {
       // 기존 Docker Compose 방식
       mikroOrmConfig = MikroOrmModule.forRootAsync({
         imports: [AppConfigModule],
-        useFactory: (appConfig: AppConfig) => {
-          const config = createTestDatabaseConfig(appConfig);
-
-          // Query Counter 설정
-          if (this.queryCounter) {
-            config.logger = this.queryCounter.logQuery;
-            config.debug = true;
-          }
-
-          return config;
-        },
+        useFactory: (appConfig: AppConfig) =>
+          createTestDatabaseConfig(appConfig),
         inject: [AppConfig],
       });
     }

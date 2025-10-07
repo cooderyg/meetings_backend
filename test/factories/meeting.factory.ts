@@ -1,194 +1,219 @@
-import { EntityManager } from '@mikro-orm/postgresql';
 import {
   Meeting,
   MeetingStatus,
 } from '../../src/domain/meeting/entity/meeting.entity';
-import { Resource } from '../../src/domain/resource/entity/resource.entity';
 import { Workspace } from '../../src/domain/workspace/entity/workspace.entity';
-import { BaseFactory } from './base.factory';
-import { ResourceFactory } from './resource.factory';
+import { WorkspaceMember } from '../../src/domain/workspace-member/entity/workspace-member.entity';
+import { Resource, ResourceType, ResourceVisibility } from '../../src/domain/resource/entity/resource.entity';
+import { v4 as uuid } from 'uuid';
 
 /**
- * Meeting 엔티티용 Test Data Builder
+ * Meeting 테스트 데이터 생성 Factory
  *
  * @example
- * ```typescript
- * // 기본 Meeting 생성 (Resource 자동 생성)
- * const meeting = await new MeetingFactory(em)
- *   .forWorkspace(workspace)
- *   .create();
- *
- * // Fluent API로 커스터마이징
- * const completedMeeting = await new MeetingFactory(em)
- *   .forWorkspace(workspace)
- *   .asCompleted()
- *   .withMemo('회의 메모')
- *   .withTags(['중요', '기획'])
- *   .create();
- *
- * // Resource를 직접 지정
- * const meetingWithResource = await new MeetingFactory(em)
- *   .forWorkspace(workspace)
- *   .withResource(resource)
- *   .create();
- * ```
+ * const meeting = MeetingFactory.create();
+ * const draftMeeting = MeetingFactory.create({ status: MeetingStatus.DRAFT });
+ * const meetings = MeetingFactory.createMany(3);
  */
-export class MeetingFactory extends BaseFactory<Meeting> {
-  private workspace?: Workspace;
-  private resource?: Resource;
-  private status?: MeetingStatus;
-  private memo?: string | null;
-  private summary?: string | null;
-  private tags?: string[];
-
-  async build(overrides?: Partial<Meeting>): Promise<Meeting> {
+export class MeetingFactory {
+  /**
+   * 단일 Meeting 엔티티 생성
+   */
+  static create(overrides: Partial<Meeting> = {}): Meeting {
     const meeting = new Meeting();
 
-    // Workspace 자동 생성 (제공되지 않은 경우)
-    let targetWorkspace = overrides?.workspace ?? this.workspace;
-    if (!targetWorkspace && this.em && Object.keys(this.em).length > 0) {
-      const { WorkspaceFactory } = await import('./workspace.factory');
-      targetWorkspace = await new WorkspaceFactory(this.em).create();
-    }
-
-    // Resource 자동 생성 (제공되지 않은 경우, EntityManager가 유효한 경우에만)
-    let targetResource = overrides?.resource ?? this.resource;
-    if (!targetResource && this.em && Object.keys(this.em).length > 0 && targetWorkspace) {
-      // Resource 생성 시 owner(WorkspaceMember)도 자동 생성
-      const { createWorkspaceMemberFixture } = await import('../../test/fixtures/meeting.fixture');
-      const owner = await createWorkspaceMemberFixture(this.em, { workspace: targetWorkspace });
-
-      targetResource = await new ResourceFactory(this.em)
-        .forWorkspace(targetWorkspace)
-        .withOwner(owner)
-        .asMeeting()
-        .withTitle('Test Meeting')
-        .create();
-    }
-
-    meeting.workspace = targetWorkspace as any; // 레거시 호환
-    meeting.resource = targetResource as any; // 레거시 호환
-    meeting.status = overrides?.status ?? this.status ?? MeetingStatus.DRAFT;
-    meeting.memo =
-      overrides?.memo !== undefined
-        ? overrides.memo
-        : this.memo ?? null;
-    meeting.summary =
-      overrides?.summary !== undefined
-        ? overrides.summary
-        : this.summary ?? null;
-    meeting.tags = overrides?.tags ?? this.tags ?? [];
+    // 기본값 설정
+    Object.assign(meeting, {
+      id: overrides.id || uuid(),
+      status: overrides.status || MeetingStatus.DRAFT,
+      tags: overrides.tags || [],
+      memo: overrides.memo || null,
+      summary: overrides.summary || null,
+      deletedAt: overrides.deletedAt || null,
+      createdAt: overrides.createdAt || new Date(),
+      updatedAt: overrides.updatedAt || new Date(),
+      ...overrides, // overrides를 마지막에 적용하여 resource 등 다른 필드도 포함
+    });
 
     return meeting;
   }
 
   /**
-   * Workspace 설정 (필수)
+   * 여러 Meeting 엔티티 생성
    */
-  forWorkspace(workspace: Workspace): this {
-    this.workspace = workspace;
-    return this;
+  static createMany(
+    count: number,
+    overrides: Partial<Meeting> = {}
+  ): Meeting[] {
+    return Array.from({ length: count }, (_, index) =>
+      this.create({
+        ...overrides,
+        id: overrides.id || uuid(),
+      })
+    );
   }
 
   /**
-   * Resource 직접 설정 (선택)
+   * Draft 상태 미팅 생성
    */
-  withResource(resource: Resource): this {
-    this.resource = resource;
-    return this;
+  static createDraft(overrides: Partial<Meeting> = {}): Meeting {
+    return this.create({
+      ...overrides,
+      status: MeetingStatus.DRAFT,
+    });
   }
 
   /**
-   * 상태 설정
+   * 진행 중인 미팅 생성
    */
-  withStatus(status: MeetingStatus): this {
-    this.status = status;
-    return this;
+  static createInProgress(overrides: Partial<Meeting> = {}): Meeting {
+    return this.create({
+      ...overrides,
+      status: MeetingStatus.IN_PROGRESS,
+    });
   }
 
   /**
-   * 메모 설정
+   * 완료된 미팅 생성
    */
-  withMemo(memo: string): this {
-    this.memo = memo;
-    return this;
+  static createCompleted(overrides: Partial<Meeting> = {}): Meeting {
+    return this.create({
+      ...overrides,
+      status: MeetingStatus.COMPLETED,
+    });
   }
 
   /**
-   * 요약 설정
+   * 일시정지된 미팅 생성
    */
-  withSummary(summary: string): this {
-    this.summary = summary;
-    return this;
+  static createPaused(overrides: Partial<Meeting> = {}): Meeting {
+    return this.create({
+      ...overrides,
+      status: MeetingStatus.PAUSED,
+    });
   }
 
   /**
-   * 태그 설정
+   * 발행된 미팅 생성
    */
-  withTags(...tags: string[]): this {
-    this.tags = tags;
-    return this;
+  static createPublished(overrides: Partial<Meeting> = {}): Meeting {
+    return this.create({
+      ...overrides,
+      status: MeetingStatus.PUBLISHED,
+    });
   }
 
   /**
-   * Draft 상태로 설정
+   * 메모가 있는 미팅 생성
    */
-  asDraft(): this {
-    return this.withStatus(MeetingStatus.DRAFT);
+  static createWithMemo(
+    memo: string,
+    overrides: Partial<Meeting> = {}
+  ): Meeting {
+    return this.create({
+      ...overrides,
+      memo,
+    });
   }
 
   /**
-   * 진행 중 상태로 설정
+   * 요약이 있는 미팅 생성
    */
-  asInProgress(): this {
-    return this.withStatus(MeetingStatus.IN_PROGRESS);
+  static createWithSummary(
+    summary: string,
+    overrides: Partial<Meeting> = {}
+  ): Meeting {
+    return this.create({
+      ...overrides,
+      summary,
+    });
   }
 
   /**
-   * 완료 상태로 설정
+   * 태그가 있는 미팅 생성
    */
-  asCompleted(): this {
-    return this.withStatus(MeetingStatus.COMPLETED);
+  static createWithTags(
+    tags: string[],
+    overrides: Partial<Meeting> = {}
+  ): Meeting {
+    return this.create({
+      ...overrides,
+      tags,
+    });
   }
 
   /**
-   * 일시정지 상태로 설정
+   * 삭제된 미팅 생성
    */
-  asPaused(): this {
-    return this.withStatus(MeetingStatus.PAUSED);
+  static createDeleted(overrides: Partial<Meeting> = {}): Meeting {
+    return this.create({
+      ...overrides,
+      deletedAt: new Date(),
+    });
   }
 
   /**
-   * 발행 상태로 설정
-   */
-  asPublished(): this {
-    return this.withStatus(MeetingStatus.PUBLISHED);
-  }
-
-  // ============================================================
-  // 레거시 호환성을 위한 정적 메서드
-  // ============================================================
-
-  /**
-   * @deprecated 인스턴스 기반 API 사용 권장
-   * 레거시 호환용 - Resource를 자동 생성하지 않음
+   * 특정 워크스페이스에 속한 미팅 생성 (resource 포함)
+   * 주의: resource는 별도로 persistAndFlush 해야 함
    */
   static createForWorkspace(
     workspace: Workspace,
-    owner?: any,
+    owner?: WorkspaceMember,
     overrides: Partial<Meeting> = {}
   ): Meeting {
-    const meeting = new Meeting();
-    meeting.workspace = workspace;
-    meeting.resource = overrides.resource ?? null as any; // Resource는 외부에서 제공해야 함
-    meeting.status = overrides.status ?? MeetingStatus.DRAFT;
-    meeting.memo = overrides.memo ?? null;
-    meeting.summary = overrides.summary ?? null;
-    meeting.tags = overrides.tags ?? [];
+    // Resource가 제공되지 않은 경우 기본 Resource 생성
+    if (!overrides.resource) {
+      const resource = new Resource();
+      resource.id = uuid();
+      resource.type = ResourceType.MEETING;
+      resource.title = 'Untitled';
+      resource.visibility = ResourceVisibility.PUBLIC;
+      resource.workspace = workspace;
+      resource.path = `root.meeting_${Date.now()}`;
+      resource.createdAt = new Date();
+      resource.updatedAt = new Date();
 
-    // 다른 overrides 적용
-    Object.assign(meeting, overrides);
+      // owner가 제공된 경우에만 설정 (선택적)
+      if (owner) {
+        resource.owner = owner;
+      }
 
-    return meeting;
+      return this.create({
+        workspace, // workspace 필드 추가
+        ...overrides,
+        resource,
+      });
+    }
+
+    return this.create({
+      workspace,
+      ...overrides,
+    });
+  }
+
+  /**
+   * 특정 리소스와 연결된 미팅 생성
+   */
+  static createWithResource(
+    resource: Resource,
+    overrides: Partial<Meeting> = {}
+  ): Meeting {
+    return this.create({
+      ...overrides,
+      resource,
+    });
+  }
+
+  /**
+   * 완전한 미팅 생성 (메모, 요약, 태그 포함)
+   */
+  static createComplete(overrides: Partial<Meeting> = {}): Meeting {
+    return this.create({
+      ...overrides,
+      memo: overrides.memo || '테스트 미팅 메모입니다.',
+      summary: overrides.summary || '테스트 미팅 요약입니다.',
+      tags: overrides.tags || ['테스트', '미팅'],
+      status: overrides.status || MeetingStatus.COMPLETED,
+    });
   }
 }

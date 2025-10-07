@@ -7,9 +7,11 @@ import { Meeting, MeetingStatus } from './entity/meeting.entity';
 import { ResourceVisibility } from '../resource/entity/resource.entity';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
-import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
-import { MeetingFactory } from '../../../test/factories/meeting.factory';
-import { createWorkspaceMemberFixture } from '../../../test/fixtures/meeting.fixture';
+import {
+  createMeetingFixture,
+  createWorkspaceMemberFixture,
+} from '../../../test/fixtures/meeting.fixture';
+import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
 import { ResourceType } from '../resource/entity/resource.entity';
 import { PaginationQuery } from '../../shared/dto/request/pagination.query';
 import { FilterQuery } from '../../shared/dto/request/filter.query';
@@ -78,7 +80,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
 
   describe('createMeeting', () => {
     it('리소스와 기본값을 가진 미팅을 생성해야 함', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       const meeting = await service.createMeeting({
@@ -108,7 +110,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
 
   describe('updateMeeting', () => {
     it('미팅 필드를 업데이트해야 함', async () => {
-      const meeting = await new MeetingFactory(em).create();
+      const meeting = await createMeetingFixture(em);
 
       const updated = await service.updateMeeting(meeting.id, {
         memo: 'Updated memo',
@@ -136,9 +138,9 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     });
 
     it('미팅 상태를 업데이트해야 함', async () => {
-      const meeting = await new MeetingFactory(em)
-        .asDraft()
-        .create();
+      const meeting = await createMeetingFixture(em, {
+        status: MeetingStatus.DRAFT,
+      });
 
       const updated = await service.updateMeeting(meeting.id, {
         status: MeetingStatus.IN_PROGRESS,
@@ -150,10 +152,8 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
 
   describe('deleteMeeting', () => {
     it('should soft delete meeting', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
 
       await service.deleteMeeting(meeting.id);
 
@@ -162,10 +162,8 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     });
 
     it('should not find deleted meetings', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
 
       await service.deleteMeeting(meeting.id);
 
@@ -176,12 +174,12 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
 
   describe('publishMeeting', () => {
     it('should publish completed meeting', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .asCompleted()
-        .create();
+      const meeting = await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.COMPLETED,
+      });
 
       const published = await service.publishMeeting({
         id: meeting.id,
@@ -195,7 +193,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     });
 
     it('존재하지 않는 미팅에 대해 AppError를 던져야 함', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
@@ -217,12 +215,12 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     });
 
     it('should throw AppError for non-completed meeting', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .asDraft()
-        .create();
+      const meeting = await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.DRAFT,
+      });
 
       try {
         await service.publishMeeting({
@@ -243,12 +241,12 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     });
 
     it('should update resource visibility atomically', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .asCompleted()
-        .create();
+      const meeting = await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.COMPLETED,
+      });
 
       await service.publishMeeting({
         id: meeting.id,
@@ -265,10 +263,8 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
 
   describe('getMeetingById', () => {
     it('should retrieve meeting by id', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
 
       const found = await service.getMeetingById(meeting.id, workspace.id);
 
@@ -277,7 +273,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     });
 
     it('should return null for non-existent meeting', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
       const found = await service.getMeetingById(nonExistentId, workspace.id);
@@ -288,13 +284,15 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
 
   describe('findMeetingsByWorkspace', () => {
     it('should return paginated meetings', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
 
       // Create non-draft meetings (findByWorkspace excludes DRAFT status)
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .asPublished()
-        .createList(5);
+      for (let i = 0; i < 5; i++) {
+        await createMeetingFixture(em, {
+          workspace,
+          status: MeetingStatus.PUBLISHED,
+        });
+      }
 
       const pagination = new PaginationQuery();
       pagination.page = 1;
@@ -310,16 +308,20 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     });
 
     it('should exclude DRAFT meetings from workspace list', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
 
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .asDraft()
-        .create();
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .asPublished()
-        .createList(2);
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.DRAFT,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.PUBLISHED,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.PUBLISHED,
+      });
 
       const pagination = new PaginationQuery();
       pagination.page = 1;
@@ -337,16 +339,20 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     });
 
     it('should filter meetings by status', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
 
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .asDraft()
-        .create();
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .asPublished()
-        .createList(2);
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.DRAFT,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.PUBLISHED,
+      });
+      await createMeetingFixture(em, {
+        workspace,
+        status: MeetingStatus.PUBLISHED,
+      });
 
       const pagination = new PaginationQuery();
       pagination.page = 1;
@@ -368,18 +374,22 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     });
 
     it('should isolate meetings by workspace', async () => {
-      const workspace1 = await new WorkspaceFactory(em).create();
-      const workspace2 = await new WorkspaceFactory(em).create();
+      const workspace1 = await createWorkspaceFixture(em);
+      const workspace2 = await createWorkspaceFixture(em);
 
       // Create non-draft meetings (findByWorkspace excludes DRAFT status)
-      await new MeetingFactory(em)
-        .forWorkspace(workspace1)
-        .asPublished()
-        .createList(2);
-      await new MeetingFactory(em)
-        .forWorkspace(workspace2)
-        .asPublished()
-        .create();
+      await createMeetingFixture(em, {
+        workspace: workspace1,
+        status: MeetingStatus.PUBLISHED,
+      });
+      await createMeetingFixture(em, {
+        workspace: workspace1,
+        status: MeetingStatus.PUBLISHED,
+      });
+      await createMeetingFixture(em, {
+        workspace: workspace2,
+        status: MeetingStatus.PUBLISHED,
+      });
 
       const pagination1 = new PaginationQuery();
       pagination1.page = 1;
@@ -405,7 +415,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
 
   describe('findMyDraftMeetings', () => {
     it('should return draft meetings for specific member', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member1 = await createWorkspaceMemberFixture(em, { workspace });
       const member2 = await createWorkspaceMemberFixture(em, { workspace });
 
@@ -418,11 +428,11 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
         parentPath: '/',
         visibility: ResourceVisibility.PUBLIC,
       });
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .withResource(resource1)
-        .asDraft()
-        .create();
+      await createMeetingFixture(em, {
+        workspace,
+        resource: resource1,
+        status: MeetingStatus.DRAFT,
+      });
 
       // Create meeting for member2
       const resource2 = await resourceService.create({
@@ -433,11 +443,11 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
         parentPath: '/',
         visibility: ResourceVisibility.PUBLIC,
       });
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .withResource(resource2)
-        .asDraft()
-        .create();
+      await createMeetingFixture(em, {
+        workspace,
+        resource: resource2,
+        status: MeetingStatus.DRAFT,
+      });
 
       const pagination = new PaginationQuery();
       pagination.page = 1;
@@ -454,7 +464,7 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     });
 
     it('should only return draft meetings', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       const draftResource = await resourceService.create({
@@ -465,11 +475,11 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
         parentPath: '/',
         visibility: ResourceVisibility.PUBLIC,
       });
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .withResource(draftResource)
-        .asDraft()
-        .create();
+      await createMeetingFixture(em, {
+        workspace,
+        resource: draftResource,
+        status: MeetingStatus.DRAFT,
+      });
 
       const publishedResource = await resourceService.create({
         workspaceId: workspace.id,
@@ -479,11 +489,11 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
         parentPath: '/',
         visibility: ResourceVisibility.PUBLIC,
       });
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .withResource(publishedResource)
-        .asPublished()
-        .create();
+      await createMeetingFixture(em, {
+        workspace,
+        resource: publishedResource,
+        status: MeetingStatus.PUBLISHED,
+      });
 
       const pagination = new PaginationQuery();
       pagination.page = 1;

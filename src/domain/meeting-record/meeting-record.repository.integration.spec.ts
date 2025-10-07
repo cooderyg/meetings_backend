@@ -6,8 +6,8 @@ import { TestContainerManager } from '../../../test/utils/testcontainer-singleto
 import { MeetingRecordModule } from './meeting-record.module';
 import { MeetingRecordRepository } from './meeting-record.repository';
 import { MeetingRecord } from './entity/meeting-record.entity';
-import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
-import { MeetingFactory } from '../../../test/factories/meeting.factory';
+import { createMeetingFixture } from '../../../test/fixtures/meeting.fixture';
+import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
 import { MeetingRecordCreate, MeetingRecordUpdate } from './meeting-record.type';
 
 describe('MeetingRecordRepository Integration Tests', () => {
@@ -58,10 +58,8 @@ describe('MeetingRecordRepository Integration Tests', () => {
   describe('create', () => {
     it('MeetingRecord를 생성해야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
 
       const data: MeetingRecordCreate = {
         meeting: meeting.id,
@@ -82,10 +80,8 @@ describe('MeetingRecordRepository Integration Tests', () => {
 
     it('여러 MeetingRecord를 생성할 수 있어야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
 
       const data1: MeetingRecordCreate = {
         meeting: meeting.id,
@@ -112,10 +108,8 @@ describe('MeetingRecordRepository Integration Tests', () => {
   describe('update', () => {
     it('MeetingRecord를 수정해야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
       const data: MeetingRecordCreate = {
         meeting: meeting.id,
         time: 60,
@@ -138,10 +132,8 @@ describe('MeetingRecordRepository Integration Tests', () => {
 
     it('시간을 수정할 수 있어야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
       const created = await repository.create({
         meeting: meeting.id,
         time: 60,
@@ -160,10 +152,8 @@ describe('MeetingRecordRepository Integration Tests', () => {
   describe('findByMeeting', () => {
     it('특정 Meeting의 모든 Record를 조회해야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
 
       await repository.create({ meeting: meeting.id, time: 120, content: 'Second' });
       await repository.create({ meeting: meeting.id, time: 60, content: 'First' });
@@ -181,13 +171,9 @@ describe('MeetingRecordRepository Integration Tests', () => {
 
     it('다른 Meeting의 Record는 조회되지 않아야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting1 = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
-      const meeting2 = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting1 = await createMeetingFixture(em, { workspace });
+      const meeting2 = await createMeetingFixture(em, { workspace });
 
       await repository.create({ meeting: meeting1.id, time: 60, content: 'Meeting 1' });
       await repository.create({ meeting: meeting2.id, time: 60, content: 'Meeting 2' });
@@ -202,10 +188,8 @@ describe('MeetingRecordRepository Integration Tests', () => {
 
     it('Record가 없으면 빈 배열을 반환해야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
 
       // When
       const records = await repository.findByMeeting(meeting.id);

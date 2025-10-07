@@ -4,8 +4,8 @@ import { MeetingRepository } from './meeting.repository';
 import { Meeting, MeetingStatus } from './entity/meeting.entity';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { initializeTestDatabase, cleanupTestDatabase } from '../../../test/utils/db-helpers';
-import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
-import { MeetingFactory } from '../../../test/factories/meeting.factory';
+import { createMeetingFixture } from '../../../test/fixtures/meeting.fixture';
+import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
 
 describe('MeetingRepository', () => {
   let orm: MikroORM;
@@ -38,10 +38,8 @@ describe('MeetingRepository', () => {
 
   describe('create', () => {
     it('should create a meeting with all required fields', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
 
       expect(meeting).toBeDefined();
       expect(meeting.id).toBeDefined();
@@ -51,15 +49,15 @@ describe('MeetingRepository', () => {
     });
 
     it('should create meeting with custom status', async () => {
-      const meeting = await new MeetingFactory(em)
-        .asInProgress()
-        .create();
+      const meeting = await createMeetingFixture(em, {
+        status: MeetingStatus.IN_PROGRESS,
+      });
 
       expect(meeting.status).toBe(MeetingStatus.IN_PROGRESS);
     });
 
     it('should populate resource relationship', async () => {
-      const meeting = await new MeetingFactory(em).create();
+      const meeting = await createMeetingFixture(em);
 
       expect(meeting.resource.title).toBe('Test Meeting');
       expect(meeting.resource.workspace).toBeDefined();
@@ -68,10 +66,8 @@ describe('MeetingRepository', () => {
 
   describe('findById', () => {
     it('should find meeting by id and workspace', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
-      const created = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const created = await createMeetingFixture(em, { workspace });
 
       const found = await repository.findById(created.id, workspace.id);
 
@@ -81,7 +77,7 @@ describe('MeetingRepository', () => {
     });
 
     it('should return null for non-existent meeting', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
 
       const found = await repository.findById('00000000-0000-0000-0000-000000000000', workspace.id);
 
@@ -89,11 +85,9 @@ describe('MeetingRepository', () => {
     });
 
     it('should return null for different workspace', async () => {
-      const workspace1 = await new WorkspaceFactory(em).create();
-      const workspace2 = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace1)
-        .create();
+      const workspace1 = await createWorkspaceFixture(em);
+      const workspace2 = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace: workspace1 });
 
       const found = await repository.findById(meeting.id, workspace2.id);
 
@@ -101,10 +95,8 @@ describe('MeetingRepository', () => {
     });
 
     it('should populate relationships correctly', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
 
       const found = await repository.findById(meeting.id, workspace.id);
 
@@ -116,9 +108,9 @@ describe('MeetingRepository', () => {
 
   describe('updateEntity', () => {
     it('should update meeting status', async () => {
-      const meeting = await new MeetingFactory(em)
-        .asDraft()
-        .create();
+      const meeting = await createMeetingFixture(em, {
+        status: MeetingStatus.DRAFT,
+      });
 
       const updated = await repository.updateEntity(meeting, {
         status: MeetingStatus.PUBLISHED,
@@ -129,7 +121,7 @@ describe('MeetingRepository', () => {
     });
 
     it('should update meeting memo', async () => {
-      const meeting = await new MeetingFactory(em).create();
+      const meeting = await createMeetingFixture(em);
 
       const updated = await repository.updateEntity(meeting, {
         memo: 'Updated memo content',
@@ -139,7 +131,7 @@ describe('MeetingRepository', () => {
     });
 
     it('should update multiple fields', async () => {
-      const meeting = await new MeetingFactory(em).create();
+      const meeting = await createMeetingFixture(em);
 
       const updated = await repository.updateEntity(meeting, {
         status: MeetingStatus.IN_PROGRESS,
@@ -155,10 +147,8 @@ describe('MeetingRepository', () => {
 
   describe('delete', () => {
     it('should soft delete a meeting', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
-      const meeting = await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .create();
+      const workspace = await createWorkspaceFixture(em);
+      const meeting = await createMeetingFixture(em, { workspace });
 
       await repository.delete(meeting.id);
 
@@ -167,7 +157,7 @@ describe('MeetingRepository', () => {
     });
 
     it('should set deletedAt timestamp', async () => {
-      const meeting = await new MeetingFactory(em).create();
+      const meeting = await createMeetingFixture(em);
 
       await repository.delete(meeting.id);
 
@@ -186,13 +176,12 @@ describe('MeetingRepository', () => {
 
   describe('pagination', () => {
     it('should return paginated meetings', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
 
       // Create 5 meetings (non-draft status as findByWorkspace excludes drafts)
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .asPublished()
-        .createList(5);
+      for (let i = 0; i < 5; i++) {
+        await createMeetingFixture(em, { workspace, status: MeetingStatus.PUBLISHED });
+      }
 
       // Clear identity map to force fresh database queries
       em.clear();
@@ -207,17 +196,11 @@ describe('MeetingRepository', () => {
     });
 
     it('should filter by status', async () => {
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
 
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .asDraft()
-        .createList(2);
-
-      await new MeetingFactory(em)
-        .forWorkspace(workspace)
-        .asPublished()
-        .create();
+      await createMeetingFixture(em, { workspace, status: MeetingStatus.DRAFT });
+      await createMeetingFixture(em, { workspace, status: MeetingStatus.DRAFT });
+      await createMeetingFixture(em, { workspace, status: MeetingStatus.PUBLISHED });
 
       // Clear identity map to force fresh database queries
       em.clear();
@@ -233,18 +216,12 @@ describe('MeetingRepository', () => {
     });
 
     it('should isolate meetings by workspace', async () => {
-      const workspace1 = await new WorkspaceFactory(em).create();
-      const workspace2 = await new WorkspaceFactory(em).create();
+      const workspace1 = await createWorkspaceFixture(em);
+      const workspace2 = await createWorkspaceFixture(em);
 
-      await new MeetingFactory(em)
-        .forWorkspace(workspace1)
-        .asPublished()
-        .createList(2);
-
-      await new MeetingFactory(em)
-        .forWorkspace(workspace2)
-        .asPublished()
-        .create();
+      await createMeetingFixture(em, { workspace: workspace1, status: MeetingStatus.PUBLISHED });
+      await createMeetingFixture(em, { workspace: workspace1, status: MeetingStatus.PUBLISHED });
+      await createMeetingFixture(em, { workspace: workspace2, status: MeetingStatus.PUBLISHED });
 
       // Clear identity map to force fresh database queries
       em.clear();

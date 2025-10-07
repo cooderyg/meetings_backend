@@ -12,7 +12,6 @@ import { Workspace } from '../workspace/entity/workspace.entity';
 import { UserFactory } from '../../../test/factories/user.factory';
 import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
 import { MeetingFactory } from '../../../test/factories/meeting.factory';
-import { ResourceFactory } from '../../../test/factories/resource.factory';
 import { v4 as uuid } from 'uuid';
 
 describe('MeetingParticipantRepository Integration Tests with Testcontainer', () => {
@@ -40,16 +39,9 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
     owner?: WorkspaceMember,
     overrides: Partial<Meeting> = {}
   ) => {
-    // Resource가 없으면 자동 생성
-    if (!overrides.resource) {
-      const resource = ResourceFactory.create({ workspace, owner });
-      await em.persistAndFlush(resource);
-      overrides.resource = resource;
-    }
-
     const meeting = MeetingFactory.createForWorkspace(workspace, owner, overrides);
-    // resource를 먼저 persist (이미 생성되지 않은 경우)
-    if (meeting.resource && !em.getUnitOfWork().getById(meeting.resource.constructor.name, meeting.resource.id)) {
+    // resource를 먼저 persist
+    if (meeting.resource) {
       await em.persistAndFlush(meeting.resource);
     }
     await em.persistAndFlush(meeting);

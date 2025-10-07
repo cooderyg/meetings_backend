@@ -5,7 +5,7 @@ import { ResourceRepository } from './resource.repository';
 import { Resource, ResourceType, ResourceVisibility } from './entity/resource.entity';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
-import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
+import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
 import { createWorkspaceMemberFixture } from '../../../test/fixtures/meeting.fixture';
 import { AppError } from '../../shared/exception/app.error';
 import { ResourceModule } from './resource.module';
@@ -71,7 +71,7 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
   describe('create', () => {
     it('Resource를 생성하고 ltree 경로가 올바르게 설정되어야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       // When
@@ -96,7 +96,7 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
 
     it('parentPath가 주어지면 계층 구조 경로를 생성해야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       // When
@@ -114,7 +114,7 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
 
     it('visibility를 지정하여 Resource를 생성해야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       // When
@@ -133,7 +133,7 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
     it('존재하지 않는 워크스페이스로 생성 시 AppError를 던져야 함', async () => {
       // Given
       const nonExistentWorkspaceId = '00000000-0000-0000-0000-000000000000';
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       // When/Then
@@ -149,7 +149,7 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
 
     it('존재하지 않는 소유자로 생성 시 AppError를 던져야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const nonExistentMemberId = '00000000-0000-0000-0000-000000000000';
 
       // When/Then
@@ -165,8 +165,8 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
 
     it('다른 워크스페이스의 멤버로 생성 시 AppError를 던져야 함', async () => {
       // Given
-      const workspace1 = await new WorkspaceFactory(em).create();
-      const workspace2 = await new WorkspaceFactory(em).create();
+      const workspace1 = await createWorkspaceFixture(em);
+      const workspace2 = await createWorkspaceFixture(em);
       const member2 = await createWorkspaceMemberFixture(em, { workspace: workspace2 });
 
       // When/Then
@@ -184,7 +184,7 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
   describe('findById', () => {
     it('ID로 Resource를 찾아야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const created = await service.create({
         workspaceId: workspace.id,
@@ -219,8 +219,8 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
   describe('findByWorkspace', () => {
     it('워크스페이스의 모든 Resource를 반환해야 함', async () => {
       // Given
-      const workspace1 = await new WorkspaceFactory(em).create();
-      const workspace2 = await new WorkspaceFactory(em).create();
+      const workspace1 = await createWorkspaceFixture(em);
+      const workspace2 = await createWorkspaceFixture(em);
       const member1 = await createWorkspaceMemberFixture(em, { workspace: workspace1 });
       const member2 = await createWorkspaceMemberFixture(em, { workspace: workspace2 });
 
@@ -257,7 +257,7 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
   describe('findByWorkspaceAndType', () => {
     it('워크스페이스와 타입으로 Resource를 필터링해야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       await service.create({
@@ -302,7 +302,7 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
   describe('update', () => {
     it('Resource의 title을 업데이트해야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const resource = await service.create({
         workspaceId: workspace.id,
@@ -324,7 +324,7 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
 
     it('Resource의 visibility를 업데이트해야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const resource = await service.create({
         workspaceId: workspace.id,
@@ -364,7 +364,7 @@ describe('ResourceService Integration Tests with Testcontainer', () => {
   describe('deleteResource', () => {
     it('Resource를 삭제해야 함', async () => {
       // Given
-      const workspace = await new WorkspaceFactory(em).create();
+      const workspace = await createWorkspaceFixture(em);
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const resource = await service.create({
         workspaceId: workspace.id,
