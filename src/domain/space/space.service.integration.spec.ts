@@ -7,7 +7,7 @@ import { Space } from './entity/space.entity';
 import { ResourceType, ResourceVisibility } from '../resource/entity/resource.entity';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
-import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
+import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
 import { createWorkspaceMemberFixture } from '../../../test/fixtures/meeting.fixture';
 import { AppError } from '../../shared/exception/app.error';
 import { SpaceModule } from './space.module';
@@ -76,7 +76,7 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
   describe('create', () => {
     it('Resource와 함께 Space를 원자적으로 생성해야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       // When
@@ -100,7 +100,7 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
 
     it('description을 포함하여 Space를 생성해야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       // When
@@ -118,7 +118,7 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
 
     it('@Transactional 데코레이터로 인해 자동으로 flush되어야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       // When
@@ -142,7 +142,7 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
   describe('findById', () => {
     it('ID로 Space를 찾아야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const created = await service.create({
         workspaceId: workspace.id,
@@ -177,8 +177,8 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
   describe('findByWorkspace', () => {
     it('워크스페이스의 모든 Space를 반환해야 함', async () => {
       // Given
-      const workspace1 = await createWorkspaceFixture(em);
-      const workspace2 = await createWorkspaceFixture(em);
+      const workspace1 = await new WorkspaceFactory(em).create();
+      const workspace2 = await new WorkspaceFactory(em).create();
       const member1 = await createWorkspaceMemberFixture(em, { workspace: workspace1 });
       const member2 = await createWorkspaceMemberFixture(em, { workspace: workspace2 });
 
@@ -215,7 +215,7 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
   describe('findByWorkspaceAndUserId', () => {
     it('특정 사용자의 워크스페이스 Space를 반환해야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member1 = await createWorkspaceMemberFixture(em, { workspace });
       const member2 = await createWorkspaceMemberFixture(em, { workspace });
 
@@ -249,7 +249,7 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
   describe('update', () => {
     it('Space의 title을 업데이트해야 함 (Resource title 동기화)', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const space = await service.create({
         workspaceId: workspace.id,
@@ -271,7 +271,7 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
 
     it('Space의 description을 업데이트해야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const space = await service.create({
         workspaceId: workspace.id,
@@ -294,7 +294,7 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
 
     it('title과 description을 함께 업데이트해야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const space = await service.create({
         workspaceId: workspace.id,
@@ -334,7 +334,7 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
 
     it('@Transactional로 title과 description 업데이트가 원자적이어야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const space = await service.create({
         workspaceId: workspace.id,
@@ -365,7 +365,7 @@ describe('SpaceService Integration Tests with Testcontainer', () => {
   describe('delete', () => {
     it('Space를 삭제해야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const space = await service.create({
         workspaceId: workspace.id,

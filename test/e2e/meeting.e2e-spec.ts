@@ -4,11 +4,9 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import * as request from 'supertest';
 import { TestModuleBuilder } from '../utils/test-module.builder';
 import { initializeTestDatabase, cleanupTestDatabase } from '../utils/db-helpers';
-import { createWorkspaceFixture } from '../fixtures/workspace.fixture';
-import {
-  createWorkspaceMemberFixture,
-  createMeetingFixture,
-} from '../fixtures/meeting.fixture';
+import { WorkspaceFactory } from '../factories/workspace.factory';
+import { MeetingFactory } from '../factories/meeting.factory';
+import { createWorkspaceMemberFixture } from '../fixtures/meeting.fixture';
 import { MeetingModule } from '../../src/domain/meeting/meeting.module';
 import { MeetingStatus } from '../../src/domain/meeting/entity/meeting.entity';
 import { ResourceVisibility } from '../../src/domain/resource/entity/resource.entity';
@@ -54,7 +52,7 @@ describe('Meeting E2E', () => {
 
   describe('POST /workspace/:workspaceId/meetings', () => {
     it('should create a new meeting', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       const response = await request(app.getHttpServer())
@@ -69,7 +67,7 @@ describe('Meeting E2E', () => {
     });
 
     it('should validate required fields', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
 
       await request(app.getHttpServer())
         .post(`/workspace/${workspace.id}/meetings`)
@@ -87,12 +85,12 @@ describe('Meeting E2E', () => {
 
   describe('GET /workspace/:workspaceId/meetings', () => {
     it('should return paginated meeting list', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
 
       // Create test meetings
-      for (let i = 0; i < 5; i++) {
-        await createMeetingFixture(em, { workspace });
-      }
+      await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .createList(5);
 
       const response = await request(app.getHttpServer())
         .get(`/workspace/${workspace.id}/meetings`)
@@ -104,11 +102,16 @@ describe('Meeting E2E', () => {
     });
 
     it('should filter meetings by status', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
 
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.DRAFT });
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.DRAFT });
-      await createMeetingFixture(em, { workspace, status: MeetingStatus.PUBLISHED });
+      await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .asDraft()
+        .createList(2);
+      await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .asPublished()
+        .create();
 
       const response = await request(app.getHttpServer())
         .get(`/workspace/${workspace.id}/meetings`)
@@ -122,7 +125,7 @@ describe('Meeting E2E', () => {
     });
 
     it('should return empty list for workspace with no meetings', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
 
       const response = await request(app.getHttpServer())
         .get(`/workspace/${workspace.id}/meetings`)
@@ -136,14 +139,14 @@ describe('Meeting E2E', () => {
 
   describe('GET /workspace/:workspaceId/meetings/drafts/my', () => {
     it('should return my draft meetings only', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       // Create draft meeting
-      await createMeetingFixture(em, {
-        workspace,
-        status: MeetingStatus.DRAFT,
-      });
+      await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .asDraft()
+        .create();
 
       const response = await request(app.getHttpServer())
         .get(`/workspace/${workspace.id}/meetings/drafts/my`)
@@ -157,8 +160,8 @@ describe('Meeting E2E', () => {
 
   describe('GET /workspace/:workspaceId/meetings/:id', () => {
     it('should return meeting detail', async () => {
-      const workspace = await createWorkspaceFixture(em);
-      const meeting = await createMeetingFixture(em, { workspace });
+      const workspace = await new WorkspaceFactory(em).create();
+      const meeting = await new MeetingFactory(em).forWorkspace(workspace).create();
 
       const response = await request(app.getHttpServer())
         .get(`/workspace/${workspace.id}/meetings/${meeting.id}`)
@@ -170,7 +173,7 @@ describe('Meeting E2E', () => {
     });
 
     it('should return null for non-existent meeting', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
       const response = await request(app.getHttpServer())
@@ -181,7 +184,7 @@ describe('Meeting E2E', () => {
     });
 
     it('should validate UUID format', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
 
       await request(app.getHttpServer())
         .get(`/workspace/${workspace.id}/meetings/invalid-id`)
@@ -191,8 +194,8 @@ describe('Meeting E2E', () => {
 
   describe('PATCH /workspace/:workspaceId/meetings/:id', () => {
     it('should update meeting fields', async () => {
-      const workspace = await createWorkspaceFixture(em);
-      const meeting = await createMeetingFixture(em, { workspace });
+      const workspace = await new WorkspaceFactory(em).create();
+      const meeting = await new MeetingFactory(em).forWorkspace(workspace).create();
 
       const response = await request(app.getHttpServer())
         .patch(`/workspace/${workspace.id}/meetings/${meeting.id}`)
@@ -208,7 +211,7 @@ describe('Meeting E2E', () => {
     });
 
     it('should return 500 for non-existent meeting', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
       await request(app.getHttpServer())
@@ -218,11 +221,11 @@ describe('Meeting E2E', () => {
     });
 
     it('should update meeting status', async () => {
-      const workspace = await createWorkspaceFixture(em);
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        status: MeetingStatus.DRAFT,
-      });
+      const workspace = await new WorkspaceFactory(em).create();
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .asDraft()
+        .create();
 
       const response = await request(app.getHttpServer())
         .patch(`/workspace/${workspace.id}/meetings/${meeting.id}`)
@@ -235,11 +238,11 @@ describe('Meeting E2E', () => {
 
   describe('PATCH /workspace/:workspaceId/meetings/publish/:id', () => {
     it('should publish completed meeting', async () => {
-      const workspace = await createWorkspaceFixture(em);
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        status: MeetingStatus.COMPLETED,
-      });
+      const workspace = await new WorkspaceFactory(em).create();
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .asCompleted()
+        .create();
 
       const response = await request(app.getHttpServer())
         .patch(`/workspace/${workspace.id}/meetings/publish/${meeting.id}`)
@@ -251,11 +254,11 @@ describe('Meeting E2E', () => {
     });
 
     it('should fail to publish draft meeting', async () => {
-      const workspace = await createWorkspaceFixture(em);
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        status: MeetingStatus.DRAFT,
-      });
+      const workspace = await new WorkspaceFactory(em).create();
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .asDraft()
+        .create();
 
       await request(app.getHttpServer())
         .patch(`/workspace/${workspace.id}/meetings/publish/${meeting.id}`)
@@ -264,7 +267,7 @@ describe('Meeting E2E', () => {
     });
 
     it('should fail for non-existent meeting', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
       await request(app.getHttpServer())
@@ -276,8 +279,8 @@ describe('Meeting E2E', () => {
 
   describe('DELETE /workspace/:workspaceId/meetings/:id', () => {
     it('should soft delete meeting', async () => {
-      const workspace = await createWorkspaceFixture(em);
-      const meeting = await createMeetingFixture(em, { workspace });
+      const workspace = await new WorkspaceFactory(em).create();
+      const meeting = await new MeetingFactory(em).forWorkspace(workspace).create();
 
       await request(app.getHttpServer())
         .delete(`/workspace/${workspace.id}/meetings/${meeting.id}`)
@@ -292,7 +295,7 @@ describe('Meeting E2E', () => {
     });
 
     it('should validate UUID format', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
 
       await request(app.getHttpServer())
         .delete(`/workspace/${workspace.id}/meetings/invalid-id`)
@@ -302,7 +305,7 @@ describe('Meeting E2E', () => {
 
   describe('Integration flows', () => {
     it('should complete full meeting lifecycle', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       // 1. Create meeting
@@ -351,11 +354,11 @@ describe('Meeting E2E', () => {
     });
 
     it('should isolate meetings by workspace', async () => {
-      const workspace1 = await createWorkspaceFixture(em);
-      const workspace2 = await createWorkspaceFixture(em);
+      const workspace1 = await new WorkspaceFactory(em).create();
+      const workspace2 = await new WorkspaceFactory(em).create();
 
-      const meeting1 = await createMeetingFixture(em, { workspace: workspace1 });
-      const meeting2 = await createMeetingFixture(em, { workspace: workspace2 });
+      const meeting1 = await new MeetingFactory(em).forWorkspace(workspace1).create();
+      const meeting2 = await new MeetingFactory(em).forWorkspace(workspace2).create();
 
       // Meeting1 should not be accessible from workspace2
       const response = await request(app.getHttpServer())
@@ -370,6 +373,114 @@ describe('Meeting E2E', () => {
         .expect(200);
 
       expect(response2.body.id).toBe(meeting2.id);
+    });
+  });
+
+  /**
+   * Object Mother 패턴을 사용한 고급 시나리오 테스트
+   * - Scenarios를 활용하여 복잡한 비즈니스 컨텍스트 테스트
+   */
+  describe('Advanced scenarios with Object Mother pattern', () => {
+    let scenarios: MeetingScenarios;
+
+    beforeEach(() => {
+      scenarios = new MeetingScenarios(em);
+    });
+
+    it('should handle team meeting workflow', async () => {
+      // Scenario: 팀 회의 생성 및 진행
+      const { meeting, workspace, participants } =
+        await scenarios.createTeamMeeting(5);
+
+      // 회의가 정상적으로 생성되었는지 확인
+      const getResponse = await request(app.getHttpServer())
+        .get(`/workspace/${workspace.id}/meetings/${meeting.id}`)
+        .expect(200);
+
+      expect(getResponse.body.status).toBe(MeetingStatus.IN_PROGRESS);
+      expect(getResponse.body.tags).toContain('팀미팅');
+      expect(participants).toHaveLength(5);
+    });
+
+    it('should manage multiple meetings in workspace', async () => {
+      // Scenario: 여러 회의가 있는 워크스페이스
+      const { workspace, meetings } =
+        await scenarios.createWorkspaceWithMultipleMeetings(10);
+
+      // 회의 목록 조회
+      const response = await request(app.getHttpServer())
+        .get(`/workspace/${workspace.id}/meetings`)
+        .query({ page: 1, limit: 5 })
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(5);
+      expect(response.body.totalCount).toBe(10);
+      expect(meetings).toHaveLength(10);
+
+      // 다양한 상태의 회의가 포함되어 있는지 확인
+      const statuses = new Set(meetings.map((m) => m.status));
+      expect(statuses.size).toBeGreaterThan(1);
+    });
+
+    it('should handle meeting state transitions', async () => {
+      // Scenario: 회의 상태 전환 워크플로우
+      const { workspace, draftMeeting, completedMeeting } =
+        await scenarios.createMeetingWorkflow();
+
+      // Draft → In Progress
+      await request(app.getHttpServer())
+        .patch(`/workspace/${workspace.id}/meetings/${draftMeeting.id}`)
+        .send({ status: MeetingStatus.IN_PROGRESS })
+        .expect(200);
+
+      // Completed → Published
+      await request(app.getHttpServer())
+        .patch(`/workspace/${workspace.id}/meetings/publish/${completedMeeting.id}`)
+        .send({ visibility: ResourceVisibility.PUBLIC })
+        .expect(200);
+
+      // 최종 상태 확인
+      const publishedResponse = await request(app.getHttpServer())
+        .get(`/workspace/${workspace.id}/meetings/${completedMeeting.id}`)
+        .expect(200);
+
+      expect(publishedResponse.body.status).toBe(MeetingStatus.PUBLISHED);
+    });
+
+    it('should test completed meeting with full content', async () => {
+      // Scenario: 완료된 회의 (메모, 요약, 태그 포함)
+      const { meeting, workspace } =
+        await scenarios.createCompletedMeetingWithContent();
+
+      const response = await request(app.getHttpServer())
+        .get(`/workspace/${workspace.id}/meetings/${meeting.id}`)
+        .expect(200);
+
+      expect(response.body.status).toBe(MeetingStatus.COMPLETED);
+      expect(response.body.memo).toContain('회의 메모');
+      expect(response.body.summary).toContain('회의 요약');
+      expect(response.body.tags).toContain('중요');
+      expect(response.body.tags).toContain('기획');
+    });
+
+    it('should handle premium workspace features', async () => {
+      // Scenario: Premium 워크스페이스의 고급 회의
+      const { meeting, workspace, members } =
+        await scenarios.createPremiumMeeting();
+
+      const response = await request(app.getHttpServer())
+        .get(`/workspace/${workspace.id}/meetings/${meeting.id}`)
+        .expect(200);
+
+      expect(response.body.tags).toContain('프리미엄');
+      expect(members).toHaveLength(3);
+
+      // Premium 기능 테스트 (예: 고급 설정 등)
+      const workspaceResponse = await request(app.getHttpServer())
+        .get(`/workspace/${workspace.id}/meetings`)
+        .expect(200);
+
+      expect(workspaceResponse.body).toBeDefined();
     });
   });
 });

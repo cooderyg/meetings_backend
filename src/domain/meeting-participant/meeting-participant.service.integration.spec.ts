@@ -8,11 +8,9 @@ import { AppError } from '../../shared/exception/app.error';
 import { MeetingParticipantModule } from './meeting-participant.module';
 import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
-import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
-import {
-  createMeetingFixture,
-  createWorkspaceMemberFixture,
-} from '../../../test/fixtures/meeting.fixture';
+import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
+import { MeetingFactory } from '../../../test/factories/meeting.factory';
+import { createWorkspaceMemberFixture } from '../../../test/fixtures/meeting.fixture';
 
 describe('MeetingParticipantService Integration Tests with Testcontainer', () => {
   let orm: MikroORM;
@@ -75,12 +73,11 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
   describe('create', () => {
     it('워크스페이스 멤버로 MeetingParticipant를 생성해야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        
-      });
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .create();
 
       // When
       const participant = await service.create({
@@ -99,12 +96,11 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
 
     it('게스트로 MeetingParticipant를 생성해야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        
-      });
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .create();
 
       // When
       const participant = await service.create({
@@ -121,12 +117,11 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
 
     it('@Transactional로 MeetingParticipant가 자동으로 flush되어야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        
-      });
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .create();
 
       // When
       const participant = await service.create({
@@ -146,7 +141,7 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
 
     it('존재하지 않는 Meeting으로 참여자 생성 시 AppError를 던져야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const nonExistentMeetingId = '00000000-0000-0000-0000-000000000000';
 
@@ -171,12 +166,11 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
 
     it('존재하지 않는 WorkspaceMember로 참여자 생성 시 AppError를 던져야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        
-      });
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .create();
       const nonExistentMemberId = '00000000-0000-0000-0000-000000000000';
 
       // When/Then
@@ -200,12 +194,11 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
 
     it('중복된 참여자 생성 시 AppError를 던져야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        
-      });
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .create();
 
       // 첫 번째 참여자 생성
       await service.create({
@@ -237,12 +230,11 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
   describe('delete', () => {
     it('MeetingParticipant를 삭제해야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        
-      });
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .create();
 
       const participant = await service.create({
         meetingId: meeting.id,
@@ -264,12 +256,11 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
 
     it('@Transactional로 삭제가 자동으로 flush되어야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        
-      });
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .create();
 
       const participant = await service.create({
         meetingId: meeting.id,
@@ -304,12 +295,11 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
   describe('findByMeetingAndMember', () => {
     it('Meeting과 WorkspaceMember로 참여자를 찾아야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        
-      });
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .create();
 
       const created = await service.create({
         meetingId: meeting.id,
@@ -332,12 +322,11 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
 
     it('존재하지 않는 조합에 대해 null을 반환해야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await createMeetingFixture(em, {
-        workspace,
-        
-      });
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .create();
 
       // When
       const found = await service.findByMeetingAndMember(

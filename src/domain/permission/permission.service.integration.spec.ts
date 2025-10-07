@@ -6,11 +6,9 @@ import { TestContainerManager } from '../../../test/utils/testcontainer-singleto
 import { PermissionModule } from './permission.module';
 import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
-import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
-import {
-  createMeetingFixture,
-  createWorkspaceMemberFixture,
-} from '../../../test/fixtures/meeting.fixture';
+import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
+import { MeetingFactory } from '../../../test/factories/meeting.factory';
+import { createWorkspaceMemberFixture } from '../../../test/fixtures/meeting.fixture';
 
 /**
  * PermissionService 통합 테스트
@@ -77,7 +75,7 @@ describe('PermissionService Integration Tests with Testcontainer', () => {
 
   describe('Data Structure Creation', () => {
     it('Workspace와 WorkspaceMember를 생성할 수 있어야 함', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
 
       expect(workspace).toBeDefined();
@@ -88,8 +86,10 @@ describe('PermissionService Integration Tests with Testcontainer', () => {
     });
 
     it('Meeting을 생성할 수 있어야 함', async () => {
-      const workspace = await createWorkspaceFixture(em);
-      const meeting = await createMeetingFixture(em, { workspace });
+      const workspace = await new WorkspaceFactory(em).create();
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .create();
 
       expect(meeting).toBeDefined();
       expect(meeting.id).toBeDefined();
@@ -98,9 +98,11 @@ describe('PermissionService Integration Tests with Testcontainer', () => {
     });
 
     it('여러 도메인 엔티티를 함께 생성할 수 있어야 함', async () => {
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
-      const meeting = await createMeetingFixture(em, { workspace });
+      const meeting = await new MeetingFactory(em)
+        .forWorkspace(workspace)
+        .create();
 
       em.clear();
 

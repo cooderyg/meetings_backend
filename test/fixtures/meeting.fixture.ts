@@ -10,6 +10,7 @@ import { Role } from '../../src/domain/role/entity/role.entity';
 import { SystemRole } from '../../src/domain/role/enum/system-role.enum';
 import { createWorkspaceFixture } from './workspace.fixture';
 import { createUserFixture } from './user.fixture';
+import { testSequence } from '../utils/sequence-generator';
 
 /**
  * 테스트용 Role 생성 (시스템 Role)
@@ -79,7 +80,7 @@ export async function createResourceFixture(
   resource.type = options.type ?? ResourceType.MEETING;
   resource.title = options.title ?? 'Test Resource';
   resource.visibility = ResourceVisibility.PUBLIC;
-  resource.path = `${Date.now()}`;
+  resource.path = `resource-${testSequence.next('resource')}`;
 
   await em.persistAndFlush(resource);
   return resource;

@@ -6,7 +6,7 @@ import { TestContainerManager } from '../../../test/utils/testcontainer-singleto
 import { WorkspaceMemberRoleModule } from './workspace-member-role.module';
 import { WorkspaceMemberRoleRepository } from './workspace-member-role.repository';
 import { WorkspaceMemberRole } from './entity/workspace-member-role.entity';
-import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
+import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
 import { createWorkspaceMemberFixture, createRoleFixture } from '../../../test/fixtures/meeting.fixture';
 
 describe('WorkspaceMemberRoleRepository Integration Tests', () => {
@@ -57,7 +57,7 @@ describe('WorkspaceMemberRoleRepository Integration Tests', () => {
   describe('create', () => {
     it('WorkspaceMemberRole을 생성해야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const role = await createRoleFixture(em);
 
@@ -77,7 +77,7 @@ describe('WorkspaceMemberRoleRepository Integration Tests', () => {
 
     it('생성된 WorkspaceMemberRole이 데이터베이스에 저장되어야 함', async () => {
       // Given
-      const workspace = await createWorkspaceFixture(em);
+      const workspace = await new WorkspaceFactory(em).create();
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const role = await createRoleFixture(em);
 

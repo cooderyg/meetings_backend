@@ -1,7 +1,7 @@
 import { Space } from '../../src/domain/space/entity/space.entity';
 import { Resource } from '../../src/domain/resource/entity/resource.entity';
 import { Workspace } from '../../src/domain/workspace/entity/workspace.entity';
-import { v4 as uuid } from 'uuid';
+import { testSequence } from '../utils/sequence-generator';
 
 /**
  * Space 테스트 데이터 생성 Factory
@@ -12,14 +12,12 @@ import { v4 as uuid } from 'uuid';
  */
 export class SpaceFactory {
   static create(overrides: Partial<Space> = {}): Space {
+    const seq = testSequence.next('space');
     const space = new Space();
 
     // 기본값 설정
     Object.assign(space, {
-      id: uuid(),
-      description: `Test Space Description ${Date.now()}`,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      description: `Test Space Description ${seq}`,
       ...overrides,
     });
     return space;
@@ -29,11 +27,8 @@ export class SpaceFactory {
    * 여러 Space 엔티티 생성
    */
   static createMany(count: number, overrides: Partial<Space> = {}): Space[] {
-    return Array.from({ length: count }, (_, index) =>
-      this.create({
-        ...overrides,
-        description: `Test Space Description ${Date.now()}-${index}`,
-      })
+    return Array.from({ length: count }, () =>
+      this.create(overrides)
     );
   }
 
