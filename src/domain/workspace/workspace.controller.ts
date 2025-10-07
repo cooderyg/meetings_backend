@@ -4,6 +4,7 @@ import { NeedAuth } from '../../shared/decorator/need-auth.decorator';
 import { UserInfo } from '../../shared/decorator/user-info.decorator';
 import { User } from '../user/entity/user.entity';
 import { CreateWorkspaceDto } from './dto/request/create-workspace.dto';
+import { IdParamDto } from './dto/request/id-param.dto';
 import { UpdateWorkspaceNameDto } from './dto/request/update-workspace-name.dto';
 import { UpdateWorkspaceNameResDto } from './dto/response/update-workspace-name.res.dto';
 import { SubscriptionTier, Workspace } from './entity/workspace.entity';
@@ -55,9 +56,9 @@ export class WorkspaceController {
   @Patch('name/:id')
   async updateWorkspaceName(
     @Body() data: UpdateWorkspaceNameDto,
-    @Param('id') id: string
+    @Param() params: IdParamDto
   ): Promise<UpdateWorkspaceNameResDto> {
-    const name = await this.workspaceService.updateWorkspaceName(id, data);
+    const name = await this.workspaceService.updateWorkspaceName(params.id, data);
 
     return { name };
   }
