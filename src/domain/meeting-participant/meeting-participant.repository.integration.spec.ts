@@ -3,15 +3,11 @@ import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import { MikroORM } from '@mikro-orm/core';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
+import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
+import { createWorkspaceMemberFixture } from '../../../test/fixtures/meeting.fixture';
+import { createMeetingFixture } from '../../../test/fixtures/meeting.fixture';
 import { MeetingParticipantRepository } from './meeting-participant.repository';
 import { MeetingParticipant } from './entity/meeting-participant.entity';
-import { Meeting } from '../meeting/entity/meeting.entity';
-import { WorkspaceMember } from '../workspace-member/entity/workspace-member.entity';
-import { User } from '../user/entity/user.entity';
-import { Workspace } from '../workspace/entity/workspace.entity';
-import { UserFactory } from '../../../test/factories/user.factory';
-import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
-import { MeetingFactory } from '../../../test/factories/meeting.factory';
 import { v4 as uuid } from 'uuid';
 
 describe('MeetingParticipantRepository Integration Tests with Testcontainer', () => {
@@ -22,49 +18,13 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
   const containerKey = 'meeting-participant-integration-test';
 
   // Helper functions
-  const createUser = async (overrides: Partial<User> = {}) => {
-    const user = UserFactory.create(overrides);
-    await em.persistAndFlush(user);
-    return user;
-  };
+  async function createParticipantTestData(em: EntityManager) {
+    const workspace = await createWorkspaceFixture(em);
+    const workspaceMember = await createWorkspaceMemberFixture(em, { workspace });
+    const meeting = await createMeetingFixture(em, { workspace, owner: workspaceMember });
+    return { workspace, workspaceMember, meeting };
+  }
 
-  const createWorkspace = async (overrides: Partial<Workspace> = {}) => {
-    const workspace = WorkspaceFactory.create(overrides);
-    await em.persistAndFlush(workspace);
-    return workspace;
-  };
-
-  const createMeeting = async (
-    workspace: Workspace,
-    owner?: WorkspaceMember,
-    overrides: Partial<Meeting> = {}
-  ) => {
-    const meeting = MeetingFactory.createForWorkspace(
-      workspace,
-      owner,
-      overrides
-    );
-    // resource를 먼저 persist
-    if (meeting.resource) {
-      await em.persistAndFlush(meeting.resource);
-    }
-    await em.persistAndFlush(meeting);
-    return meeting;
-  };
-
-  const createWorkspaceMember = async (user: User, workspace: Workspace) => {
-    const workspaceMember = new WorkspaceMember();
-    workspaceMember.id = uuid();
-    workspaceMember.user = user;
-    workspaceMember.workspace = workspace;
-    workspaceMember.firstName = user.firstName;
-    workspaceMember.lastName = user.lastName;
-    workspaceMember.isActive = true;
-    workspaceMember.createdAt = new Date();
-    workspaceMember.updatedAt = new Date();
-    await em.persistAndFlush(workspaceMember);
-    return workspaceMember;
-  };
 
   beforeAll(async () => {
     // Testcontainer를 사용한 모듈 빌드
@@ -113,10 +73,7 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
   describe('create', () => {
     it('워크스페이스 멤버로 미팅 참여자를 생성해야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
-      const workspaceMember = await createWorkspaceMember(user, workspace);
-      const meeting = await createMeeting(workspace, workspaceMember);
+      const { workspaceMember, meeting } = await createParticipantTestData(em);
 
       const createData = {
         meeting,
@@ -138,10 +95,7 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
 
     it('게스트 이름으로 미팅 참여자를 생성해야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
-      const workspaceMember = await createWorkspaceMember(user, workspace);
-      const meeting = await createMeeting(workspace, workspaceMember);
+      const { meeting } = await createParticipantTestData(em);
 
       const createData = {
         meeting,
@@ -165,10 +119,7 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
   describe('findById', () => {
     it('ID로 미팅 참여자를 찾아야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
-      const workspaceMember = await createWorkspaceMember(user, workspace);
-      const meeting = await createMeeting(workspace, workspaceMember);
+      const { workspaceMember, meeting } = await createParticipantTestData(em);
 
       const createData = {
         meeting,
@@ -202,10 +153,7 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
   describe('findByMeetingAndMember', () => {
     it('미팅과 멤버로 참여자를 찾아야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
-      const workspaceMember = await createWorkspaceMember(user, workspace);
-      const meeting = await createMeeting(workspace, workspaceMember);
+      const { workspaceMember, meeting } = await createParticipantTestData(em);
 
       const createData = {
         meeting,
@@ -245,10 +193,7 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
   describe('delete', () => {
     it('미팅 참여자를 삭제해야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
-      const workspaceMember = await createWorkspaceMember(user, workspace);
-      const meeting = await createMeeting(workspace, workspaceMember);
+      const { workspaceMember, meeting } = await createParticipantTestData(em);
 
       const createData = {
         meeting,
