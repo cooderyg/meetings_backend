@@ -93,6 +93,7 @@ export async function createMeetingFixture(
   options: {
     workspace?: Workspace;
     resource?: Resource;
+    owner?: WorkspaceMember;
     status?: MeetingStatus;
   } = {}
 ): Promise<Meeting> {
@@ -101,6 +102,7 @@ export async function createMeetingFixture(
     options.resource ??
     (await createResourceFixture(em, {
       workspace,
+      owner: options.owner,
       type: ResourceType.MEETING,
       title: 'Test Meeting',
     }));

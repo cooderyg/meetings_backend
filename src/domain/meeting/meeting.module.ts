@@ -6,12 +6,14 @@ import { MeetingService } from './meeting.service';
 import { MeetingController } from './meeting.controller';
 import { ResourceModule } from '../resource/resource.module';
 import { WorkspaceMemberModule } from '../workspace-member/workspace-member.module';
+import { RoleModule } from '../role/role.module';
 
 @Module({
   imports: [
     MikroOrmModule.forFeature([Meeting]),
     ResourceModule,
     WorkspaceMemberModule,
+    RoleModule,
   ],
   controllers: [MeetingController],
   providers: [MeetingService, MeetingRepository],

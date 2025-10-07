@@ -75,7 +75,7 @@ export class TestModuleBuilder {
    * 가드 모킹 (E2E 테스트용)
    *
    * @param guard - 재정의할 가드 클래스
-   * @param userPayload - (선택) request.user에 주입할 사용자 정보
+   * @param mockOrUserPayload - (선택) 커스텀 mock 구현체 또는 request.user에 주입할 사용자 정보
    *
    * @example
    * ```typescript
@@ -84,18 +84,36 @@ export class TestModuleBuilder {
    *
    * // request.user 주입
    * .mockGuard(AuthGuard, { id: 'user-123', uid: 'test-uid' })
+   *
+   * // 커스텀 mock 구현
+   * .mockGuard(WorkspaceMemberGuard, {
+   *   canActivate: (context) => {
+   *     const request = context.switchToHttp().getRequest();
+   *     request.workspaceMemberId = 'member-123';
+   *     return true;
+   *   }
+   * })
    * ```
    */
-  mockGuard(guard: any, userPayload?: any): this {
-    const mockImplementation = userPayload
-      ? {
-          canActivate: (context: any) => {
-            const request = context.switchToHttp().getRequest();
-            request.user = userPayload; // ✅ request.user 주입
-            return true;
-          },
-        }
-      : { canActivate: () => true };
+  mockGuard(guard: any, mockOrUserPayload?: any): this {
+    let mockImplementation;
+
+    if (!mockOrUserPayload) {
+      // 단순 bypass
+      mockImplementation = { canActivate: () => true };
+    } else if (typeof mockOrUserPayload.canActivate === 'function') {
+      // 커스텀 mock 구현체
+      mockImplementation = mockOrUserPayload;
+    } else {
+      // request.user 주입 패턴
+      mockImplementation = {
+        canActivate: (context: any) => {
+          const request = context.switchToHttp().getRequest();
+          request.user = mockOrUserPayload; // ✅ request.user 주입
+          return true;
+        },
+      };
+    }
 
     this.guardOverrides.push({ guard, mock: mockImplementation });
     return this;

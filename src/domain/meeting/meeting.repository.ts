@@ -47,7 +47,12 @@ export class MeetingRepository {
   }
 
   async updateEntity(entity: Meeting, data: UpdateMeetingData) {
-    this.repository.assign(entity, data);
+    // Filter out undefined values to avoid MikroORM assign errors
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== undefined)
+    );
+
+    this.repository.assign(entity, cleanData);
     await this.em.persist(entity);
     await this.em.populate(entity, MEETING_DETAIL_POPULATE);
 
