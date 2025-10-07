@@ -16,7 +16,6 @@ import { AppError } from '../../shared/exception/app.error';
 import { SpaceModule } from './space.module';
 import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
-import { SpaceFactory } from '../../../test/factories/space.factory';
 
 describe('SpaceService Integration Tests with Testcontainer', () => {
   let orm: MikroORM;

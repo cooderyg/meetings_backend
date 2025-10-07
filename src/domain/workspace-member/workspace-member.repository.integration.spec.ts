@@ -3,12 +3,12 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { MikroORM } from '@mikro-orm/core';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
+import { createUserFixture } from '../../../test/fixtures/user.fixture';
+import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
+import { createRoleFixture, createWorkspaceMemberFixture } from '../../../test/fixtures/meeting.fixture';
+import { SystemRole } from '../role/enum/system-role.enum';
 import { WorkspaceMemberRepository } from './workspace-member.repository';
 import { WorkspaceMember } from './entity/workspace-member.entity';
-import { WorkspaceMemberFactory } from '../../../test/factories/workspace-member.factory';
-import { UserFactory } from '../../../test/factories/user.factory';
-import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
-import { RoleFactory } from '../../../test/factories/role.factory';
 import { User } from '../user/entity/user.entity';
 import { Workspace } from '../workspace/entity/workspace.entity';
 import { Role } from '../role/entity/role.entity';
@@ -25,34 +25,12 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
   const containerKey = 'workspace-member-integration-test';
 
   // Helper to create a user for testing
-  const createUser = async (overrides: Partial<User> = {}) => {
-    const user = UserFactory.create(overrides);
-    await em.persistAndFlush(user);
-    return user;
-  };
 
   // Helper to create a workspace for testing
-  const createWorkspace = async (overrides: Partial<Workspace> = {}) => {
-    const workspace = WorkspaceFactory.create(overrides);
-    await em.persistAndFlush(workspace);
-    return workspace;
-  };
 
   // Helper to create a role for testing
-  const createRole = async (overrides: Partial<Role> = {}) => {
-    const role = RoleFactory.create(overrides);
-    await em.persistAndFlush(role);
-    return role;
-  };
 
   // Helper to create a workspace member for testing
-  const createWorkspaceMember = async (
-    overrides: Partial<WorkspaceMember> = {}
-  ) => {
-    const workspaceMember = WorkspaceMemberFactory.create(overrides);
-    await em.persistAndFlush(workspaceMember);
-    return workspaceMember;
-  };
 
   beforeAll(async () => {
     // Testcontainer를 사용한 모듈 빌드 (Repository만 테스트)
@@ -103,9 +81,9 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
   describe('create', () => {
     it('새 워크스페이스 멤버를 생성해야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
-      const role = await createRole();
+      const user = await createUserFixture(em);
+      const workspace = await createWorkspaceFixture(em);
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       const workspaceMemberData = {
         user,
         workspace,
@@ -133,9 +111,9 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
   describe('findById', () => {
     it('ID로 워크스페이스 멤버를 찾아야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
-      const workspaceMember = await createWorkspaceMember({
+      const user = await createUserFixture(em);
+      const workspace = await createWorkspaceFixture(em);
+      const workspaceMember = await createWorkspaceMemberFixture(em, {
         user,
         workspace,
         firstName: '길동',
@@ -169,17 +147,17 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
   describe('findByWorkspace', () => {
     it('워크스페이스의 모든 멤버를 찾아야 함', async () => {
       // Given
-      const workspace = await createWorkspace();
-      const user1 = await createUser({ email: 'user1@example.com' });
-      const user2 = await createUser({ email: 'user2@example.com' });
+      const workspace = await createWorkspaceFixture(em);
+      const user1 = await createUserFixture(em, { email: 'user1@example.com' });
+      const user2 = await createUserFixture(em, { email: 'user2@example.com' });
 
-      await createWorkspaceMember({
+      await createWorkspaceMemberFixture(em, {
         user: user1,
         workspace,
         firstName: '사용자1',
         lastName: '테스트',
       });
-      await createWorkspaceMember({
+      await createWorkspaceMemberFixture(em, {
         user: user2,
         workspace,
         firstName: '사용자2',
@@ -199,7 +177,7 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
 
     it('워크스페이스에 멤버가 없으면 빈 배열을 반환해야 함', async () => {
       // Given
-      const workspace = await createWorkspace();
+      const workspace = await createWorkspaceFixture(em);
 
       // When
       const result = await workspaceMemberRepository.findByWorkspace(
@@ -214,9 +192,9 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
   describe('findByUserAndWorkspace', () => {
     it('사용자와 워크스페이스로 멤버를 찾아야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
-      await createWorkspaceMember({
+      const user = await createUserFixture(em);
+      const workspace = await createWorkspaceFixture(em);
+      await createWorkspaceMemberFixture(em, {
         user,
         workspace,
         firstName: '길동',
@@ -237,8 +215,8 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
 
     it('존재하지 않는 조합으로 찾으면 null을 반환해야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
+      const user = await createUserFixture(em);
+      const workspace = await createWorkspaceFixture(em);
 
       // When
       const result = await workspaceMemberRepository.findByUserAndWorkspace(
@@ -254,9 +232,9 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
   describe('findActiveByUserAndWorkspace', () => {
     it('활성화된 멤버를 찾아야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
-      await createWorkspaceMember({
+      const user = await createUserFixture(em);
+      const workspace = await createWorkspaceFixture(em);
+      await createWorkspaceMemberFixture(em, {
         user,
         workspace,
         isActive: true,
@@ -278,9 +256,9 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
 
     it('비활성화된 멤버는 찾지 않아야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
-      await createWorkspaceMember({
+      const user = await createUserFixture(em);
+      const workspace = await createWorkspaceFixture(em);
+      await createWorkspaceMemberFixture(em, {
         user,
         workspace,
         isActive: false,
@@ -303,9 +281,9 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
   describe('findByUserAndWorkspaceForAuth', () => {
     it('인증용 멤버 정보를 찾아야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
-      await createWorkspaceMember({
+      const user = await createUserFixture(em);
+      const workspace = await createWorkspaceFixture(em);
+      await createWorkspaceMemberFixture(em, {
         user,
         workspace,
         isActive: true,
@@ -328,8 +306,8 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
 
     it('인증용 멤버 정보를 찾을 수 없으면 null을 반환해야 함', async () => {
       // Given
-      const user = await createUser();
-      const workspace = await createWorkspace();
+      const user = await createUserFixture(em);
+      const workspace = await createWorkspaceFixture(em);
 
       // When
       const result =

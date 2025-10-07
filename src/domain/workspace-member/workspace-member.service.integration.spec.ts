@@ -10,10 +10,9 @@ import { SystemRole } from '../role/enum/system-role.enum';
 import { IWorkspaceMemberCreateData } from './interfaces/workspace-member-create-data.interface';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
-import { WorkspaceMemberFactory } from '../../../test/factories/workspace-member.factory';
-import { UserFactory } from '../../../test/factories/user.factory';
-import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
-import { RoleFactory } from '../../../test/factories/role.factory';
+import { createUserFixture } from '../../../test/fixtures/user.fixture';
+import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
+import { createRoleFixture } from '../../../test/fixtures/meeting.fixture';
 import { WorkspaceMemberModule } from './workspace-member.module';
 import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
@@ -26,31 +25,9 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
   const containerKey = 'workspace-member-service-integration-test';
 
   // Helper functions
-  const createUser = async (overrides: Partial<User> = {}) => {
-    const user = UserFactory.create(overrides);
-    await em.persistAndFlush(user);
-    return user;
-  };
 
-  const createWorkspace = async (overrides: Partial<Workspace> = {}) => {
-    const workspace = WorkspaceFactory.create(overrides);
-    await em.persistAndFlush(workspace);
-    return workspace;
-  };
 
-  const createRole = async (overrides: Partial<Role> = {}) => {
-    const role = RoleFactory.create(overrides);
-    await em.persistAndFlush(role);
-    return role;
-  };
 
-  const createWorkspaceMember = async (
-    overrides: Partial<WorkspaceMember> = {}
-  ) => {
-    const member = WorkspaceMemberFactory.create(overrides);
-    await em.persistAndFlush(member);
-    return member;
-  };
 
   beforeAll(async () => {
     // Testcontainer를 사용한 모듈 빌드
@@ -104,18 +81,15 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
   describe('워크스페이스 멤버 생성 시나리오', () => {
     it('새 사용자를 워크스페이스에 멤버로 추가하는 시나리오', async () => {
       // Given
-      const user = await createUser({
+      const user = await createUserFixture(em, {
         firstName: '길동',
         lastName: '홍',
         email: 'hong@example.com',
       });
-      const workspace = await createWorkspace({
+      const workspace = await createWorkspaceFixture(em, {
         name: 'Test Workspace',
       });
-      const role = await createRole({
-        name: SystemRole.CAN_VIEW,
-        workspace: null,
-      });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
       const createData: IWorkspaceMemberCreateData = {
         user,
@@ -146,17 +120,14 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
 
     it('여러 사용자를 같은 워크스페이스에 멤버로 추가하는 시나리오', async () => {
       // Given
-      const workspace = await createWorkspace({
+      const workspace = await createWorkspaceFixture(em, {
         name: 'Test Workspace',
       });
-      const role = await createRole({
-        name: SystemRole.CAN_VIEW,
-        workspace: null,
-      });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
-      const user1 = await createUser({ email: 'user1@example.com' });
-      const user2 = await createUser({ email: 'user2@example.com' });
-      const user3 = await createUser({ email: 'user3@example.com' });
+      const user1 = await createUserFixture(em, { email: 'user1@example.com' });
+      const user2 = await createUserFixture(em, { email: 'user2@example.com' });
+      const user3 = await createUserFixture(em, { email: 'user3@example.com' });
 
       // When
       const member1 = await service.createWorkspaceMember({
@@ -201,13 +172,10 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
 
     it('같은 사용자를 다른 워크스페이스에 멤버로 추가하는 시나리오', async () => {
       // Given
-      const user = await createUser({ email: 'user@example.com' });
-      const workspace1 = await createWorkspace({ name: 'Workspace 1' });
-      const workspace2 = await createWorkspace({ name: 'Workspace 2' });
-      const role = await createRole({
-        name: SystemRole.CAN_VIEW,
-        workspace: null,
-      });
+      const user = await createUserFixture(em, { email: 'user@example.com' });
+      const workspace1 = await createWorkspaceFixture(em, { name: 'Workspace 1' });
+      const workspace2 = await createWorkspaceFixture(em, { name: 'Workspace 2' });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
       // When
       const member1 = await service.createWorkspaceMember({
@@ -251,16 +219,13 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
   describe('워크스페이스 멤버 조회 시나리오', () => {
     it('워크스페이스의 모든 멤버를 조회하는 시나리오', async () => {
       // Given
-      const workspace = await createWorkspace({ name: 'Test Workspace' });
-      const role = await createRole({
-        name: SystemRole.CAN_VIEW,
-        workspace: null,
-      });
+      const workspace = await createWorkspaceFixture(em, { name: 'Test Workspace' });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
       const users = await Promise.all([
-        createUser({ email: 'user1@example.com' }),
-        createUser({ email: 'user2@example.com' }),
-        createUser({ email: 'user3@example.com' }),
+        createUserFixture(em, { email: 'user1@example.com' }),
+        createUserFixture(em, { email: 'user2@example.com' }),
+        createUserFixture(em, { email: 'user3@example.com' }),
       ]);
 
       const members = await Promise.all(
@@ -288,7 +253,7 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
 
     it('빈 워크스페이스의 멤버 조회 시 빈 배열을 반환하는 시나리오', async () => {
       // Given
-      const workspace = await createWorkspace({ name: 'Empty Workspace' });
+      const workspace = await createWorkspaceFixture(em, { name: 'Empty Workspace' });
 
       // When
       const workspaceMembers = await service.findByWorkspace(workspace.id);
@@ -299,12 +264,9 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
 
     it('사용자와 워크스페이스로 멤버를 조회하는 시나리오', async () => {
       // Given
-      const user = await createUser({ email: 'user@example.com' });
-      const workspace = await createWorkspace({ name: 'Test Workspace' });
-      const role = await createRole({
-        name: SystemRole.CAN_VIEW,
-        workspace: null,
-      });
+      const user = await createUserFixture(em, { email: 'user@example.com' });
+      const workspace = await createWorkspaceFixture(em, { name: 'Test Workspace' });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
       const member = await service.createWorkspaceMember({
         user,
@@ -330,8 +292,8 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
 
     it('존재하지 않는 사용자-워크스페이스 조합 조회 시 null을 반환하는 시나리오', async () => {
       // Given
-      const user = await createUser({ email: 'user@example.com' });
-      const workspace = await createWorkspace({ name: 'Test Workspace' });
+      const user = await createUserFixture(em, { email: 'user@example.com' });
+      const workspace = await createWorkspaceFixture(em, { name: 'Test Workspace' });
 
       // When
       const foundMember = await service.findByUserAndWorkspace(
@@ -347,14 +309,11 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
   describe('워크스페이스 멤버 활성화 상태 시나리오', () => {
     it('활성화된 멤버만 조회하는 시나리오', async () => {
       // Given
-      const workspace = await createWorkspace({ name: 'Test Workspace' });
-      const role = await createRole({
-        name: SystemRole.CAN_VIEW,
-        workspace: null,
-      });
+      const workspace = await createWorkspaceFixture(em, { name: 'Test Workspace' });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
-      const activeUser = await createUser({ email: 'active@example.com' });
-      const inactiveUser = await createUser({ email: 'inactive@example.com' });
+      const activeUser = await createUserFixture(em, { email: 'active@example.com' });
+      const inactiveUser = await createUserFixture(em, { email: 'inactive@example.com' });
 
       const activeMember = await service.createWorkspaceMember({
         user: activeUser,
@@ -391,12 +350,9 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
 
     it('활성화된 멤버를 인증용으로 조회하는 시나리오', async () => {
       // Given
-      const user = await createUser({ email: 'user@example.com' });
-      const workspace = await createWorkspace({ name: 'Test Workspace' });
-      const role = await createRole({
-        name: SystemRole.CAN_VIEW,
-        workspace: null,
-      });
+      const user = await createUserFixture(em, { email: 'user@example.com' });
+      const workspace = await createWorkspaceFixture(em, { name: 'Test Workspace' });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
       const member = await service.createWorkspaceMember({
         user,
@@ -423,12 +379,9 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
 
     it('비활성화된 멤버는 인증용 조회에서 null을 반환하는 시나리오', async () => {
       // Given
-      const user = await createUser({ email: 'user@example.com' });
-      const workspace = await createWorkspace({ name: 'Test Workspace' });
-      const role = await createRole({
-        name: SystemRole.CAN_VIEW,
-        workspace: null,
-      });
+      const user = await createUserFixture(em, { email: 'user@example.com' });
+      const workspace = await createWorkspaceFixture(em, { name: 'Test Workspace' });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
       await service.createWorkspaceMember({
         user,
@@ -453,24 +406,15 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
   describe('워크스페이스 멤버 권한 시나리오', () => {
     it('다양한 역할을 가진 멤버들을 생성하는 시나리오', async () => {
       // Given
-      const workspace = await createWorkspace({ name: 'Test Workspace' });
+      const workspace = await createWorkspaceFixture(em, { name: 'Test Workspace' });
 
-      const ownerRole = await createRole({
-        name: SystemRole.OWNER,
-        workspace: null,
-      });
-      const adminRole = await createRole({
-        name: SystemRole.ADMIN,
-        workspace: null,
-      });
-      const memberRole = await createRole({
-        name: SystemRole.CAN_VIEW,
-        workspace: null,
-      });
+      const ownerRole = await createRoleFixture(em, SystemRole.OWNER);
+      const adminRole = await createRoleFixture(em, SystemRole.ADMIN);
+      const memberRole = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
-      const owner = await createUser({ email: 'owner@example.com' });
-      const admin = await createUser({ email: 'admin@example.com' });
-      const member = await createUser({ email: 'member@example.com' });
+      const owner = await createUserFixture(em, { email: 'owner@example.com' });
+      const admin = await createUserFixture(em, { email: 'admin@example.com' });
+      const member = await createUserFixture(em, { email: 'member@example.com' });
 
       // When
       const ownerMember = await service.createWorkspaceMember({
@@ -519,15 +463,12 @@ describe('WorkspaceMemberService Integration Tests with Testcontainer', () => {
   describe('워크스페이스 멤버 격리 시나리오', () => {
     it('다른 워크스페이스의 멤버 데이터가 격리되는 시나리오', async () => {
       // Given
-      const workspace1 = await createWorkspace({ name: 'Workspace 1' });
-      const workspace2 = await createWorkspace({ name: 'Workspace 2' });
-      const role = await createRole({
-        name: SystemRole.CAN_VIEW,
-        workspace: null,
-      });
+      const workspace1 = await createWorkspaceFixture(em, { name: 'Workspace 1' });
+      const workspace2 = await createWorkspaceFixture(em, { name: 'Workspace 2' });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
-      const user1 = await createUser({ email: 'user1@example.com' });
-      const user2 = await createUser({ email: 'user2@example.com' });
+      const user1 = await createUserFixture(em, { email: 'user1@example.com' });
+      const user2 = await createUserFixture(em, { email: 'user2@example.com' });
 
       // When
       const member1 = await service.createWorkspaceMember({

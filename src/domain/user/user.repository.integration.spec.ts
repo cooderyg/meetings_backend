@@ -6,7 +6,7 @@ import { TestContainerManager } from '../../../test/utils/testcontainer-singleto
 import { UserModule } from './user.module';
 import { UserRepository } from './user.repository';
 import { User } from './entity/user.entity';
-import { UserFactory } from '../../../test/factories/user.factory';
+import { createUserFixture } from '../../../test/fixtures/user.fixture';
 import { v4 as uuid } from 'uuid';
 
 describe('UserRepository Integration Tests with Testcontainer', () => {
@@ -15,13 +15,6 @@ describe('UserRepository Integration Tests with Testcontainer', () => {
   let em: EntityManager;
   let orm: MikroORM;
   const containerKey = 'user-integration-test';
-
-  // User 생성 헬퍼 함수 (Factory 패턴 사용)
-  const createUser = async (overrides: Partial<User> = {}) => {
-    const user = UserFactory.create(overrides);
-    await em.persistAndFlush(user);
-    return user;
-  };
 
   beforeAll(async () => {
     // Testcontainer를 사용한 모듈 빌드
@@ -73,7 +66,7 @@ describe('UserRepository Integration Tests with Testcontainer', () => {
     it('이메일로 사용자를 찾아야 함', async () => {
       // Given
       const email = 'test@example.com';
-      const user = await createUser({ email });
+      const user = await createUserFixture(em, { email, firstName: '길동', lastName: '홍' });
 
       // When
       const foundUser = await userRepository.findByEmail(email);
@@ -100,7 +93,7 @@ describe('UserRepository Integration Tests with Testcontainer', () => {
   describe('findById', () => {
     it('ID로 사용자를 찾아야 함', async () => {
       // Given
-      const user = await createUser({
+      const user = await createUserFixture(em, {
         email: 'findbyid@example.com',
       });
 
@@ -129,7 +122,7 @@ describe('UserRepository Integration Tests with Testcontainer', () => {
     it('UID로 사용자를 찾아야 함', async () => {
       // Given
       const uid = uuid();
-      const user = await createUser({
+      const user = await createUserFixture(em, {
         uid,
         email: 'findbyuid@example.com',
       });
@@ -147,7 +140,7 @@ describe('UserRepository Integration Tests with Testcontainer', () => {
   describe('updateUser', () => {
     it('사용자 정보를 업데이트해야 함', async () => {
       // Given
-      const user = await createUser({
+      const user = await createUserFixture(em, {
         email: 'update@example.com',
       });
 
@@ -171,20 +164,20 @@ describe('UserRepository Integration Tests with Testcontainer', () => {
     it('중복된 이메일로 사용자 생성 시 실패해야 함', async () => {
       // Given
       const email = 'duplicate@example.com';
-      await createUser({ email });
+      await createUserFixture(em, { email });
 
       // When/Then - 동일한 이메일로 다른 사용자 생성 시도
-      await expect(createUser({ email })).rejects.toThrow();
+      await expect(createUserFixture(em, { email })).rejects.toThrow();
     });
 
     it('중복된 UID로 사용자 생성 시 실패해야 함', async () => {
       // Given
       const uid = uuid();
-      await createUser({ uid, email: 'user1@example.com' });
+      await createUserFixture(em, { uid, email: 'user1@example.com' });
 
       // When/Then - 동일한 UID로 다른 사용자 생성 시도
       await expect(
-        createUser({ uid, email: 'user2@example.com' })
+        createUserFixture(em, { uid, email: 'user2@example.com' })
       ).rejects.toThrow();
     });
   });
@@ -282,7 +275,7 @@ describe('UserRepository Integration Tests with Testcontainer', () => {
     it('각 테스트가 독립적인 데이터베이스 컨텍스트에서 실행되어야 함', async () => {
       // Given - 이 테스트만의 고유한 데이터 생성
       const uniqueEmail = `parallel_${Date.now()}@example.com`;
-      const user = await createUser({
+      const user = await createUserFixture(em, {
         email: uniqueEmail,
         firstName: '병렬테스트',
       });

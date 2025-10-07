@@ -3,10 +3,10 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { MikroORM } from '@mikro-orm/core';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
+import { createUserFixture } from '../../../test/fixtures/user.fixture';
+import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
 import { WorkspaceRepository } from './workspace.repository';
 import { Workspace, SubscriptionTier } from './entity/workspace.entity';
-import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
-import { UserFactory } from '../../../test/factories/user.factory';
 import { User } from '../user/entity/user.entity';
 import { v4 as uuid } from 'uuid';
 
@@ -18,18 +18,8 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
   const containerKey = 'workspace-integration-test';
 
   // Workspace 생성 헬퍼 함수 (Factory 패턴 사용)
-  const createWorkspace = async (overrides: Partial<Workspace> = {}) => {
-    const workspace = WorkspaceFactory.create(overrides);
-    await em.persistAndFlush(workspace);
-    return workspace;
-  };
 
   // User 생성 헬퍼 함수 (Factory 패턴 사용)
-  const createUser = async (overrides: Partial<User> = {}) => {
-    const user = UserFactory.create(overrides);
-    await em.persistAndFlush(user);
-    return user;
-  };
 
   beforeAll(async () => {
     // Testcontainer를 사용한 모듈 빌드 (Repository만 테스트)
@@ -81,7 +71,7 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
   describe('findOne', () => {
     it('ID로 워크스페이스를 찾아야 함', async () => {
       // Given
-      const workspace = await createWorkspace({
+      const workspace = await createWorkspaceFixture(em, {
         name: 'Test Workspace',
         subscriptionTier: SubscriptionTier.FREE,
       });
@@ -109,7 +99,7 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
 
     it('이름으로 워크스페이스를 찾아야 함', async () => {
       // Given
-      const workspace = await createWorkspace({
+      const workspace = await createWorkspaceFixture(em, {
         name: 'Unique Workspace Name',
         subscriptionTier: SubscriptionTier.FREE,
       });
@@ -127,9 +117,9 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
   describe('find', () => {
     it('모든 워크스페이스를 조회해야 함', async () => {
       // Given
-      await createWorkspace({ name: 'Workspace 1' });
-      await createWorkspace({ name: 'Workspace 2' });
-      await createWorkspace({ name: 'Workspace 3' });
+      await createWorkspaceFixture(em, { name: 'Workspace 1' });
+      await createWorkspaceFixture(em, { name: 'Workspace 2' });
+      await createWorkspaceFixture(em, { name: 'Workspace 3' });
 
       // When
       const workspaces = await workspaceRepository.find({});
@@ -145,15 +135,15 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
 
     it('구독 티어별로 워크스페이스를 필터링해야 함', async () => {
       // Given
-      await createWorkspace({
+      await createWorkspaceFixture(em, {
         name: 'Free Workspace',
         subscriptionTier: SubscriptionTier.FREE,
       });
-      await createWorkspace({
+      await createWorkspaceFixture(em, {
         name: 'Premium Workspace',
         subscriptionTier: SubscriptionTier.PREMIUM,
       });
-      await createWorkspace({
+      await createWorkspaceFixture(em, {
         name: 'Another Free Workspace',
         subscriptionTier: SubscriptionTier.FREE,
       });
@@ -174,8 +164,8 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
 
     it('빈 조건으로 조회하면 모든 워크스페이스를 반환해야 함', async () => {
       // Given
-      await createWorkspace({ name: 'Workspace 1' });
-      await createWorkspace({ name: 'Workspace 2' });
+      await createWorkspaceFixture(em, { name: 'Workspace 1' });
+      await createWorkspaceFixture(em, { name: 'Workspace 2' });
 
       // When
       const workspaces = await workspaceRepository.find({});
@@ -211,7 +201,7 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
 
     it('기존 워크스페이스에 데이터를 할당해야 함', async () => {
       // Given
-      const existingWorkspace = await createWorkspace({
+      const existingWorkspace = await createWorkspaceFixture(em, {
         name: 'Original Name',
         subscriptionTier: SubscriptionTier.FREE,
       });
@@ -237,13 +227,10 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
   describe('persistAndFlush', () => {
     it('워크스페이스를 데이터베이스에 저장해야 함', async () => {
       // Given
-      const workspace = WorkspaceFactory.create({
+      const workspace = await createWorkspaceFixture(em, {
         name: 'Persisted Workspace',
         subscriptionTier: SubscriptionTier.FREE,
       });
-
-      // When
-      await em.persistAndFlush(workspace);
 
       // Then
       const found = await workspaceRepository.findOne({ id: workspace.id });
@@ -253,12 +240,15 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
 
     it('여러 워크스페이스를 한 번에 저장해야 함', async () => {
       // Given
-      const workspaces = WorkspaceFactory.createMany(3, {
+      const workspace1 = await createWorkspaceFixture(em, {
         subscriptionTier: SubscriptionTier.FREE,
       });
-
-      // When
-      await em.persistAndFlush(workspaces);
+      const workspace2 = await createWorkspaceFixture(em, {
+        subscriptionTier: SubscriptionTier.FREE,
+      });
+      const workspace3 = await createWorkspaceFixture(em, {
+        subscriptionTier: SubscriptionTier.FREE,
+      });
 
       // Then
       const found = await workspaceRepository.find({});
@@ -269,7 +259,7 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
   describe('update', () => {
     it('워크스페이스 정보를 업데이트해야 함', async () => {
       // Given
-      const workspace = await createWorkspace({
+      const workspace = await createWorkspaceFixture(em, {
         name: 'Original Name',
         subscriptionTier: SubscriptionTier.FREE,
       });
@@ -290,7 +280,7 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
   describe('remove', () => {
     it('워크스페이스를 삭제해야 함', async () => {
       // Given
-      const workspace = await createWorkspace({
+      const workspace = await createWorkspaceFixture(em, {
         name: 'To Be Deleted',
         subscriptionTier: SubscriptionTier.FREE,
       });
@@ -307,15 +297,15 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
   describe('복합 쿼리', () => {
     it('이름과 구독 티어로 워크스페이스를 찾아야 함', async () => {
       // Given
-      await createWorkspace({
+      await createWorkspaceFixture(em, {
         name: 'Free Workspace',
         subscriptionTier: SubscriptionTier.FREE,
       });
-      await createWorkspace({
+      await createWorkspaceFixture(em, {
         name: 'Premium Workspace',
         subscriptionTier: SubscriptionTier.PREMIUM,
       });
-      await createWorkspace({
+      await createWorkspaceFixture(em, {
         name: 'Another Free Workspace',
         subscriptionTier: SubscriptionTier.FREE,
       });
@@ -334,9 +324,9 @@ describe('WorkspaceRepository Integration Tests with Testcontainer', () => {
 
     it('이름에 특정 문자열이 포함된 워크스페이스를 찾아야 함', async () => {
       // Given
-      await createWorkspace({ name: 'Development Workspace' });
-      await createWorkspace({ name: 'Production Workspace' });
-      await createWorkspace({ name: 'Test Environment' });
+      await createWorkspaceFixture(em, { name: 'Development Workspace' });
+      await createWorkspaceFixture(em, { name: 'Production Workspace' });
+      await createWorkspaceFixture(em, { name: 'Test Environment' });
 
       // When
       const workspaces = await workspaceRepository.find({

@@ -10,11 +10,10 @@ import { OAuthType } from '../enums/oauth-type.enum';
 import { AppError } from '../../../shared/exception/app.error';
 import { TestModuleBuilder } from '../../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../../test/utils/testcontainer-singleton';
-import { UserFactory } from '../../../../test/factories/user.factory';
-import { WorkspaceFactory } from '../../../../test/factories/workspace.factory';
 import { AuthModule } from '../auth.module';
 import { AuthGuard } from '../../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../../shared/guard/workspace-member.guard';
+import { createUserFixture } from '../../../../test/fixtures/user.fixture';
 
 // Mock AppConfig
 jest.mock('../../../shared/module/app-config/app-config', () => {
@@ -52,11 +51,6 @@ describe('AuthService Integration Tests with Testcontainer', () => {
   let service: AuthService;
   const containerKey = 'auth-service-integration-test';
 
-  const createUser = async (overrides: Partial<User> = {}) => {
-    const user = UserFactory.create(overrides);
-    await em.persistAndFlush(user);
-    return user;
-  };
 
   beforeAll(async () => {
     // Testcontainer를 사용한 모듈 빌드
@@ -108,7 +102,7 @@ describe('AuthService Integration Tests with Testcontainer', () => {
   describe('Google OAuth 로그인 시나리오', () => {
     it('기존 사용자가 Google OAuth로 로그인하는 시나리오', async () => {
       // Given
-      await createUser({
+      await createUserFixture(em, {
         uid: 'google-uid-123',
         email: 'existing@google.com',
         firstName: '기존',
