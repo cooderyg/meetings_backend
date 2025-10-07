@@ -31,10 +31,8 @@ describe('WorkspaceMemberRoleRepository Integration Tests', () => {
     em = module.get<EntityManager>(EntityManager);
     orm = module.get<MikroORM>(MikroORM);
 
-    // ltree 확장 설치
     await em.execute('CREATE EXTENSION IF NOT EXISTS ltree');
 
-    // 스키마 생성
     const generator = orm.getSchemaGenerator();
     await generator.dropSchema({ wrap: false });
     await generator.createSchema({ wrap: false });

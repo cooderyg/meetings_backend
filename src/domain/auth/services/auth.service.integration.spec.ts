@@ -50,22 +50,12 @@ describe('AuthService Integration Tests with Testcontainer', () => {
   let orm: MikroORM;
   let em: EntityManager;
   let service: AuthService;
-  let userService: UserService;
-  let workspaceService: WorkspaceService;
-  let workspaceMemberService: WorkspaceMemberService;
   const containerKey = 'auth-service-integration-test';
 
-  // Helper functions
   const createUser = async (overrides: Partial<User> = {}) => {
     const user = UserFactory.create(overrides);
     await em.persistAndFlush(user);
     return user;
-  };
-
-  const createWorkspace = async (overrides: Partial<Workspace> = {}) => {
-    const workspace = WorkspaceFactory.create(overrides);
-    await em.persistAndFlush(workspace);
-    return workspace;
   };
 
   beforeAll(async () => {
@@ -80,11 +70,6 @@ describe('AuthService Integration Tests with Testcontainer', () => {
     orm = module.get<MikroORM>(MikroORM);
     em = orm.em as EntityManager;
     service = module.get<AuthService>(AuthService);
-    userService = module.get<UserService>(UserService);
-    workspaceService = module.get<WorkspaceService>(WorkspaceService);
-    workspaceMemberService = module.get<WorkspaceMemberService>(
-      WorkspaceMemberService
-    );
 
     // ltree 확장 설치 (Resource 엔티티에서 사용)
     await em.execute('CREATE EXTENSION IF NOT EXISTS ltree');
@@ -123,7 +108,7 @@ describe('AuthService Integration Tests with Testcontainer', () => {
   describe('Google OAuth 로그인 시나리오', () => {
     it('기존 사용자가 Google OAuth로 로그인하는 시나리오', async () => {
       // Given
-      const existingUser = await createUser({
+      await createUser({
         uid: 'google-uid-123',
         email: 'existing@google.com',
         firstName: '기존',
@@ -137,7 +122,6 @@ describe('AuthService Integration Tests with Testcontainer', () => {
         lastName: '사용자',
       };
 
-      // Mock GoogleAuthStrategy만 설정 (나머지는 실제 서비스 사용)
       const googleAuthStrategy = (service as any).strategies[OAuthType.GOOGLE];
       googleAuthStrategy.verifyOAuthToken = jest
         .fn()

@@ -29,12 +29,10 @@ describe('MeetingRepository', () => {
   });
 
   beforeEach(async () => {
-    // Clear identity map before each test to prevent cache pollution
     em.clear();
   });
 
   afterAll(async () => {
-    // 워커 전용 스키마 삭제 (모든 테이블 포함)
     await cleanupTestDatabase(orm);
     await orm.close();
   });
@@ -184,7 +182,6 @@ describe('MeetingRepository', () => {
     it('should return paginated meetings', async () => {
       const workspace = await createWorkspaceFixture(em);
 
-      // Create 5 meetings (non-draft status as findByWorkspace excludes drafts)
       for (let i = 0; i < 5; i++) {
         await createMeetingFixture(em, {
           workspace,
@@ -192,7 +189,6 @@ describe('MeetingRepository', () => {
         });
       }
 
-      // Clear identity map to force fresh database queries
       em.clear();
 
       const result = await repository.findByWorkspace(workspace.id, {
@@ -221,7 +217,6 @@ describe('MeetingRepository', () => {
         status: MeetingStatus.PUBLISHED,
       });
 
-      // Clear identity map to force fresh database queries
       em.clear();
 
       const result = await repository.findByWorkspace(
@@ -253,7 +248,6 @@ describe('MeetingRepository', () => {
         status: MeetingStatus.PUBLISHED,
       });
 
-      // Clear identity map to force fresh database queries
       em.clear();
 
       const result1 = await repository.findByWorkspace(workspace1.id, {

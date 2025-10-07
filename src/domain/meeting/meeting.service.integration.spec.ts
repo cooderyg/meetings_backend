@@ -21,29 +21,14 @@ import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
 
 /**
- * MeetingService 통합 테스트 (Testcontainer 기반)
+ * MeetingService 통합 테스트
  *
  * @description
- * 실제 PostgreSQL 컨테이너를 사용하여 Service 계층의 비즈니스 로직을 검증합니다.
- * - 실제 DB 연산 (MikroORM flush, 관계 로딩 등)
- * - Repository와 Service 간 통합
- * - 트랜잭션 격리 및 데이터 무결성 검증
- *
- * @remarks
- * **Testcontainer 패턴**
- * - beforeAll: 격리된 PostgreSQL 컨테이너 시작 및 스키마 생성
- * - beforeEach: 트랜잭션 시작 (테스트 간 데이터 격리)
- * - afterEach: 트랜잭션 롤백 (자동 데이터 초기화)
- * - afterAll: 컨테이너 정리
- *
- * **E2E 테스트와의 차이**
- * - E2E: HTTP 요청/응답 검증, Controller 포함
- * - Integration: Service 비즈니스 로직 검증, Controller 제외
- *
- * @see {@link TestModuleBuilder.withTestcontainer} - 컨테이너 설정
- * @see {@link TestContainerManager} - 컨테이너 재사용 및 관리
+ * Testcontainer로 격리된 PostgreSQL에서 Service 비즈니스 로직 검증
+ * - Transaction 기반 데이터 격리 (begin → rollback)
+ * - E2E: HTTP + Controller / Integration: Service + Repository
  */
-describe('MeetingService Integration Tests with Testcontainer', () => {
+describe('MeetingService Integration Tests', () => {
   let orm: MikroORM;
   let em: EntityManager;
   let service: MeetingService;
@@ -83,36 +68,15 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
     await generator.createSchema({ wrap: false });
   }, 30000); // Testcontainer 시작 시간 고려
 
-  /**
-   * beforeEach: 트랜잭션 시작
-   *
-   * @description
-   * 각 테스트를 트랜잭션으로 격리하여 데이터 간섭 방지
-   */
   beforeEach(async () => {
     await orm.em.begin();
   });
 
-  /**
-   * afterEach: 트랜잭션 롤백 및 EntityManager 초기화
-   *
-   * @description
-   * 1. 트랜잭션 롤백으로 테스트 데이터 자동 삭제
-   * 2. Identity Map 초기화 (em.clear())
-   */
   afterEach(async () => {
     await orm.em.rollback();
     orm.em.clear();
   });
 
-  /**
-   * afterAll: 테스트 환경 정리
-   *
-   * @description
-   * 1. DB 연결 종료
-   * 2. ORM 종료
-   * 3. Testcontainer 정리 (containerKey로 해당 컨테이너만 종료)
-   */
   afterAll(async () => {
     if (em) {
       await em.getConnection().close(true);
@@ -246,21 +210,26 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
       const member = await createWorkspaceMemberFixture(em, { workspace });
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
 
-      try {
-        await service.publishMeeting({
+      await expect(
+        service.publishMeeting({
           id: nonExistentId,
           workspaceId: workspace.id,
           workspaceMemberId: member.id,
           data: { visibility: ResourceVisibility.PUBLIC },
-        });
-        fail('Should have thrown AppError');
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError);
-        expect((error as AppError).code).toBe('meeting.publish.notFound');
-        expect((error as AppError).context).toEqual({
-          meetingId: nonExistentId,
-        });
-      }
+        })
+      ).rejects.toThrow(AppError);
+
+      await expect(
+        service.publishMeeting({
+          id: nonExistentId,
+          workspaceId: workspace.id,
+          workspaceMemberId: member.id,
+          data: { visibility: ResourceVisibility.PUBLIC },
+        })
+      ).rejects.toMatchObject({
+        code: 'meeting.publish.notFound',
+        context: { meetingId: nonExistentId },
+      });
     });
 
     it('should throw AppError for non-completed meeting', async () => {
@@ -271,22 +240,29 @@ describe('MeetingService Integration Tests with Testcontainer', () => {
         status: MeetingStatus.DRAFT,
       });
 
-      try {
-        await service.publishMeeting({
+      await expect(
+        service.publishMeeting({
           id: meeting.id,
           workspaceId: workspace.id,
           workspaceMemberId: member.id,
           data: { visibility: ResourceVisibility.PUBLIC },
-        });
-        fail('Should have thrown AppError');
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError);
-        expect((error as AppError).code).toBe('meeting.publish.isDraft');
-        expect((error as AppError).context).toEqual({
+        })
+      ).rejects.toThrow(AppError);
+
+      await expect(
+        service.publishMeeting({
+          id: meeting.id,
+          workspaceId: workspace.id,
+          workspaceMemberId: member.id,
+          data: { visibility: ResourceVisibility.PUBLIC },
+        })
+      ).rejects.toMatchObject({
+        code: 'meeting.publish.isDraft',
+        context: {
           currentStatus: MeetingStatus.DRAFT,
           requiredStatus: MeetingStatus.COMPLETED,
-        });
-      }
+        },
+      });
     });
 
     it('should update resource visibility atomically', async () => {

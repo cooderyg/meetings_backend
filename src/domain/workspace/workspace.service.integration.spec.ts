@@ -6,7 +6,6 @@ import { WorkspaceMemberService } from '../workspace-member/workspace-member.ser
 import { RoleService } from '../role/role.service';
 import { Workspace, SubscriptionTier } from './entity/workspace.entity';
 import { User } from '../user/entity/user.entity';
-import { Role } from '../role/entity/role.entity';
 import { SystemRole } from '../role/enum/system-role.enum';
 import { UpdateWorkspaceNameDto } from './dto/request/update-workspace-name.dto';
 import { AppError } from '../../shared/exception/app.error';
@@ -15,7 +14,6 @@ import { TestContainerManager } from '../../../test/utils/testcontainer-singleto
 import { WorkspaceFactory } from '../../../test/factories/workspace.factory';
 import { UserFactory } from '../../../test/factories/user.factory';
 import { RoleFactory } from '../../../test/factories/role.factory';
-import { WorkspaceMemberFactory } from '../../../test/factories/workspace-member.factory';
 import { WorkspaceModule } from './workspace.module';
 import { AuthGuard } from '../../shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
@@ -81,6 +79,7 @@ describe('WorkspaceService Integration Tests with Testcontainer', () => {
 
   beforeEach(async () => {
     // 각 테스트 전에 데이터 초기화
+    // NOTE: SystemRole(Owner, Admin 등)이 공유되므로 TRUNCATE 필요
     await em.execute('TRUNCATE TABLE "workspaces" CASCADE');
     await em.execute('TRUNCATE TABLE "workspace_members" CASCADE');
     await em.execute('TRUNCATE TABLE "workspace_member_roles" CASCADE');

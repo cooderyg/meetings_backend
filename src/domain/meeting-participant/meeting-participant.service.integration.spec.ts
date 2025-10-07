@@ -22,7 +22,6 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
   const containerKey = 'meeting-participant-service-integration-test';
 
   beforeAll(async () => {
-    // Testcontainer를 사용한 모듈 빌드
     const module = await TestModuleBuilder.create()
       .withModule(MeetingParticipantModule)
       .withTestcontainer(containerKey)
@@ -37,28 +36,23 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       MeetingParticipantRepository
     );
 
-    // ltree 확장 설치 (Resource 엔티티에서 사용)
     await em.execute('CREATE EXTENSION IF NOT EXISTS ltree');
 
-    // 스키마 생성 (기존 스키마 삭제 후 재생성)
     const generator = orm.getSchemaGenerator();
     await generator.dropSchema({ wrap: false });
     await generator.createSchema({ wrap: false });
-  }, 30000); // Testcontainer 시작 시간 고려
+  }, 30000);
 
   beforeEach(async () => {
-    // 각 테스트를 트랜잭션으로 격리
     await orm.em.begin();
   });
 
   afterEach(async () => {
-    // 트랜잭션 롤백으로 데이터 초기화
     await orm.em.rollback();
     orm.em.clear();
   });
 
   afterAll(async () => {
-    // 정리 작업
     if (em) {
       await em.getConnection().close(true);
     }
@@ -67,7 +61,6 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
       await orm.close();
     }
 
-    // Testcontainer 정리
     const manager = TestContainerManager.getInstance();
     await manager.cleanup(containerKey);
   }, 30000);
@@ -99,7 +92,7 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
     it('게스트로 MeetingParticipant를 생성해야 함', async () => {
       // Given
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace });
+      await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
         workspace,
       });
@@ -169,7 +162,7 @@ describe('MeetingParticipantService Integration Tests with Testcontainer', () =>
     it('존재하지 않는 WorkspaceMember로 참여자 생성 시 AppError를 던져야 함', async () => {
       // Given
       const workspace = await createWorkspaceFixture(em);
-      const member = await createWorkspaceMemberFixture(em, { workspace });
+      await createWorkspaceMemberFixture(em, { workspace });
       const meeting = await createMeetingFixture(em, {
         workspace,
       });

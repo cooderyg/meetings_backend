@@ -7,7 +7,6 @@ import { UserModule } from './user.module';
 import { UserRepository } from './user.repository';
 import { User } from './entity/user.entity';
 import { UserFactory } from '../../../test/factories/user.factory';
-import { DbCleanup } from '../../../test/utils/db-cleanup';
 import { v4 as uuid } from 'uuid';
 
 describe('UserRepository Integration Tests with Testcontainer', () => {

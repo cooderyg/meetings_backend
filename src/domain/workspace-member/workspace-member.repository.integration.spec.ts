@@ -82,6 +82,7 @@ describe('WorkspaceMemberRepository Integration Tests with Testcontainer', () =>
 
   beforeEach(async () => {
     // 각 테스트 전에 데이터 초기화
+    // NOTE: SystemRole 등 공유 데이터가 있어 TRUNCATE 필요
     await em.execute('TRUNCATE TABLE "workspace_members" CASCADE');
     await em.execute('TRUNCATE TABLE "workspaces" CASCADE');
     await em.execute('TRUNCATE TABLE "users" CASCADE');

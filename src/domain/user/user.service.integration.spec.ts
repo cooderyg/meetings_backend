@@ -2,7 +2,6 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { UserService } from './user.service';
 import { UserRepository } from './user.repository';
-import { User } from './entity/user.entity';
 import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
 import { AppError } from '../../shared/exception/app.error';
@@ -17,7 +16,6 @@ describe('UserService Integration Tests with Testcontainer', () => {
   const containerKey = 'user-service-integration-test';
 
   beforeAll(async () => {
-    // Testcontainer를 사용한 모듈 빌드
     const module = await TestModuleBuilder.create()
       .withModule(UserModule)
       .withTestcontainer(containerKey)
@@ -29,28 +27,23 @@ describe('UserService Integration Tests with Testcontainer', () => {
     service = module.get<UserService>(UserService);
     repository = module.get<UserRepository>(UserRepository);
 
-    // ltree 확장 설치 (다른 도메인에서 사용할 수 있음)
     await em.execute('CREATE EXTENSION IF NOT EXISTS ltree');
 
-    // 스키마 생성 (기존 스키마 삭제 후 재생성)
     const generator = orm.getSchemaGenerator();
     await generator.dropSchema({ wrap: false });
     await generator.createSchema({ wrap: false });
-  }, 30000); // Testcontainer 시작 시간 고려
+  }, 30000);
 
   beforeEach(async () => {
-    // 각 테스트를 트랜잭션으로 격리
     await orm.em.begin();
   });
 
   afterEach(async () => {
-    // 트랜잭션 롤백으로 데이터 초기화
     await orm.em.rollback();
     orm.em.clear();
   });
 
   afterAll(async () => {
-    // 정리 작업
     if (em) {
       await em.getConnection().close(true);
     }
@@ -59,7 +52,6 @@ describe('UserService Integration Tests with Testcontainer', () => {
       await orm.close();
     }
 
-    // Testcontainer 정리
     const manager = TestContainerManager.getInstance();
     await manager.cleanup(containerKey);
   }, 30000);
