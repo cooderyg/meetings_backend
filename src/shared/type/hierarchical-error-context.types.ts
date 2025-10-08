@@ -196,6 +196,50 @@ export interface HierarchicalErrorContextMap {
   'role.system.notFound': undefined;
 
   // ===================
+  // 초대 도메인 (invitation.*.*)
+  // ===================
+  // 생성 관련 (invitation.create.*)
+  'invitation.create.duplicatePending': {
+    workspaceId: string;
+    inviteeEmail: string;
+  };
+  'invitation.create.inviterNotFound': {
+    inviterId: string;
+  };
+  'invitation.create.roleNotFound': {
+    roleId: number;
+  };
+
+  // 수락 관련 (invitation.accept.*)
+  'invitation.accept.notFound': {
+    token: string;
+  };
+  'invitation.accept.cannotAccept': {
+    status: string;
+    expired: boolean;
+  };
+  'invitation.accept.emailMismatch': {
+    expected: string;
+    actual: string;
+  };
+  'invitation.accept.alreadyMember': {
+    userId: string;
+    workspaceId: string;
+  };
+
+  // 취소 관련 (invitation.cancel.*)
+  'invitation.cancel.notFound': {
+    invitationId: string;
+  };
+  'invitation.cancel.unauthorized': {
+    inviterId: string;
+    ownerId: string;
+  };
+  'invitation.cancel.alreadyProcessed': {
+    status: string;
+  };
+
+  // ===================
   // LangChain 도메인 (langchain.*.*)
   // ===================
   'langchain.config.missingApiKey': undefined;

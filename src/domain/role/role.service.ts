@@ -21,4 +21,8 @@ export class RoleService {
   async findSystemRoles(role: SystemRole) {
     return this.roleRepository.findOneSystemRole(role);
   }
+
+  async findById(id: number) {
+    return this.roleRepository.findById(id);
+  }
 }

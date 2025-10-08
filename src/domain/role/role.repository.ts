@@ -26,4 +26,8 @@ export class RoleRepository {
       workspace: null,
     });
   }
+
+  async findById(id: number) {
+    return await this.repository.findOne({ id });
+  }
 }

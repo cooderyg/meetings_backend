@@ -138,6 +138,25 @@ export type HierarchicalErrorCode =
   | 'workspace.subscription.limitExceeded'
 
   // ===================
+  // 초대 도메인 (invitation.*.*)
+  // ===================
+  // 생성 관련 (invitation.create.*)
+  | 'invitation.create.duplicatePending'
+  | 'invitation.create.inviterNotFound'
+  | 'invitation.create.roleNotFound'
+
+  // 수락 관련 (invitation.accept.*)
+  | 'invitation.accept.notFound'
+  | 'invitation.accept.cannotAccept'
+  | 'invitation.accept.emailMismatch'
+  | 'invitation.accept.alreadyMember'
+
+  // 취소 관련 (invitation.cancel.*)
+  | 'invitation.cancel.notFound'
+  | 'invitation.cancel.unauthorized'
+  | 'invitation.cancel.alreadyProcessed'
+
+  // ===================
   // 리소스 도메인 (resource.*.*)
   // ===================
   // 조회 관련 (resource.fetch.*)
@@ -335,6 +354,18 @@ export const HIERARCHICAL_ERROR_DEFINITIONS: Record<
   'workspace.leave.lastOwner': { httpStatus: 400, logLevel: 'warn' },
   'workspace.subscription.required': { httpStatus: 402, logLevel: 'warn' },
   'workspace.subscription.limitExceeded': { httpStatus: 429, logLevel: 'warn' },
+
+  // 초대 도메인
+  'invitation.create.duplicatePending': { httpStatus: 400, logLevel: 'warn' },
+  'invitation.create.inviterNotFound': { httpStatus: 404, logLevel: 'warn' },
+  'invitation.create.roleNotFound': { httpStatus: 400, logLevel: 'warn' },
+  'invitation.accept.notFound': { httpStatus: 404, logLevel: 'info' },
+  'invitation.accept.cannotAccept': { httpStatus: 400, logLevel: 'warn' },
+  'invitation.accept.emailMismatch': { httpStatus: 400, logLevel: 'warn' },
+  'invitation.accept.alreadyMember': { httpStatus: 409, logLevel: 'warn' },
+  'invitation.cancel.notFound': { httpStatus: 404, logLevel: 'info' },
+  'invitation.cancel.unauthorized': { httpStatus: 403, logLevel: 'warn' },
+  'invitation.cancel.alreadyProcessed': { httpStatus: 400, logLevel: 'warn' },
 
   // 공통 리소스 (3계층 통일)
   'resource.fetch.notFound': { httpStatus: 404, logLevel: 'info' },

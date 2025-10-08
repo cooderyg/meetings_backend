@@ -26,6 +26,7 @@ import { WorkspaceMiddleware } from './shared/middleware/workspace.middleware';
 import { ResourceModule } from './domain/resource/resource.module';
 import { MeetingModule } from './domain/meeting/meeting.module';
 import { MeetingParticipantModule } from './domain/meeting-participant/meeting-participant.module';
+import { InvitationModule } from './domain/invitation/invitation.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { MeetingParticipantModule } from './domain/meeting-participant/meeting-p
     MeetingModule,
     MeetingRecordModule,
     MeetingParticipantModule,
+    InvitationModule,
     EventEmitterModule.forRoot(),
   ],
   controllers: [],
