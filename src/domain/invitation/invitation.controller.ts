@@ -111,12 +111,12 @@ export class InvitationController {
   }
 
   /**
-   * 토큰으로 초대 조회 (Public)
+   * 토큰으로 초대 조회 (Public - 인증 불필요)
    */
   @Get('invitations/:token')
   @ApiOperation({
     summary: '초대 정보 조회',
-    description: '토큰으로 초대 정보를 조회합니다.',
+    description: '토큰으로 초대 정보를 조회합니다. (미가입자도 접근 가능)',
   })
   @ApiResponse({
     status: 200,
@@ -139,6 +139,7 @@ export class InvitationController {
 
     return this.mapToDto(invitation);
   }
+
 
   /**
    * 초대 취소

@@ -159,6 +159,12 @@ export type HierarchicalErrorCode =
   | 'invitation.cancel.unauthorized'
   | 'invitation.cancel.alreadyProcessed'
 
+  // 회원가입 관련 (invitation.register.*)
+  | 'invitation.register.emailMismatch'
+  | 'invitation.register.emailAlreadyExists'
+  | 'invitation.register.invitationNotFound'
+  | 'invitation.register.cannotAccept'
+
   // ===================
   // 리소스 도메인 (resource.*.*)
   // ===================
@@ -370,6 +376,10 @@ export const HIERARCHICAL_ERROR_DEFINITIONS: Record<
   'invitation.cancel.notFound': { httpStatus: 404, logLevel: 'info' },
   'invitation.cancel.unauthorized': { httpStatus: 403, logLevel: 'warn' },
   'invitation.cancel.alreadyProcessed': { httpStatus: 400, logLevel: 'warn' },
+  'invitation.register.emailMismatch': { httpStatus: 400, logLevel: 'warn' },
+  'invitation.register.emailAlreadyExists': { httpStatus: 409, logLevel: 'warn' },
+  'invitation.register.invitationNotFound': { httpStatus: 404, logLevel: 'info' },
+  'invitation.register.cannotAccept': { httpStatus: 400, logLevel: 'warn' },
 
   // 공통 리소스 (3계층 통일)
   'resource.fetch.notFound': { httpStatus: 404, logLevel: 'info' },

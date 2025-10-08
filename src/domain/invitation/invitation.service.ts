@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { Invitation } from './entity/invitation.entity';
 import { InvitationRepository } from './invitation.repository';
 import { InvitationStatus } from './enum/invitation-status.enum';
@@ -21,7 +20,6 @@ export class InvitationService {
     private readonly roleService: RoleService,
     private readonly workspaceService: WorkspaceService,
     private readonly userService: UserService,
-    @InjectRepository(Invitation)
     private readonly em: EntityManager
   ) {}
 
@@ -145,6 +143,64 @@ export class InvitationService {
   }
 
   /**
+   * OAuth 기반 초대 수락 (신규 사용자 또는 기존 사용자)
+   */
+  async acceptInvitationWithOAuth(
+    token: string,
+    user: any
+  ): Promise<WorkspaceMember> {
+    const invitation = await this.repository.findByToken(token);
+
+    if (!invitation) {
+      throw new AppError('invitation.accept.notFound', { token });
+    }
+
+    if (!invitation.canAccept()) {
+      throw new AppError('invitation.accept.cannotAccept', {
+        status: invitation.status,
+        expired: invitation.isExpired(),
+      });
+    }
+
+    // 이메일 일치 확인
+    if (user.email !== invitation.inviteeEmail) {
+      throw new AppError('invitation.accept.emailMismatch', {
+        expected: invitation.inviteeEmail,
+        actual: user.email,
+      });
+    }
+
+    // 이미 워크스페이스 멤버인지 확인
+    const existingMember =
+      await this.workspaceMemberService.findByUserAndWorkspace(
+        user.id,
+        invitation.workspace.id
+      );
+
+    if (existingMember) {
+      throw new AppError('invitation.accept.alreadyMember', {
+        userId: user.id,
+        workspaceId: invitation.workspace.id,
+      });
+    }
+
+    // 워크스페이스 멤버 생성
+    const member = await this.workspaceMemberService.createWorkspaceMember({
+      user,
+      workspace: invitation.workspace,
+      role: invitation.role,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      isActive: true,
+    });
+
+    // 초대 상태 업데이트
+    await this.repository.updateStatus(invitation.id, InvitationStatus.ACCEPTED);
+
+    return member;
+  }
+
+  /**
    * 스페이스 초대 생성
    * TODO: SpaceMember 도메인 구현 후 완성
    */
@@ -204,4 +260,5 @@ export class InvitationService {
 
     await this.repository.updateStatus(id, InvitationStatus.CANCELLED);
   }
+
 }

@@ -243,6 +243,20 @@ export interface HierarchicalErrorContextMap {
   'invitation.cancel.alreadyProcessed': {
     status: string;
   };
+  'invitation.register.emailMismatch': {
+    expected: string;
+    actual: string;
+  };
+  'invitation.register.emailAlreadyExists': {
+    email: string;
+  };
+  'invitation.register.invitationNotFound': {
+    token: string;
+  };
+  'invitation.register.cannotAccept': {
+    status: string;
+    expired: boolean;
+  };
 
   // ===================
   // LangChain 도메인 (langchain.*.*)

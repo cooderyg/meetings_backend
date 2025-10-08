@@ -23,7 +23,11 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+NestJS 기반 회의 관리 백엔드 시스템 (3계층 아키텍처)
+
+**기술 스택**: NestJS v11, TypeScript v5.7, PostgreSQL + MikroORM v6, pnpm
+
+**프로젝트 가이드**: [CLAUDE.md](CLAUDE.md) - Claude Code 사용 시 참조
 
 ## Project setup
 
@@ -69,6 +73,24 @@ $ mau deploy
 ```
 
 With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+
+## 문서
+
+### 📐 아키텍처
+- [Domain Layer 가이드](docs/architecture/domain-layer.md) - 3계층 구조, Service/Repository 패턴
+- [MikroORM 패턴](docs/architecture/mikroorm-patterns.md) - CRUD 패턴, Population, 트랜잭션
+- [에러 처리 시스템](docs/architecture/error-handling.md) - AppError 계층적 에러 코드
+
+### 🧪 테스트
+- [테스트 전략](docs/testing/test-strategy.md) - Pure Orchestrator vs Logician, 한국어 작성 규칙
+- [E2E 테스트 작성](docs/testing/e2e-guide.md) - TestModuleBuilder, Guard Mocking
+- [통합 테스트 작성](docs/testing/integration-guide.md) - Testcontainer, 트랜잭션 패턴
+- [Fixture 사용법](docs/testing/fixture-guide.md) - 테스트 데이터 생성 헬퍼
+- [트러블슈팅](docs/testing/e2e-troubleshooting.md) - 자주 발생하는 이슈 해결
+
+### 💻 개발 가이드
+- [코딩 규칙](docs/development/coding-standards.md) - TypeScript, 네이밍 컨벤션
+- [API 설계](docs/development/api-design.md) - RESTful 원칙, Swagger 문서화
 
 ## Resources
 

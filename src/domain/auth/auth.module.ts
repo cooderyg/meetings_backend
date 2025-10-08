@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../user/user.module';
 import { WorkspaceMemberModule } from '../workspace-member/workspace-member.module';
 import { WorkspaceModule } from '../workspace/workspace.module';
+import { InvitationModule } from '../invitation/invitation.module';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 
@@ -15,6 +16,7 @@ import { AuthService } from './services/auth.service';
     UserModule,
     WorkspaceModule,
     WorkspaceMemberModule,
+    InvitationModule,
   ],
   controllers: [AuthController],
   providers: [AuthService],

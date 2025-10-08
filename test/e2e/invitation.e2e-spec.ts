@@ -362,6 +362,137 @@ describe('Invitation E2E', () => {
     });
   });
 
+  describe('POST /invitations/:token/register', () => {
+    it('미가입 사용자가 초대를 수락하며 회원가입해야 함', async () => {
+      const workspace = await createWorkspaceFixture(em);
+      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
+      const newUserEmail = 'newuser-register@example.com';
+
+      const invitation = await createInvitationFixture(em, {
+        workspace,
+        inviter,
+        role,
+        inviteeEmail: newUserEmail,
+        status: InvitationStatus.PENDING,
+      });
+
+      const response = await request(app.getHttpServer())
+        .post(`/invitations/${invitation.token}/register`)
+        .send({
+          email: newUserEmail,
+          password: 'Password123!',
+          firstName: 'New',
+          lastName: 'User',
+        })
+        .expect(201);
+
+      expect(response.body).toHaveProperty('user');
+      expect(response.body).toHaveProperty('workspaceMember');
+      expect(response.body.user.email).toBe(newUserEmail);
+      expect(response.body.workspaceMember.workspaceId).toBe(workspace.id);
+
+      // User 생성 확인
+      const createdUser = await em.findOne(User, { email: newUserEmail });
+      expect(createdUser).toBeDefined();
+      expect(createdUser?.firstName).toBe('New');
+      expect(createdUser?.lastName).toBe('User');
+
+      // Invitation 상태 확인
+      em.clear();
+      const updatedInvitation = await em.findOne(Invitation, { id: invitation.id });
+      expect(updatedInvitation?.status).toBe(InvitationStatus.ACCEPTED);
+    });
+
+    it('이메일이 일치하지 않으면 회원가입할 수 없어야 함', async () => {
+      const workspace = await createWorkspaceFixture(em);
+      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
+
+      const invitation = await createInvitationFixture(em, {
+        workspace,
+        inviter,
+        role,
+        inviteeEmail: 'invited@example.com',
+        status: InvitationStatus.PENDING,
+      });
+
+      await request(app.getHttpServer())
+        .post(`/invitations/${invitation.token}/register`)
+        .send({
+          email: 'different@example.com', // 다른 이메일
+          password: 'Password123!',
+          firstName: 'Wrong',
+          lastName: 'User',
+        })
+        .expect(400);
+    });
+
+    it('이미 존재하는 이메일로는 회원가입할 수 없어야 함', async () => {
+      const workspace = await createWorkspaceFixture(em);
+      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
+      const existingUser = await createUserFixture(em, {
+        email: 'existing@example.com',
+      });
+
+      const invitation = await createInvitationFixture(em, {
+        workspace,
+        inviter,
+        role,
+        inviteeEmail: existingUser.email,
+        status: InvitationStatus.PENDING,
+      });
+
+      await request(app.getHttpServer())
+        .post(`/invitations/${invitation.token}/register`)
+        .send({
+          email: existingUser.email,
+          password: 'Password123!',
+          firstName: 'Existing',
+          lastName: 'User',
+        })
+        .expect(409);
+    });
+
+    it('만료된 초대로는 회원가입할 수 없어야 함', async () => {
+      const workspace = await createWorkspaceFixture(em);
+      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
+
+      const invitation = await createInvitationFixture(em, {
+        workspace,
+        inviter,
+        role,
+        inviteeEmail: 'expired-register@example.com',
+        status: InvitationStatus.PENDING,
+        expiresAt: new Date('2020-01-01'),
+      });
+
+      await request(app.getHttpServer())
+        .post(`/invitations/${invitation.token}/register`)
+        .send({
+          email: 'expired-register@example.com',
+          password: 'Password123!',
+          firstName: 'Expired',
+          lastName: 'User',
+        })
+        .expect(400);
+    });
+
+    it('존재하지 않는 토큰으로는 회원가입할 수 없어야 함', async () => {
+      await request(app.getHttpServer())
+        .post('/invitations/123e4567-e89b-12d3-a456-999999999999/register')
+        .send({
+          email: 'test@example.com',
+          password: 'Password123!',
+          firstName: 'Test',
+          lastName: 'User',
+        })
+        .expect(404);
+    });
+  });
+
   describe('DELETE /workspace/:workspaceId/invitations/:invitationId', () => {
     it('초대를 취소해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);

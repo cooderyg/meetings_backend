@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post, Query } from '@nestjs/common';
 import { OAuthTypeParamDto } from '../dto/request/oauth-type.param.dto';
 import { SignInGoogleDto } from '../dto/request/sign-in-google.dto';
 import { TokenResponseDto } from '../dto/response/token-res.dto';
@@ -13,11 +13,13 @@ export class AuthController {
   @Post('sign-in/:type')
   async signIn(
     @Param() param: OAuthTypeParamDto,
-    @Body() dto: SignInGoogleDto
+    @Body() dto: SignInGoogleDto,
+    @Query('invitationToken') invitationToken?: string
   ): Promise<TokenResponseDto> {
     return this.authService.signIn({
       code: dto.code,
       type: param.type,
+      invitationToken,
     });
   }
 }

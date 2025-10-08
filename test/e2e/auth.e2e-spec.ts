@@ -14,9 +14,18 @@ import { AuthService } from '../../src/domain/auth/services/auth.service';
 import { AuthGuard } from '../../src/shared/guard/auth.guard';
 import { WorkspaceMemberGuard } from '../../src/shared/guard/workspace-member.guard';
 import { createUserFixture } from '../fixtures/user.fixture';
+import { createWorkspaceFixture } from '../fixtures/workspace.fixture';
+import { createInvitationFixture } from '../fixtures/invitation.fixture';
+import {
+  createRoleFixture,
+  createWorkspaceMemberFixture,
+} from '../fixtures/meeting.fixture';
 import { User } from '../../src/domain/user/entity/user.entity';
 import { WorkspaceMember } from '../../src/domain/workspace-member/entity/workspace-member.entity';
 import { Workspace } from '../../src/domain/workspace/entity/workspace.entity';
+import { Invitation } from '../../src/domain/invitation/entity/invitation.entity';
+import { InvitationStatus } from '../../src/domain/invitation/enum/invitation-status.enum';
+import { SystemRole } from '../../src/domain/role/enum/system-role.enum';
 
 /**
  * Auth E2E 테스트
@@ -318,6 +327,243 @@ describe('Auth E2E', () => {
         expect(accessPayload.exp).toBeDefined();
         expect(refreshPayload.exp).toBeDefined();
         expect(refreshPayload.exp).toBeGreaterThan(accessPayload.exp);
+      });
+    });
+
+    describe('POST /auth/sign-in/:type (초대 토큰 포함)', () => {
+      it('초대 토큰과 함께 신규 사용자 OAuth 가입 시 WorkspaceMember를 생성해야 함', async () => {
+        // Given: 초대 생성
+        const workspace = await createWorkspaceFixture(em);
+        const inviterUser = await createUserFixture(em);
+        const inviter = await createWorkspaceMemberFixture(em, {
+          workspace,
+          user: inviterUser,
+        });
+        const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
+
+        const inviteeEmail = `newuser-invited-${Date.now()}@gmail.com`;
+        const invitation = await createInvitationFixture(em, {
+          workspace,
+          inviter,
+          role,
+          inviteeEmail,
+        });
+
+        // Mock OAuth 결과
+        const mockOAuthResult = {
+          uid: `google-uid-new-invited-${Date.now()}`,
+          email: inviteeEmail,
+          firstName: 'Invited',
+          lastName: 'User',
+        };
+
+        const googleStrategy = (authService as any).strategies[
+          OAuthType.GOOGLE
+        ];
+        jest
+          .spyOn(googleStrategy, 'verifyOAuthToken')
+          .mockResolvedValueOnce(mockOAuthResult);
+
+        // When: 초대 토큰과 함께 OAuth 로그인
+        const response = await request(app.getHttpServer())
+          .post(`/auth/sign-in/google?invitationToken=${invitation.token}`)
+          .send({ code: 'mock-code-with-invitation' })
+          .expect(201);
+
+        // Then: JWT 토큰 발급
+        expect(response.body.accessToken).toBeDefined();
+        expect(response.body.refreshToken).toBeDefined();
+
+        // WorkspaceMember 생성 확인
+        const user = await em
+          .getRepository(User)
+          .findOne({ uid: mockOAuthResult.uid });
+        expect(user).toBeDefined();
+
+        const member = await em.getRepository(WorkspaceMember).findOne({
+          user: user!.id,
+          workspace: workspace.id,
+        });
+        expect(member).toBeDefined();
+
+        // Invitation ACCEPTED 확인
+        em.clear();
+        const updatedInvitation = await em
+          .getRepository(Invitation)
+          .findOne({ id: invitation.id });
+        expect(updatedInvitation?.status).toBe(InvitationStatus.ACCEPTED);
+      });
+
+      it('초대 토큰과 함께 가입 시 개인 워크스페이스를 생성하지 않아야 함', async () => {
+        // Given: 초대 생성
+        const workspace = await createWorkspaceFixture(em);
+        const inviterUser = await createUserFixture(em);
+        const inviter = await createWorkspaceMemberFixture(em, {
+          workspace,
+          user: inviterUser,
+        });
+        const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
+
+        const inviteeEmail = `no-personal-ws-${Date.now()}@gmail.com`;
+        const invitation = await createInvitationFixture(em, {
+          workspace,
+          inviter,
+          role,
+          inviteeEmail,
+        });
+
+        const mockOAuthResult = {
+          uid: `google-uid-no-personal-${Date.now()}`,
+          email: inviteeEmail,
+          firstName: 'NoPersonal',
+          lastName: 'User',
+        };
+
+        const googleStrategy = (authService as any).strategies[
+          OAuthType.GOOGLE
+        ];
+        jest
+          .spyOn(googleStrategy, 'verifyOAuthToken')
+          .mockResolvedValueOnce(mockOAuthResult);
+
+        const initialWorkspaceCount = await em
+          .getRepository(Workspace)
+          .count();
+
+        // When: 초대 토큰과 함께 OAuth 로그인
+        await request(app.getHttpServer())
+          .post(`/auth/sign-in/google?invitationToken=${invitation.token}`)
+          .send({ code: 'mock-code-no-personal-ws' })
+          .expect(201);
+
+        // Then: 워크스페이스가 증가하지 않아야 함 (초대된 워크스페이스만 참여)
+        const finalWorkspaceCount = await em.getRepository(Workspace).count();
+        expect(finalWorkspaceCount).toBe(initialWorkspaceCount);
+      });
+
+      it('초대 이메일과 OAuth 이메일이 다르면 400 에러를 반환해야 함', async () => {
+        // Given
+        const workspace = await createWorkspaceFixture(em);
+        const inviterUser = await createUserFixture(em);
+        const inviter = await createWorkspaceMemberFixture(em, {
+          workspace,
+          user: inviterUser,
+        });
+        const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
+
+        const invitation = await createInvitationFixture(em, {
+          workspace,
+          inviter,
+          role,
+          inviteeEmail: 'invited@example.com',
+        });
+
+        const mockOAuthResult = {
+          uid: `google-uid-mismatch-${Date.now()}`,
+          email: 'different@example.com', // 다른 이메일
+          firstName: 'Mismatch',
+          lastName: 'User',
+        };
+
+        const googleStrategy = (authService as any).strategies[
+          OAuthType.GOOGLE
+        ];
+        jest
+          .spyOn(googleStrategy, 'verifyOAuthToken')
+          .mockResolvedValueOnce(mockOAuthResult);
+
+        // When & Then
+        await request(app.getHttpServer())
+          .post(`/auth/sign-in/google?invitationToken=${invitation.token}`)
+          .send({ code: 'mock-code-email-mismatch' })
+          .expect(400);
+      });
+
+      it('이미 해당 워크스페이스 멤버인 경우 409 에러를 반환해야 함', async () => {
+        // Given: 이미 워크스페이스 멤버인 사용자
+        const workspace = await createWorkspaceFixture(em);
+        const existingUser = await createUserFixture(em, {
+          uid: `google-uid-already-member-${Date.now()}`,
+          email: `already-member-${Date.now()}@gmail.com`,
+        });
+        await createWorkspaceMemberFixture(em, {
+          workspace,
+          user: existingUser,
+        });
+
+        const inviterUser = await createUserFixture(em);
+        const inviter = await createWorkspaceMemberFixture(em, {
+          workspace,
+          user: inviterUser,
+        });
+        const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
+
+        const invitation = await createInvitationFixture(em, {
+          workspace,
+          inviter,
+          role,
+          inviteeEmail: existingUser.email,
+        });
+
+        const mockOAuthResult = {
+          uid: existingUser.uid,
+          email: existingUser.email,
+          firstName: existingUser.firstName,
+          lastName: existingUser.lastName,
+        };
+
+        const googleStrategy = (authService as any).strategies[
+          OAuthType.GOOGLE
+        ];
+        jest
+          .spyOn(googleStrategy, 'verifyOAuthToken')
+          .mockResolvedValueOnce(mockOAuthResult);
+
+        // When & Then
+        await request(app.getHttpServer())
+          .post(`/auth/sign-in/google?invitationToken=${invitation.token}`)
+          .send({ code: 'mock-code-already-member' })
+          .expect(409);
+      });
+
+      it('만료된 초대 토큰은 400 에러를 반환해야 함', async () => {
+        // Given: 만료된 초대
+        const workspace = await createWorkspaceFixture(em);
+        const inviterUser = await createUserFixture(em);
+        const inviter = await createWorkspaceMemberFixture(em, {
+          workspace,
+          user: inviterUser,
+        });
+        const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
+
+        const expiredDate = new Date(Date.now() - 1000); // 1초 전 만료
+        const invitation = await createInvitationFixture(em, {
+          workspace,
+          inviter,
+          role,
+          inviteeEmail: `expired-${Date.now()}@example.com`,
+          expiresAt: expiredDate,
+        });
+
+        const mockOAuthResult = {
+          uid: `google-uid-expired-${Date.now()}`,
+          email: invitation.inviteeEmail,
+          firstName: 'Expired',
+          lastName: 'User',
+        };
+
+        const googleStrategy = (authService as any).strategies[
+          OAuthType.GOOGLE
+        ];
+        jest
+          .spyOn(googleStrategy, 'verifyOAuthToken')
+          .mockResolvedValueOnce(mockOAuthResult);
+
+        // When & Then
+        await request(app.getHttpServer())
+          .post(`/auth/sign-in/google?invitationToken=${invitation.token}`)
+          .send({ code: 'mock-code-expired' })
+          .expect(400);
       });
     });
   });

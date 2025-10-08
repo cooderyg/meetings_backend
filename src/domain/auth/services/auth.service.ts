@@ -15,6 +15,7 @@ import { OAuthType } from '../enums/oauth-type.enum';
 import { ISignIn, ISignInReturn } from '../interfaces/sign-in.interface';
 import { GoogleAuthStrategy } from '../strategies/google-auth.strategy';
 import { IOAuthStrategy } from '../strategies/o-auth.strategy.interface';
+import { InvitationService } from '../../invitation/invitation.service';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +26,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
     private readonly workspaceService: WorkspaceService,
-    private readonly workspaceMemberService: WorkspaceMemberService
+    private readonly workspaceMemberService: WorkspaceMemberService,
+    private readonly invitationService: InvitationService
   ) {
     this.appConfig = new AppConfig();
     this.strategies = {
@@ -53,7 +55,7 @@ export class AuthService {
   }
 
   async signIn(args: ISignIn): Promise<ISignInReturn> {
-    const { code, type } = args;
+    const { code, type, invitationToken } = args;
 
     const strategy = this.strategies[type];
     if (!strategy) {
@@ -62,27 +64,34 @@ export class AuthService {
 
     const oauthResult = await strategy.verifyOAuthToken({ code });
 
-    const user = await this.userService.getUserByUid(oauthResult.uid);
-    if (!user) {
-      const newUser = await this.userService.createUser({
+    let user = await this.userService.getUserByUid(oauthResult.uid);
+    const isNewUser = !user;
+
+    // 신규 사용자 생성
+    if (isNewUser) {
+      user = await this.userService.createUser({
         uid: oauthResult.uid,
         email: oauthResult.email,
         firstName: oauthResult.firstName,
         lastName: oauthResult.lastName,
       });
+    }
 
+    // 초대 토큰이 있으면 초대 수락 처리
+    if (invitationToken) {
+      await this.invitationService.acceptInvitationWithOAuth(invitationToken, user!);
+    } else if (isNewUser) {
+      // 초대 토큰이 없고 신규 사용자인 경우에만 개인 워크스페이스 생성
       await this.workspaceService.createWorkspace(
         {
           name: `${oauthResult.firstName}'s Workspace`,
           subscriptionTier: SubscriptionTier.FREE,
         },
-        newUser
+        user!
       );
-
-      return this.getTokens(newUser);
     }
 
-    return this.getTokens(user);
+    return this.getTokens(user!);
   }
 
   private getTokens(user: User) {
