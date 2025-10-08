@@ -33,7 +33,7 @@ export class MemberResourcePermission extends BaseEntity {
   }
 
   isActive(): boolean {
-    return this.isAllowed && !this.isExpired();
+    return !this.isExpired();
   }
 
   /**

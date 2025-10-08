@@ -44,8 +44,18 @@ export async function createRoleFixture(
   em: EntityManager,
   systemRole: SystemRole = SystemRole.CAN_VIEW
 ): Promise<Role> {
-  const role = Role.createSystemRole(systemRole, `Test ${systemRole} role`);
+  // ✅ 기존 System Role 조회 (beforeAll에서 생성된 것 재사용)
+  const existingRole = await em.findOne(Role, {
+    name: systemRole,
+    workspace: null, // System Role 조건
+  });
 
+  if (existingRole) {
+    return existingRole;
+  }
+
+  // 없으면 새로 생성 (E2E 테스트 등)
+  const role = Role.createSystemRole(systemRole, `Test ${systemRole} role`);
   await em.persistAndFlush(role);
   return role;
 }

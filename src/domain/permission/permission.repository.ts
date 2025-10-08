@@ -4,6 +4,8 @@ import { MemberResourcePermission } from './entity/member-resource-permission.en
 import { WorkspaceMember } from '../workspace-member/entity/workspace-member.entity';
 import { Resource, ResourceType } from '../resource/entity/resource.entity';
 import { Action, ResourceSubject } from './entity/permission.entity';
+import { Space } from '../space/entity/space.entity';
+import { Meeting } from '../meeting/entity/meeting.entity';
 
 @Injectable()
 export class PermissionRepository extends EntityRepository<MemberResourcePermission> {
@@ -44,6 +46,30 @@ export class PermissionRepository extends EntityRepository<MemberResourcePermiss
         ],
       }
     );
+  }
+
+  /**
+   * Space ID로 리소스 조회 (Space → Resource 변환)
+   */
+  async findResourceBySpaceId(spaceId: string): Promise<Resource | null> {
+    const spaceRepo = this.em.getRepository(Space);
+    const space = await spaceRepo.findOne(
+      { id: spaceId },
+      { populate: ['resource', 'resource.owner'] }
+    );
+    return space?.resource ?? null;
+  }
+
+  /**
+   * Meeting ID로 리소스 조회 (Meeting → Resource 변환)
+   */
+  async findResourceByMeetingId(meetingId: string): Promise<Resource | null> {
+    const meetingRepo = this.em.getRepository(Meeting);
+    const meeting = await meetingRepo.findOne(
+      { id: meetingId },
+      { populate: ['resource', 'resource.owner'] }
+    );
+    return meeting?.resource ?? null;
   }
 
   /**

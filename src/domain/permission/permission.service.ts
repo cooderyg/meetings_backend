@@ -183,12 +183,7 @@ export class PermissionService {
 
     // PRIVATE 리소스 접근 제어
     if (resource.visibility === ResourceVisibility.PRIVATE) {
-      // 1. 소유자 체크 (소유자는 항상 접근 가능)
-      if (resource.isOwnedBy(memberId)) {
-        return true;
-      }
-
-      // 2. 명시적 권한 체크 (MemberResourcePermission)
+      // 1. 명시적 권한 체크 (MemberResourcePermission) - 최우선
       const explicitPermission = await this.checkDirectResourcePermission(
         memberId,
         action,
@@ -196,8 +191,23 @@ export class PermissionService {
         resource.path
       );
 
-      // 명시적 허용만 인정 (null이나 false는 거부)
-      return explicitPermission === true;
+      // 명시적 거부는 소유자라도 차단
+      if (explicitPermission === false) {
+        return false;
+      }
+
+      // 명시적 허용이 있으면 통과
+      if (explicitPermission === true) {
+        return true;
+      }
+
+      // 2. 소유자는 명시적 권한 없어도 접근 가능
+      if (resource.isOwnedBy(memberId)) {
+        return true;
+      }
+
+      // 3. 명시적 권한도 없고 소유자도 아니면 거부
+      return false;
     }
 
     // 알 수 없는 visibility는 거부
@@ -235,10 +245,7 @@ export class PermissionService {
    * Space 리소스 조회 (backward compatibility)
    */
   private async getSpaceWithPath(spaceId: string): Promise<Resource | null> {
-    return this.permissionRepository.findResourceById(
-      spaceId,
-      ResourceType.SPACE
-    );
+    return this.permissionRepository.findResourceBySpaceId(spaceId);
   }
 
   /**
@@ -247,10 +254,7 @@ export class PermissionService {
   private async getMeetingWithPath(
     meetingId: string
   ): Promise<Resource | null> {
-    return this.permissionRepository.findResourceById(
-      meetingId,
-      ResourceType.MEETING
-    );
+    return this.permissionRepository.findResourceByMeetingId(meetingId);
   }
 
   /**
