@@ -6,11 +6,14 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { NeedAuth } from '../../shared/decorator/need-auth.decorator';
 import { UserInfo } from '../../shared/decorator/user-info.decorator';
 import { WorkspaceMemberId } from '../../shared/decorator/workspace-member-id.decorator';
+import { WorkspaceMemberGuard } from '../../shared/guard/workspace-member.guard';
+import { AppError } from '../../shared/exception/app.error';
 import { User } from '../user/entity/user.entity';
 import { CreateWorkspaceInvitationDto } from './dto/request/create-workspace-invitation.dto';
 import { AcceptInvitationDto } from './dto/response/accept-invitation.dto';
@@ -27,6 +30,7 @@ export class InvitationController {
    * 워크스페이스 초대 생성
    */
   @NeedAuth()
+  @UseGuards(WorkspaceMemberGuard)
   @Post('workspace/:workspaceId/invitations')
   @ApiOperation({
     summary: '워크스페이스 초대 생성',
@@ -119,19 +123,28 @@ export class InvitationController {
     description: '초대 정보',
     type: InvitationDto,
   })
+  @ApiResponse({
+    status: 404,
+    description: '초대를 찾을 수 없습니다.',
+  })
   async getInvitationByToken(
     @Param('token') token: string
-  ): Promise<InvitationDto | null> {
+  ): Promise<InvitationDto> {
     const invitation =
       await this.invitationService.findInvitationByToken(token);
 
-    return invitation ? this.mapToDto(invitation) : null;
+    if (!invitation) {
+      throw new AppError('invitation.fetch.notFound', { token });
+    }
+
+    return this.mapToDto(invitation);
   }
 
   /**
    * 초대 취소
    */
   @NeedAuth()
+  @UseGuards(WorkspaceMemberGuard)
   @Delete('workspace/:workspaceId/invitations/:invitationId')
   @ApiOperation({
     summary: '초대 취소',

@@ -145,6 +145,9 @@ export type HierarchicalErrorCode =
   | 'invitation.create.inviterNotFound'
   | 'invitation.create.roleNotFound'
 
+  // 조회 관련 (invitation.fetch.*)
+  | 'invitation.fetch.notFound'
+
   // 수락 관련 (invitation.accept.*)
   | 'invitation.accept.notFound'
   | 'invitation.accept.cannotAccept'
@@ -359,6 +362,7 @@ export const HIERARCHICAL_ERROR_DEFINITIONS: Record<
   'invitation.create.duplicatePending': { httpStatus: 400, logLevel: 'warn' },
   'invitation.create.inviterNotFound': { httpStatus: 404, logLevel: 'warn' },
   'invitation.create.roleNotFound': { httpStatus: 400, logLevel: 'warn' },
+  'invitation.fetch.notFound': { httpStatus: 404, logLevel: 'info' },
   'invitation.accept.notFound': { httpStatus: 404, logLevel: 'info' },
   'invitation.accept.cannotAccept': { httpStatus: 400, logLevel: 'warn' },
   'invitation.accept.emailMismatch': { httpStatus: 400, logLevel: 'warn' },

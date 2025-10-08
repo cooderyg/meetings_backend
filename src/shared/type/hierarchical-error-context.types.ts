@@ -210,6 +210,11 @@ export interface HierarchicalErrorContextMap {
     roleId: number;
   };
 
+  // 조회 관련 (invitation.fetch.*)
+  'invitation.fetch.notFound': {
+    token: string;
+  };
+
   // 수락 관련 (invitation.accept.*)
   'invitation.accept.notFound': {
     token: string;

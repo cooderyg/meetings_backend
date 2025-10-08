@@ -202,7 +202,7 @@ describe('Invitation E2E', () => {
 
       const response = await request(app.getHttpServer())
         .post(`/invitations/accept/${invitation.token}`)
-        .expect(200);
+        .expect(201);
 
       expect(response.body).toHaveProperty('workspaceMemberId');
       expect(response.body).toHaveProperty('workspaceId');
@@ -355,12 +355,10 @@ describe('Invitation E2E', () => {
       expect(response.body.token).toBe(invitation.token);
     });
 
-    it('존재하지 않는 토큰은 null을 반환해야 함', async () => {
-      const response = await request(app.getHttpServer())
+    it('존재하지 않는 토큰은 404를 반환해야 함', async () => {
+      await request(app.getHttpServer())
         .get('/invitations/123e4567-e89b-12d3-a456-888888888888')
-        .expect(200);
-
-      expect(response.body).toBeNull();
+        .expect(404);
     });
   });
 
@@ -388,6 +386,7 @@ describe('Invitation E2E', () => {
       expect(response.body.message).toBe('Invitation cancelled successfully');
 
       // 상태가 CANCELLED로 변경되었는지 확인
+      em.clear();
       const updated = await em.findOne(Invitation, { id: invitation.id });
       expect(updated?.status).toBe(InvitationStatus.CANCELLED);
     });
