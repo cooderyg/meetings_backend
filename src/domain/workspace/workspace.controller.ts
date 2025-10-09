@@ -58,7 +58,10 @@ export class WorkspaceController {
     @Body() data: UpdateWorkspaceNameDto,
     @Param() params: IdParamDto
   ): Promise<UpdateWorkspaceNameResDto> {
-    const name = await this.workspaceService.updateWorkspaceName(params.id, data);
+    const name = await this.workspaceService.updateWorkspaceName(
+      params.id,
+      data
+    );
 
     return { name };
   }

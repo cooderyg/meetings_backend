@@ -15,7 +15,7 @@ secret
 .env
 .env.local
 .env.*.local
-!.env.test
+.env.test
 
 # Test coverage
 coverage

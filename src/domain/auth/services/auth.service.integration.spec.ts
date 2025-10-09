@@ -51,7 +51,6 @@ describe('AuthService Integration Tests with Testcontainer', () => {
   let service: AuthService;
   const containerKey = 'auth-service-integration-test';
 
-
   beforeAll(async () => {
     // Testcontainer를 사용한 모듈 빌드
     const module = await TestModuleBuilder.create()

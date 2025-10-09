@@ -161,9 +161,7 @@ describe('Auth E2E', () => {
         expect(response.body.accessToken).toBeDefined();
 
         // 사용자가 실제로 생성되었는지 확인
-        const user = await em
-          .getRepository(User)
-          .findOne({ uid: uniqueUid });
+        const user = await em.getRepository(User).findOne({ uid: uniqueUid });
         expect(user).toBeDefined();
         expect(user!.email).toBe(uniqueEmail);
         expect(user!.firstName).toBe('New');
@@ -232,9 +230,7 @@ describe('Auth E2E', () => {
           lastName: 'User2',
         });
 
-        const initialWorkspaceCount = await em
-          .getRepository(Workspace)
-          .count();
+        const initialWorkspaceCount = await em.getRepository(Workspace).count();
 
         // 2. Mock OAuth 결과
         const mockExistingOAuthResult = {
@@ -258,9 +254,7 @@ describe('Auth E2E', () => {
           .expect(201);
 
         // 4. 워크스페이스가 새로 생성되지 않았는지 확인
-        const finalWorkspaceCount = await em
-          .getRepository(Workspace)
-          .count();
+        const finalWorkspaceCount = await em.getRepository(Workspace).count();
         expect(finalWorkspaceCount).toBe(initialWorkspaceCount);
       });
     });
@@ -426,9 +420,7 @@ describe('Auth E2E', () => {
           .spyOn(googleStrategy, 'verifyOAuthToken')
           .mockResolvedValueOnce(mockOAuthResult);
 
-        const initialWorkspaceCount = await em
-          .getRepository(Workspace)
-          .count();
+        const initialWorkspaceCount = await em.getRepository(Workspace).count();
 
         // When: 초대 토큰과 함께 OAuth 로그인
         await request(app.getHttpServer())

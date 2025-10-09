@@ -140,7 +140,6 @@ export class InvitationController {
     return this.mapToDto(invitation);
   }
 
-
   /**
    * 초대 취소
    */

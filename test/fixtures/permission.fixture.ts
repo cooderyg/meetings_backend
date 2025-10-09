@@ -1,6 +1,10 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { MemberResourcePermission } from '../../src/domain/permission/entity/member-resource-permission.entity';
-import { Permission, Action, ResourceSubject } from '../../src/domain/permission/entity/permission.entity';
+import {
+  Permission,
+  Action,
+  ResourceSubject,
+} from '../../src/domain/permission/entity/permission.entity';
 import { WorkspaceMember } from '../../src/domain/workspace-member/entity/workspace-member.entity';
 import { Workspace } from '../../src/domain/workspace/entity/workspace.entity';
 

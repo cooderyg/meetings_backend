@@ -275,6 +275,24 @@ export interface HierarchicalErrorContextMap {
     requiredRole: string;
     currentRole: string;
   };
+
+  // ===================
+  // 메일 도메인 (mail.*.*)
+  // ===================
+  'mail.send.invalidEmail': {
+    email: string;
+    reason?: string;
+  };
+  'mail.send.expiredInvitation': {
+    expiresAt: Date;
+  };
+  'mail.fetch.notFound': {
+    id: string;
+  };
+
+  // ===================
+  // 공통 검증 (validation.*.*)
+  // ===================
   'validation.form.failed': {
     fields: Record<string, string[]>;
   };

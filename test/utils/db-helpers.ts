@@ -137,9 +137,7 @@ async function createRolePermissions(em: EntityManager): Promise<void> {
       });
 
       if (!permission) {
-        console.warn(
-          `Permission not found: ${rule.action}:${rule.subject}`
-        );
+        console.warn(`Permission not found: ${rule.action}:${rule.subject}`);
         continue;
       }
 
@@ -205,4 +203,3 @@ export async function cleanupTestDatabase(orm: MikroORM): Promise<void> {
   // 워커 전용 스키마 삭제 (다른 워커와 충돌 없음)
   await dropWorkerSchema(orm as any);
 }
-

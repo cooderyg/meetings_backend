@@ -22,7 +22,10 @@ import {
 } from '../../../test/fixtures/permission.fixture';
 import { Action, ResourceSubject } from './entity/permission.entity';
 import { SystemRole } from '../role/enum/system-role.enum';
-import { ResourceVisibility, ResourceType } from '../resource/entity/resource.entity';
+import {
+  ResourceVisibility,
+  ResourceType,
+} from '../resource/entity/resource.entity';
 
 /**
  * PermissionService 통합 테스트
@@ -72,7 +75,9 @@ describe('PermissionService Integration Tests with Testcontainer', () => {
     await em.execute('DELETE FROM meetings');
     await em.execute('DELETE FROM spaces');
     await em.execute('DELETE FROM resources'); // WorkspaceMember FK 제거 후
-    await em.execute('DELETE FROM workspace_member_roles WHERE workspace_member_id IS NOT NULL');
+    await em.execute(
+      'DELETE FROM workspace_member_roles WHERE workspace_member_id IS NOT NULL'
+    );
     await em.execute('DELETE FROM workspace_members');
     await em.execute('DELETE FROM workspaces');
     await em.execute('DELETE FROM users');
@@ -748,14 +753,17 @@ describe('PermissionService Integration Tests with Testcontainer', () => {
         });
 
         // 1단계: Individual Permission ALLOW 부여
-        const allowPermission = await createMemberResourcePermissionFixture(em, {
-          workspaceMember: member,
-          workspace,
-          action: Action.READ,
-          resourceSubject: ResourceSubject.MEETING,
-          resourcePath: resource.path,
-          isAllowed: true,
-        });
+        const allowPermission = await createMemberResourcePermissionFixture(
+          em,
+          {
+            workspaceMember: member,
+            workspace,
+            action: Action.READ,
+            resourceSubject: ResourceSubject.MEETING,
+            resourcePath: resource.path,
+            isAllowed: true,
+          }
+        );
 
         const withAllowPermission = await service.hasMeetingPermission(
           member.id,
@@ -804,13 +812,14 @@ describe('PermissionService Integration Tests with Testcontainer', () => {
         });
 
         // 만료된 Individual Permission 생성
-        const expiredPermission = await createExpiredMemberResourcePermissionFixture(em, {
-          workspaceMember: member,
-          workspace,
-          action: Action.READ,
-          resourceSubject: ResourceSubject.SPACE,
-          resourcePath: resource.path,
-        });
+        const expiredPermission =
+          await createExpiredMemberResourcePermissionFixture(em, {
+            workspaceMember: member,
+            workspace,
+            action: Action.READ,
+            resourceSubject: ResourceSubject.SPACE,
+            resourcePath: resource.path,
+          });
 
         // 만료 상태 확인
         expect(expiredPermission.isExpired()).toBe(true);
@@ -851,14 +860,17 @@ describe('PermissionService Integration Tests with Testcontainer', () => {
 
         // 1시간 후 만료되는 Individual Permission 생성
         const futureExpiry = new Date(Date.now() + 3600000);
-        const validPermission = await createMemberResourcePermissionFixture(em, {
-          workspaceMember: member,
-          workspace,
-          action: Action.READ,
-          resourceSubject: ResourceSubject.SPACE,
-          resourcePath: resource.path,
-          expiresAt: futureExpiry,
-        });
+        const validPermission = await createMemberResourcePermissionFixture(
+          em,
+          {
+            workspaceMember: member,
+            workspace,
+            action: Action.READ,
+            resourceSubject: ResourceSubject.SPACE,
+            resourcePath: resource.path,
+            expiresAt: futureExpiry,
+          }
+        );
 
         // 아직 만료되지 않음
         expect(validPermission.isExpired()).toBe(false);
@@ -1402,40 +1414,46 @@ describe('PermissionService Integration Tests with Testcontainer', () => {
         [Action.MANAGE, 'Space', ResourceType.SPACE],
         [Action.CREATE, 'Meeting', ResourceType.MEETING],
         [Action.DELETE, 'Meeting', ResourceType.MEETING],
-      ])('ADMIN은 %s에 대한 %s 권한이 있어야 함', async (action, resourceTypeName, resourceType) => {
-        const workspace = await createWorkspaceFixture(em);
-        const adminRole = await createRoleFixture(em, SystemRole.ADMIN);
-        const admin = await createWorkspaceMemberFixture(em, {
-          workspace,
-          role: adminRole,
-        });
-        const owner = await createWorkspaceMemberFixture(em, { workspace });
+      ])(
+        'ADMIN은 %s에 대한 %s 권한이 있어야 함',
+        async (action, resourceTypeName, resourceType) => {
+          const workspace = await createWorkspaceFixture(em);
+          const adminRole = await createRoleFixture(em, SystemRole.ADMIN);
+          const admin = await createWorkspaceMemberFixture(em, {
+            workspace,
+            role: adminRole,
+          });
+          const owner = await createWorkspaceMemberFixture(em, { workspace });
 
-        const resource = await createResourceFixture(em, {
-          workspace,
-          owner,
-          type: resourceType,
-          title: `Admin Test ${resourceTypeName}`,
-        });
+          const resource = await createResourceFixture(em, {
+            workspace,
+            owner,
+            type: resourceType,
+            title: `Admin Test ${resourceTypeName}`,
+          });
 
-        if (resourceType === ResourceType.SPACE) {
-          const space = await createSpaceFixture(em, { workspace, resource });
-          const hasPermission = await service.hasSpacePermission(
-            admin.id,
-            action,
-            space.id
-          );
-          expect(hasPermission).toBe(true);
-        } else {
-          const meeting = await createMeetingFixture(em, { workspace, resource });
-          const hasPermission = await service.hasMeetingPermission(
-            admin.id,
-            action,
-            meeting.id
-          );
-          expect(hasPermission).toBe(true);
+          if (resourceType === ResourceType.SPACE) {
+            const space = await createSpaceFixture(em, { workspace, resource });
+            const hasPermission = await service.hasSpacePermission(
+              admin.id,
+              action,
+              space.id
+            );
+            expect(hasPermission).toBe(true);
+          } else {
+            const meeting = await createMeetingFixture(em, {
+              workspace,
+              resource,
+            });
+            const hasPermission = await service.hasMeetingPermission(
+              admin.id,
+              action,
+              meeting.id
+            );
+            expect(hasPermission).toBe(true);
+          }
         }
-      });
+      );
     });
 
     describe('FULL_EDIT 역할', () => {
@@ -1443,40 +1461,49 @@ describe('PermissionService Integration Tests with Testcontainer', () => {
         [Action.MANAGE, 'Space', ResourceType.SPACE],
         [Action.UPDATE, 'Meeting', ResourceType.MEETING],
         [Action.DELETE, 'Meeting', ResourceType.MEETING],
-      ])('FULL_EDIT은 %s에 대한 %s 권한이 있어야 함', async (action, resourceTypeName, resourceType) => {
-        const workspace = await createWorkspaceFixture(em);
-        const fullEditRole = await createRoleFixture(em, SystemRole.FULL_EDIT);
-        const member = await createWorkspaceMemberFixture(em, {
-          workspace,
-          role: fullEditRole,
-        });
-        const owner = await createWorkspaceMemberFixture(em, { workspace });
-
-        const resource = await createResourceFixture(em, {
-          workspace,
-          owner,
-          type: resourceType,
-          title: `FullEdit Test ${resourceTypeName}`,
-        });
-
-        if (resourceType === ResourceType.SPACE) {
-          const space = await createSpaceFixture(em, { workspace, resource });
-          const hasPermission = await service.hasSpacePermission(
-            member.id,
-            action,
-            space.id
+      ])(
+        'FULL_EDIT은 %s에 대한 %s 권한이 있어야 함',
+        async (action, resourceTypeName, resourceType) => {
+          const workspace = await createWorkspaceFixture(em);
+          const fullEditRole = await createRoleFixture(
+            em,
+            SystemRole.FULL_EDIT
           );
-          expect(hasPermission).toBe(true);
-        } else {
-          const meeting = await createMeetingFixture(em, { workspace, resource });
-          const hasPermission = await service.hasMeetingPermission(
-            member.id,
-            action,
-            meeting.id
-          );
-          expect(hasPermission).toBe(true);
+          const member = await createWorkspaceMemberFixture(em, {
+            workspace,
+            role: fullEditRole,
+          });
+          const owner = await createWorkspaceMemberFixture(em, { workspace });
+
+          const resource = await createResourceFixture(em, {
+            workspace,
+            owner,
+            type: resourceType,
+            title: `FullEdit Test ${resourceTypeName}`,
+          });
+
+          if (resourceType === ResourceType.SPACE) {
+            const space = await createSpaceFixture(em, { workspace, resource });
+            const hasPermission = await service.hasSpacePermission(
+              member.id,
+              action,
+              space.id
+            );
+            expect(hasPermission).toBe(true);
+          } else {
+            const meeting = await createMeetingFixture(em, {
+              workspace,
+              resource,
+            });
+            const hasPermission = await service.hasMeetingPermission(
+              member.id,
+              action,
+              meeting.id
+            );
+            expect(hasPermission).toBe(true);
+          }
         }
-      });
+      );
     });
 
     describe('CAN_EDIT 역할', () => {
@@ -1485,40 +1512,46 @@ describe('PermissionService Integration Tests with Testcontainer', () => {
         [Action.UPDATE, 'Meeting', ResourceType.MEETING, true],
         [Action.DELETE, 'Space', ResourceType.SPACE, true],
         [Action.MANAGE, 'Space', ResourceType.SPACE, false],
-      ])('CAN_EDIT은 %s에 대한 %s 권한이 %s해야 함', async (action, resourceTypeName, resourceType, expected) => {
-        const workspace = await createWorkspaceFixture(em);
-        const canEditRole = await createRoleFixture(em, SystemRole.CAN_EDIT);
-        const member = await createWorkspaceMemberFixture(em, {
-          workspace,
-          role: canEditRole,
-        });
-        const owner = await createWorkspaceMemberFixture(em, { workspace });
+      ])(
+        'CAN_EDIT은 %s에 대한 %s 권한이 %s해야 함',
+        async (action, resourceTypeName, resourceType, expected) => {
+          const workspace = await createWorkspaceFixture(em);
+          const canEditRole = await createRoleFixture(em, SystemRole.CAN_EDIT);
+          const member = await createWorkspaceMemberFixture(em, {
+            workspace,
+            role: canEditRole,
+          });
+          const owner = await createWorkspaceMemberFixture(em, { workspace });
 
-        const resource = await createResourceFixture(em, {
-          workspace,
-          owner,
-          type: resourceType,
-          title: `CanEdit Test ${resourceTypeName}`,
-        });
+          const resource = await createResourceFixture(em, {
+            workspace,
+            owner,
+            type: resourceType,
+            title: `CanEdit Test ${resourceTypeName}`,
+          });
 
-        if (resourceType === ResourceType.SPACE) {
-          const space = await createSpaceFixture(em, { workspace, resource });
-          const hasPermission = await service.hasSpacePermission(
-            member.id,
-            action,
-            space.id
-          );
-          expect(hasPermission).toBe(expected);
-        } else {
-          const meeting = await createMeetingFixture(em, { workspace, resource });
-          const hasPermission = await service.hasMeetingPermission(
-            member.id,
-            action,
-            meeting.id
-          );
-          expect(hasPermission).toBe(expected);
+          if (resourceType === ResourceType.SPACE) {
+            const space = await createSpaceFixture(em, { workspace, resource });
+            const hasPermission = await service.hasSpacePermission(
+              member.id,
+              action,
+              space.id
+            );
+            expect(hasPermission).toBe(expected);
+          } else {
+            const meeting = await createMeetingFixture(em, {
+              workspace,
+              resource,
+            });
+            const hasPermission = await service.hasMeetingPermission(
+              member.id,
+              action,
+              meeting.id
+            );
+            expect(hasPermission).toBe(expected);
+          }
         }
-      });
+      );
     });
   });
 

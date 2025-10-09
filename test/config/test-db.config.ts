@@ -7,6 +7,7 @@ import { getWorkerSchemaName } from '../utils/test-db-manager';
 // 명시적 엔티티 import (glob 검색 제거로 성능 향상)
 import { LoginEvent } from '../../src/domain/auth/entity/login-event.entity';
 import { Invitation } from '../../src/domain/invitation/entity/invitation.entity';
+import { MailLog } from '../../src/domain/mail/entity/mail-log.entity';
 import { MeetingParticipant } from '../../src/domain/meeting-participant/entity/meeting-participant.entity';
 import { MeetingRecord } from '../../src/domain/meeting-record/entity/meeting-record.entity';
 import { Meeting } from '../../src/domain/meeting/entity/meeting.entity';
@@ -43,6 +44,7 @@ export function createTestDatabaseConfig(appConfig: AppConfig): Options {
     entities: [
       LoginEvent,
       Invitation,
+      MailLog,
       MeetingParticipant,
       MeetingRecord,
       Meeting,

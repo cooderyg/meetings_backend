@@ -108,7 +108,10 @@ describe('Workspace E2E', () => {
     });
 
     it('필수 필드를 검증해야 함', async () => {
-      await request(app.getHttpServer()).post('/workspace').send({}).expect(400);
+      await request(app.getHttpServer())
+        .post('/workspace')
+        .send({})
+        .expect(400);
     });
 
     it('생성된 workspace는 FREE 티어여야 함', async () => {

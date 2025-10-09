@@ -91,7 +91,10 @@ describe('Invitation E2E', () => {
   describe('POST /workspace/:workspaceId/invitations', () => {
     it('워크스페이스 초대를 생성해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_EDIT);
       globalWorkspaceMemberId = inviter.id;
 
@@ -114,7 +117,10 @@ describe('Invitation E2E', () => {
 
     it('중복된 pending 초대는 생성할 수 없어야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       globalWorkspaceMemberId = inviter.id;
 
@@ -139,7 +145,10 @@ describe('Invitation E2E', () => {
 
     it('유효하지 않은 roleId로는 생성할 수 없어야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       globalWorkspaceMemberId = inviter.id;
 
       await request(app.getHttpServer())
@@ -153,7 +162,10 @@ describe('Invitation E2E', () => {
 
     it('expirationDays는 1~30일 사이여야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       globalWorkspaceMemberId = inviter.id;
 
@@ -182,7 +194,10 @@ describe('Invitation E2E', () => {
   describe('POST /invitations/accept/:token', () => {
     it('유효한 토큰으로 초대를 수락해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       const accepter = await createUserFixture(em, {
         email: 'invitee@example.com',
@@ -218,7 +233,10 @@ describe('Invitation E2E', () => {
 
     it('이메일이 일치하지 않으면 수락할 수 없어야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       const wrongUser = await createUserFixture(em, {
         email: 'wronguser@example.com',
@@ -242,7 +260,10 @@ describe('Invitation E2E', () => {
 
     it('만료된 초대는 수락할 수 없어야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       const expiredUser = await createUserFixture(em, {
         email: 'expired@example.com',
@@ -269,7 +290,10 @@ describe('Invitation E2E', () => {
   describe('GET /invitations/pending', () => {
     it('내 이메일로 온 pending 초대 목록을 조회해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       const myEmail = 'myemail@example.com';
 
@@ -306,7 +330,10 @@ describe('Invitation E2E', () => {
 
     it('ACCEPTED 상태 초대는 조회되지 않아야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       const myEmail = 'accepted@example.com';
 
@@ -335,7 +362,10 @@ describe('Invitation E2E', () => {
   describe('GET /invitations/:token', () => {
     it('토큰으로 초대 정보를 조회해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
       const invitation = await createInvitationFixture(em, {
@@ -365,7 +395,10 @@ describe('Invitation E2E', () => {
   describe('POST /invitations/:token/register', () => {
     it('미가입 사용자가 초대를 수락하며 회원가입해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       const newUserEmail = 'newuser-register@example.com';
 
@@ -400,13 +433,18 @@ describe('Invitation E2E', () => {
 
       // Invitation 상태 확인
       em.clear();
-      const updatedInvitation = await em.findOne(Invitation, { id: invitation.id });
+      const updatedInvitation = await em.findOne(Invitation, {
+        id: invitation.id,
+      });
       expect(updatedInvitation?.status).toBe(InvitationStatus.ACCEPTED);
     });
 
     it('이메일이 일치하지 않으면 회원가입할 수 없어야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
       const invitation = await createInvitationFixture(em, {
@@ -430,7 +468,10 @@ describe('Invitation E2E', () => {
 
     it('이미 존재하는 이메일로는 회원가입할 수 없어야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       const existingUser = await createUserFixture(em, {
         email: 'existing@example.com',
@@ -457,7 +498,10 @@ describe('Invitation E2E', () => {
 
     it('만료된 초대로는 회원가입할 수 없어야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
 
       const invitation = await createInvitationFixture(em, {
@@ -496,7 +540,10 @@ describe('Invitation E2E', () => {
   describe('DELETE /workspace/:workspaceId/invitations/:invitationId', () => {
     it('초대를 취소해야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       globalWorkspaceMemberId = inviter.id;
 
@@ -509,9 +556,7 @@ describe('Invitation E2E', () => {
       });
 
       const response = await request(app.getHttpServer())
-        .delete(
-          `/workspace/${workspace.id}/invitations/${invitation.id}`
-        )
+        .delete(`/workspace/${workspace.id}/invitations/${invitation.id}`)
         .expect(200);
 
       expect(response.body.message).toBe('Invitation cancelled successfully');
@@ -524,9 +569,17 @@ describe('Invitation E2E', () => {
 
     it('다른 사람이 생성한 초대는 취소할 수 없어야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
-      const otherUser = await createUserFixture(em, { email: 'othermember@example.com' });
-      const otherMember = await createWorkspaceMemberFixture(em, { workspace, user: otherUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
+      const otherUser = await createUserFixture(em, {
+        email: 'othermember@example.com',
+      });
+      const otherMember = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: otherUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       globalWorkspaceMemberId = otherMember.id; // 다른 멤버로 설정
 
@@ -539,15 +592,16 @@ describe('Invitation E2E', () => {
       });
 
       await request(app.getHttpServer())
-        .delete(
-          `/workspace/${workspace.id}/invitations/${invitation.id}`
-        )
+        .delete(`/workspace/${workspace.id}/invitations/${invitation.id}`)
         .expect(403);
     });
 
     it('이미 ACCEPTED 상태인 초대는 취소할 수 없어야 함', async () => {
       const workspace = await createWorkspaceFixture(em);
-      const inviter = await createWorkspaceMemberFixture(em, { workspace, user: testUser });
+      const inviter = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: testUser,
+      });
       const role = await createRoleFixture(em, SystemRole.CAN_VIEW);
       globalWorkspaceMemberId = inviter.id;
 
@@ -560,9 +614,7 @@ describe('Invitation E2E', () => {
       });
 
       await request(app.getHttpServer())
-        .delete(
-          `/workspace/${workspace.id}/invitations/${invitation.id}`
-        )
+        .delete(`/workspace/${workspace.id}/invitations/${invitation.id}`)
         .expect(400);
     });
   });

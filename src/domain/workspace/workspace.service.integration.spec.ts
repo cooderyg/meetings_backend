@@ -29,8 +29,6 @@ describe('WorkspaceService Integration Tests with Testcontainer', () => {
 
   // Helper functions
 
-
-
   beforeAll(async () => {
     // Testcontainer를 사용한 모듈 빌드
     const module = await TestModuleBuilder.create()

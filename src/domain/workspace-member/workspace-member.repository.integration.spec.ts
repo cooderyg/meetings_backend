@@ -5,7 +5,10 @@ import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
 import { createUserFixture } from '../../../test/fixtures/user.fixture';
 import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
-import { createRoleFixture, createWorkspaceMemberFixture } from '../../../test/fixtures/meeting.fixture';
+import {
+  createRoleFixture,
+  createWorkspaceMemberFixture,
+} from '../../../test/fixtures/meeting.fixture';
 import { SystemRole } from '../role/enum/system-role.enum';
 import { WorkspaceMemberRepository } from './workspace-member.repository';
 import { WorkspaceMember } from './entity/workspace-member.entity';

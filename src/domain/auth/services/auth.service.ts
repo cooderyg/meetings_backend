@@ -79,7 +79,10 @@ export class AuthService {
 
     // 초대 토큰이 있으면 초대 수락 처리
     if (invitationToken) {
-      await this.invitationService.acceptInvitationWithOAuth(invitationToken, user!);
+      await this.invitationService.acceptInvitationWithOAuth(
+        invitationToken,
+        user!
+      );
     } else if (isNewUser) {
       // 초대 토큰이 없고 신규 사용자인 경우에만 개인 워크스페이스 생성
       await this.workspaceService.createWorkspace(

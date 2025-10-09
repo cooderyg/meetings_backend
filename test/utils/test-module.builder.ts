@@ -68,6 +68,7 @@ export class TestModuleBuilder {
   private providers: any[] = [];
   private controllers: any[] = [];
   private guardOverrides: Array<{ guard: any; mock: any }> = [];
+  private providerOverrides: Array<{ token: any; value: any }> = [];
   private useTestcontainer: boolean = false;
   private containerKey: string = 'default';
 
@@ -162,6 +163,41 @@ export class TestModuleBuilder {
   }
 
   /**
+   * Provider 재정의 (Mock 주입용)
+   *
+   * @description
+   * 특정 Provider를 Mock으로 교체합니다.
+   * Bull Queue, 외부 서비스 등을 Mock할 때 사용합니다.
+   *
+   * @param token - Provider 토큰 (클래스 또는 Injection Token)
+   * @param value - Mock 객체
+   *
+   * @example
+   * ```typescript
+   * import { getQueueToken } from '@nestjs/bull';
+   *
+   * const mockQueue = {
+   *   add: jest.fn().mockResolvedValue({}),
+   * };
+   *
+   * const module = await TestModuleBuilder.create()
+   *   .withModule(MailModule)
+   *   .overrideProvider(getQueueToken('mail'))
+   *   .useValue(mockQueue)
+   *   .build();
+   * ```
+   */
+  overrideProvider(token: any): { useValue: (value: any) => TestModuleBuilder } {
+    return {
+      useValue: (value: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this.providerOverrides.push({ token, value });
+        return this;
+      },
+    };
+  }
+
+  /**
    * Testcontainer 사용 설정 (격리된 PostgreSQL 컨테이너)
    *
    * @description
@@ -250,6 +286,13 @@ export class TestModuleBuilder {
       testingModuleBuilder = testingModuleBuilder
         .overrideGuard(override.guard)
         .useValue(override.mock);
+    }
+
+    // Apply provider overrides
+    for (const override of this.providerOverrides) {
+      testingModuleBuilder = testingModuleBuilder
+        .overrideProvider(override.token)
+        .useValue(override.value);
     }
 
     const module = await testingModuleBuilder.compile();

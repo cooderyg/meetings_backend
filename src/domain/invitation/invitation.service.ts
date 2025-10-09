@@ -29,7 +29,13 @@ export class InvitationService {
   async createWorkspaceInvitation(
     args: ICreateWorkspaceInvitationArgs
   ): Promise<Invitation> {
-    const { workspaceId, inviterId, inviteeEmail, roleId, expirationDays = 7 } = args;
+    const {
+      workspaceId,
+      inviterId,
+      inviteeEmail,
+      roleId,
+      expirationDays = 7,
+    } = args;
 
     // 중복 초대 확인
     const duplicate = await this.repository.findDuplicatePending(
@@ -122,7 +128,10 @@ export class InvitationService {
 
     if (existingMember) {
       // 이미 멤버이면 초대만 ACCEPTED로 변경
-      await this.repository.updateStatus(invitation.id, InvitationStatus.ACCEPTED);
+      await this.repository.updateStatus(
+        invitation.id,
+        InvitationStatus.ACCEPTED
+      );
       return existingMember;
     }
 
@@ -137,7 +146,10 @@ export class InvitationService {
     });
 
     // 초대 상태 업데이트
-    await this.repository.updateStatus(invitation.id, InvitationStatus.ACCEPTED);
+    await this.repository.updateStatus(
+      invitation.id,
+      InvitationStatus.ACCEPTED
+    );
 
     return member;
   }
@@ -195,7 +207,10 @@ export class InvitationService {
     });
 
     // 초대 상태 업데이트
-    await this.repository.updateStatus(invitation.id, InvitationStatus.ACCEPTED);
+    await this.repository.updateStatus(
+      invitation.id,
+      InvitationStatus.ACCEPTED
+    );
 
     return member;
   }
@@ -204,9 +219,10 @@ export class InvitationService {
    * 스페이스 초대 생성
    * TODO: SpaceMember 도메인 구현 후 완성
    */
-  async createSpaceInvitation(
-    args: ICreateSpaceInvitationArgs
-  ): Promise<{ workspaceInvitation: Invitation | null; spaceInvitation: Invitation }> {
+  async createSpaceInvitation(args: ICreateSpaceInvitationArgs): Promise<{
+    workspaceInvitation: Invitation | null;
+    spaceInvitation: Invitation;
+  }> {
     throw new Error('SpaceMember domain not implemented yet');
   }
 
@@ -260,5 +276,4 @@ export class InvitationService {
 
     await this.repository.updateStatus(id, InvitationStatus.CANCELLED);
   }
-
 }

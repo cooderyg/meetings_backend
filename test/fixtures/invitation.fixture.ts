@@ -46,8 +46,7 @@ export async function createInvitationFixture(
   em: EntityManager,
   overrides: Partial<Invitation> & { inviter: WorkspaceMember }
 ): Promise<Invitation> {
-  const workspace =
-    overrides.workspace ?? (await createWorkspaceFixture(em));
+  const workspace = overrides.workspace ?? (await createWorkspaceFixture(em));
   const role =
     overrides.role ?? (await createRoleFixture(em, SystemRole.CAN_VIEW));
 

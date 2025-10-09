@@ -20,11 +20,15 @@ describe('MeetingParticipantRepository Integration Tests with Testcontainer', ()
   // Helper functions
   async function createParticipantTestData(em: EntityManager) {
     const workspace = await createWorkspaceFixture(em);
-    const workspaceMember = await createWorkspaceMemberFixture(em, { workspace });
-    const meeting = await createMeetingFixture(em, { workspace, owner: workspaceMember });
+    const workspaceMember = await createWorkspaceMemberFixture(em, {
+      workspace,
+    });
+    const meeting = await createMeetingFixture(em, {
+      workspace,
+      owner: workspaceMember,
+    });
     return { workspace, workspaceMember, meeting };
   }
-
 
   beforeAll(async () => {
     // Testcontainer를 사용한 모듈 빌드

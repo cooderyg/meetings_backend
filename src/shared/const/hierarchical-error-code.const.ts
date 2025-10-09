@@ -271,7 +271,17 @@ export type HierarchicalErrorCode =
   | 'langchain.generation.failed'
 
   // 구조화된 출력 관련 (langchain.structuredOutput.*)
-  | 'langchain.structuredOutput.failed';
+  | 'langchain.structuredOutput.failed'
+
+  // ===================
+  // 메일 도메인 (mail.*.*)
+  // ===================
+  // 발송 관련 (mail.send.*)
+  | 'mail.send.invalidEmail'
+  | 'mail.send.expiredInvitation'
+
+  // 조회 관련 (mail.fetch.*)
+  | 'mail.fetch.notFound';
 
 /**
  * 계층적 에러 코드별 HTTP 상태코드 및 로그 레벨 정의
@@ -377,8 +387,14 @@ export const HIERARCHICAL_ERROR_DEFINITIONS: Record<
   'invitation.cancel.unauthorized': { httpStatus: 403, logLevel: 'warn' },
   'invitation.cancel.alreadyProcessed': { httpStatus: 400, logLevel: 'warn' },
   'invitation.register.emailMismatch': { httpStatus: 400, logLevel: 'warn' },
-  'invitation.register.emailAlreadyExists': { httpStatus: 409, logLevel: 'warn' },
-  'invitation.register.invitationNotFound': { httpStatus: 404, logLevel: 'info' },
+  'invitation.register.emailAlreadyExists': {
+    httpStatus: 409,
+    logLevel: 'warn',
+  },
+  'invitation.register.invitationNotFound': {
+    httpStatus: 404,
+    logLevel: 'info',
+  },
   'invitation.register.cannotAccept': { httpStatus: 400, logLevel: 'warn' },
 
   // 공통 리소스 (3계층 통일)
@@ -433,4 +449,9 @@ export const HIERARCHICAL_ERROR_DEFINITIONS: Record<
   'langchain.config.missingApiKey': { httpStatus: 500, logLevel: 'error' },
   'langchain.generation.failed': { httpStatus: 502, logLevel: 'error' },
   'langchain.structuredOutput.failed': { httpStatus: 502, logLevel: 'error' },
+
+  // 메일 도메인
+  'mail.send.invalidEmail': { httpStatus: 400, logLevel: 'info' },
+  'mail.send.expiredInvitation': { httpStatus: 400, logLevel: 'info' },
+  'mail.fetch.notFound': { httpStatus: 404, logLevel: 'info' },
 };

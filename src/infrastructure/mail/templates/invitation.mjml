@@ -1,0 +1,119 @@
+<mjml>
+  <mj-head>
+    <mj-title>{{inviterName}}님의 초대</mj-title>
+    <mj-attributes>
+      <mj-all font-family="'Pretendard', 'Malgun Gothic', '맑은 고딕', Arial, sans-serif" />
+      <mj-text font-size="14px" line-height="1.6" color="#333333" />
+      <mj-button background-color="#4F46E5" color="#ffffff" border-radius="8px" font-weight="600" />
+    </mj-attributes>
+    <mj-style>
+      .header-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1F2937;
+        line-height: 1.3;
+      }
+      .invitation-box {
+        background-color: #F9FAFB;
+        border-left: 4px solid #4F46E5;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .invitation-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1F2937;
+        margin-bottom: 8px;
+      }
+      .expiry-notice {
+        font-size: 12px;
+        color: #DC2626;
+        font-weight: 500;
+      }
+      .footer-text {
+        font-size: 12px;
+        color: #6B7280;
+        line-height: 1.5;
+      }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#F3F4F6">
+    <!-- Header -->
+    <mj-section padding="40px 0 20px 0">
+      <mj-column>
+        <mj-text align="center" css-class="header-title">
+          Anote
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Main Content -->
+    <mj-section background-color="#ffffff" padding="40px 30px" border-radius="12px">
+      <mj-column>
+        <mj-text font-size="18px" font-weight="600" color="#374151" padding-bottom="10px">
+          초대장이 도착했습니다! 🎉
+        </mj-text>
+
+        <mj-text padding-bottom="20px">
+          <strong>{{inviterName}}</strong>님이 {{#if isWorkspaceInvitation}}워크스페이스{{else}}스페이스{{/if}}에 초대했습니다.
+        </mj-text>
+
+        <!-- Invitation Details Box -->
+        <mj-text css-class="invitation-box">
+          <div class="invitation-title">
+            {{#if isWorkspaceInvitation}}
+              📁 워크스페이스: {{workspaceName}}
+            {{else}}
+              📂 스페이스: {{spaceName}}
+            {{/if}}
+          </div>
+          <div style="color: #6B7280; font-size: 13px;">
+            {{#if isWorkspaceInvitation}}
+              {{workspaceName}} 워크스페이스의 멤버로 초대되었습니다.
+            {{else}}
+              {{workspaceName}} 워크스페이스 내 {{spaceName}} 스페이스의 멤버로 초대되었습니다.
+            {{/if}}
+          </div>
+        </mj-text>
+
+        <mj-text padding-bottom="20px">
+          아래 버튼을 클릭하여 초대를 수락하고 팀과 함께 협업을 시작하세요.
+        </mj-text>
+
+        <mj-button href="{{appUrl}}/invitations/accept?token={{invitationToken}}" padding="20px 0">
+          초대 수락하기
+        </mj-button>
+
+        <mj-text align="center" css-class="expiry-notice" padding-top="20px">
+          ⏰ 이 초대장은 {{expiresAt}}까지 유효합니다
+        </mj-text>
+
+        <mj-divider border-color="#E5E7EB" padding="30px 0" />
+
+        <mj-text color="#6B7280" font-size="13px">
+          <strong>초대를 요청하지 않으셨나요?</strong><br/>
+          이 메일을 무시하셔도 됩니다. 초대를 수락하지 않으면 아무 일도 일어나지 않습니다.
+        </mj-text>
+
+        <mj-text color="#9CA3AF" font-size="12px" padding-top="15px">
+          버튼이 작동하지 않으면 아래 링크를 복사하여 브라우저에 붙여넣으세요:<br/>
+          <span style="word-break: break-all;">{{appUrl}}/invitations/accept?token={{invitationToken}}</span>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="30px 0">
+      <mj-column>
+        <mj-text align="center" css-class="footer-text">
+          © 2025 Anote. All rights reserved.<br/>
+          이 메일은 발신 전용입니다. 답장하지 마세요.
+        </mj-text>
+        <mj-text align="center" css-class="footer-text" padding-top="10px">
+          초대와 관련하여 궁금하신 사항은<br/>
+          <a href="mailto:support@anote.app" style="color: #4F46E5; text-decoration: none;">support@anote.app</a>로 문의해 주세요.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

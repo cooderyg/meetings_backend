@@ -5,7 +5,10 @@ import { TestModuleBuilder } from '../../../test/utils/test-module.builder';
 import { TestContainerManager } from '../../../test/utils/testcontainer-singleton';
 import { createUserFixture } from '../../../test/fixtures/user.fixture';
 import { createWorkspaceFixture } from '../../../test/fixtures/workspace.fixture';
-import { createWorkspaceMemberFixture, createResourceFixture } from '../../../test/fixtures/meeting.fixture';
+import {
+  createWorkspaceMemberFixture,
+  createResourceFixture,
+} from '../../../test/fixtures/meeting.fixture';
 import { ResourceRepository } from './resource.repository';
 import {
   Resource,
@@ -80,7 +83,9 @@ describe('ResourceRepository Integration Tests with Testcontainer', () => {
       // Given
       const workspace = await createWorkspaceFixture(em);
       const user = await createUserFixture(em);
-      const workspaceMember = await createWorkspaceMemberFixture(em, { workspace });
+      const workspaceMember = await createWorkspaceMemberFixture(em, {
+        workspace,
+      });
       const resource = await createResourceFixture(em, {
         workspace,
         owner: workspaceMember,
@@ -112,10 +117,18 @@ describe('ResourceRepository Integration Tests with Testcontainer', () => {
   describe('findByWorkspace', () => {
     it('워크스페이스의 모든 리소스를 찾아야 함', async () => {
       // Given
-      const workspace1 = await createWorkspaceFixture(em, { name: 'Workspace 1' });
-      const workspace2 = await createWorkspaceFixture(em, { name: 'Workspace 2' });
-      const member1 = await createWorkspaceMemberFixture(em, { workspace: workspace1 });
-      const member2 = await createWorkspaceMemberFixture(em, { workspace: workspace2 });
+      const workspace1 = await createWorkspaceFixture(em, {
+        name: 'Workspace 1',
+      });
+      const workspace2 = await createWorkspaceFixture(em, {
+        name: 'Workspace 2',
+      });
+      const member1 = await createWorkspaceMemberFixture(em, {
+        workspace: workspace1,
+      });
+      const member2 = await createWorkspaceMemberFixture(em, {
+        workspace: workspace2,
+      });
 
       const resource1 = await createResourceFixture(em, {
         workspace: workspace1,
@@ -152,8 +165,14 @@ describe('ResourceRepository Integration Tests with Testcontainer', () => {
       const workspace = await createWorkspaceFixture(em);
       const user1 = await createUserFixture(em, { email: 'user1@test.com' });
       const user2 = await createUserFixture(em, { email: 'user2@test.com' });
-      const member1 = await createWorkspaceMemberFixture(em, { workspace, user: user1 });
-      const member2 = await createWorkspaceMemberFixture(em, { workspace, user: user2 });
+      const member1 = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: user1,
+      });
+      const member2 = await createWorkspaceMemberFixture(em, {
+        workspace,
+        user: user2,
+      });
 
       const resource1 = await createResourceFixture(em, {
         workspace,
@@ -186,7 +205,9 @@ describe('ResourceRepository Integration Tests with Testcontainer', () => {
     it('새 리소스를 생성해야 함', async () => {
       // Given
       const workspace = await createWorkspaceFixture(em);
-      const workspaceMember = await createWorkspaceMemberFixture(em, { workspace });
+      const workspaceMember = await createWorkspaceMemberFixture(em, {
+        workspace,
+      });
       const createData = {
         workspace,
         owner: workspaceMember,
@@ -211,7 +232,9 @@ describe('ResourceRepository Integration Tests with Testcontainer', () => {
     it('리소스를 업데이트해야 함', async () => {
       // Given
       const workspace = await createWorkspaceFixture(em);
-      const workspaceMember = await createWorkspaceMemberFixture(em, { workspace });
+      const workspaceMember = await createWorkspaceMemberFixture(em, {
+        workspace,
+      });
       const resource = await createResourceFixture(em, {
         workspace,
         owner: workspaceMember,
@@ -237,7 +260,9 @@ describe('ResourceRepository Integration Tests with Testcontainer', () => {
     it('리소스를 삭제해야 함', async () => {
       // Given
       const workspace = await createWorkspaceFixture(em);
-      const workspaceMember = await createWorkspaceMemberFixture(em, { workspace });
+      const workspaceMember = await createWorkspaceMemberFixture(em, {
+        workspace,
+      });
       const resource = await createResourceFixture(em, {
         workspace,
         owner: workspaceMember,

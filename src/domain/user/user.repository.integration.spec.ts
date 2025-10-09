@@ -66,7 +66,11 @@ describe('UserRepository Integration Tests with Testcontainer', () => {
     it('이메일로 사용자를 찾아야 함', async () => {
       // Given
       const email = 'test@example.com';
-      const user = await createUserFixture(em, { email, firstName: '길동', lastName: '홍' });
+      const user = await createUserFixture(em, {
+        email,
+        firstName: '길동',
+        lastName: '홍',
+      });
 
       // When
       const foundUser = await userRepository.findByEmail(email);
